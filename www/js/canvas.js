@@ -7,12 +7,16 @@ anima.Canvas = new Class({
 
     scenes:[],
     sceneMap:[],
+    currentScene:null,
 
     initialize:function (id) {
 
         this.parent(id);
 
         this.element$ = $('#' + this.id);
+        this.element$.css({
+            margin:'auto auto'
+        });
 
         this.animator = new anima.Animator();
 
@@ -21,8 +25,9 @@ anima.Canvas = new Class({
 
     addScene:function (scene) {
 
-        this.scene$.append('<div id="' + scene.id + '"></div>');
-        scene.scene$ = $('#' + scene.id);
+        this.element$.append('<div id="' + scene.id + '"></div>');
+        scene.element$ = $('#' + scene.id);
+        scene.element$.hide();
 
         this.scenes.push(scene);
         this.sceneMap[scene.id] = scene;
@@ -35,11 +40,28 @@ anima.Canvas = new Class({
         return this.sceneMap[id];
     },
 
+    setCurrentScene:function (id) {
+
+        var newScene = this.getScene(id);
+        if (newScene) {
+            if (this.currentScene) {
+                this.currentScene.element$.fadeOut(1000, function () {
+                    newScene.element$.fadeIn();
+                    this.currentScene = scene;
+                });
+            } else {
+                newScene.element$.fadeIn();
+                this.currentScene = newScene;
+            }
+        }
+    },
+
     removeScene:function (id) {
 
         var scene = this.getScene();
         if (scene) {
-            for (var i in this.scenes) {
+            var count = this.scenes.length;
+            for (var i = 0; i < count; i++) {
                 if (this.scenes[i].id = id) {
                     this.scenes.splice(i, 1);
                     delete this.sceneMap[id];
@@ -54,6 +76,14 @@ anima.Canvas = new Class({
     getAnimator:function () {
 
         return this.animator;
+    },
+
+    getImageUrls:function (urls) {
+
+        var count = this.scenes.length;
+        for (var i = 0; i < count; i++) {
+            this.scenes[i].getImageUrls(urls);
+        }
     },
 
     resize:function () {
@@ -95,16 +125,61 @@ $(window).resize(function () {
     });
 });
 
-/*
- acc.currentLevel.loadBackground(function () {
- acc.currentLevel.initializeLevel(acc.gameCanvas);
- requestAnimFrame(update);
- });
+function update() {
 
- function update() {
+    $.each(anima._canvases, function (index, value) {
+        value.getAnimator().animate();
+    });
+    requestAnimFrame(update);
+}
 
- acc.animator.animate();
- requestAnimFrame(update);
- }
+anima.loadImages = function (callbackFn) {
 
- */
+    $.mobile.showPageLoadingMsg("b", "Loading Images");
+
+    var urls = [];
+    try {
+        $.each(anima._canvases, function (index, value) {
+            value.getImageUrls(urls);
+        });
+    } catch (e) {
+        console.log(e);
+        $.mobile.hidePageLoadingMsg();
+        return;
+    }
+    var totalImages = urls.length;
+    if (totalImages == 0) {
+        $.mobile.hidePageLoadingMsg();
+        if (callbackFn) {
+            callbackFn.call();
+        }
+        return;
+    }
+    var image;
+    var loadedImages = 0;
+    for (var i = 0; i < totalImages; i++) {
+        image = new Image();
+        image.onload = function () {
+
+            if (++loadedImages >= totalImages) {
+                $.mobile.hidePageLoadingMsg();
+                if (callbackFn) {
+                    callbackFn.call();
+                }
+            }
+
+            image = null;
+        };
+        image.src = urls[i];
+    }
+};
+
+anima.start = function (callbackFn) {
+
+    anima.loadImages(function () {
+        if (callbackFn) {
+            callbackFn.call();
+        }
+        requestAnimFrame(update);
+    });
+};

@@ -2,6 +2,8 @@
     width: 100% !important;
     height: 100% !important;
     position: relative !important;
+
+    background-color: #000;
 }
 
 #pageContent {
@@ -22,4 +24,5 @@
     position: absolute;
 
     background-color: #000;
+    border: 1px solid gray;
 }

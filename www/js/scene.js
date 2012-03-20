@@ -1,7 +1,7 @@
 anima.Scene = new Class({
     Extends:anima.Layer,
 
-    canvas: null,
+    canvas:null,
 
     layers:[],
     layerMap:[],
@@ -13,8 +13,8 @@ anima.Scene = new Class({
 
     addLayer:function (layer) {
 
-        this.layer$.append('<div id="' + layer.id + '"></div>');
-        layer.layer$ = $('#' + layer.id);
+        this.element$.append('<div id="' + layer.id + '"></div>');
+        layer.element$ = $('#' + layer.id);
 
         this.layers.push(layer);
         this.layerMap[layer.id] = layer;
@@ -31,7 +31,8 @@ anima.Scene = new Class({
 
         var layer = this.getLayer();
         if (layer) {
-            for (var i in this.layers) {
+            var count = this.layers.length;
+            for (var i = 0; i < count; i++) {
                 if (this.layers[i].id = id) {
                     this.layers.splice(i, 1);
                     delete this.layerMap[id];
@@ -43,9 +44,29 @@ anima.Scene = new Class({
         }
     },
 
+    getImageUrls:function (urls) {
+
+        var count = this.layers.count;
+        for (var i = 0; i < count; i++) {
+            this.layers[i].getImageUrls(urls);
+        }
+    },
+
+    setBackground:function (color, url, width, height) {
+
+        if (!width) {
+            width = this.canvas.element$.width();
+        }
+        if (!height) {
+            height = this.canvas.element$.height();
+        }
+        this.parent(color, url, width, height);
+    },
+
     removeElement:function () {
 
-        for (var i in this.nodes) {
+        var count = this.layers.length();
+        for (var i = 0; i < count; i++) {
             this.layers[i].removeElement();
         }
         this.layers = [];

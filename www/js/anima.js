@@ -25,7 +25,7 @@ anima.getRequestParameter = function (name) {
         return "";
     else
         return decodeURIComponent(results[1].replace(/\+/g, " "));
-}
+};
 
 if (typeof String.prototype.startsWith != 'function') {
     String.prototype.startsWith = function (str) {
@@ -36,7 +36,7 @@ if (typeof String.prototype.startsWith != 'function') {
 anima.nowTime = function () {
 
     return new Date().getTime();
-}
+};
 
 anima.isArray = function (value) {
 
@@ -46,24 +46,24 @@ anima.isArray = function (value) {
 anima.isNumber = function (value) {
 
     return $.type(value) === "number";
-}
+};
 
 anima.isString = function (value) {
 
     return $.type(value) === "string";
-}
+};
 
 anima.isObject = function (value) {
 
     return $.isPlainObject(value);
-}
+};
 
 anima.isVisible = function (element$) {
 
     return element$ ? (element$.css("display") != "none") : false;
-}
+};
 
 anima.clone = function (obj) {
 
     return $.extend({}, obj);
-}
+};

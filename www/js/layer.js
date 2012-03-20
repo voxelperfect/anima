@@ -31,7 +31,8 @@ anima.Layer = new Class({
 
         var node = this.getNode();
         if (node) {
-            for (var i in this.nodes) {
+            var count = this.nodes.length;
+            for (var i = 0; i < count; i++) {
                 if (this.nodes[i].id = id) {
                     this.nodes.splice(i, 1);
                     delete this.nodeMap[id];
@@ -43,9 +44,33 @@ anima.Layer = new Class({
         }
     },
 
+    getImageUrls:function (urls) {
+
+        var url;
+        var count = this.nodes.length;
+        for (var i = 0; i < count; i++) {
+            url = this.nodes[i].getImageUrl();
+            if (url) {
+                urls.push(url);
+            }
+        }
+    },
+
+    setBackground:function (color, url, width, height) {
+
+        if (!width) {
+            width = this.scene.element$.width();
+        }
+        if (!height) {
+            height = this.scene.element$.height();
+        }
+        this.parent(color, url, width, height);
+    },
+
     removeElement:function () {
 
-        for (var i in this.nodes) {
+        var count = this.nodes.length;
+        for (var i = 0; i < count; i++) {
             this.nodes[i].removeElement();
         }
         this.nodes = [];

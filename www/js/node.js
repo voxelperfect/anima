@@ -1,7 +1,7 @@
 anima.Node = new Class({
 
     id:null,
-    layer: null,
+    layer:null,
     element$:null,
 
     position:{
@@ -26,7 +26,21 @@ anima.Node = new Class({
         this.id = id;
     },
 
+    getImageUrl:function () {
+
+        var background = this.element$.css('background');
+        if (background) {
+            var pos1 = background.indexOf('url');
+            var pos2 = background.indexOf(')');
+            return background.substr(pos1 + 4, pos2 - pos1 - 4);
+        } else {
+            return null;
+        }
+    },
+
     setBackground:function (color, url, width, height) {
+
+        var css = {};
 
         var background = '';
         if (color) {
@@ -35,13 +49,21 @@ anima.Node = new Class({
         if (url) {
             background += ' url(' + url + ')';
         }
+        if (background.length > 0) {
+            css['background'] = background;
+            css['background-repeat'] = 'no-repeat';
+        }
 
-        this.element$.css({
-            'background':background,
-            'background-repeat':'no-repeat',
-            'width':width,
-            'height':height
-        });
+        if (!width) {
+            width = this.layer.element$.width();
+        }
+        css.width = width;
+        if (!height) {
+            height = this.layer.element$.height();
+        }
+        css.height = height;
+
+        this.element$.css(css);
 
         this.size.width = width;
         this.size.height = height;
@@ -50,7 +72,7 @@ anima.Node = new Class({
     setOrigin:function (origin) {
 
         this.origin = origin;
-        this._updateTransform(false, false, true);
+        this._updateTransform();
     },
 
     getOrigin:function () {
@@ -61,7 +83,7 @@ anima.Node = new Class({
     setPosition:function (position) {
 
         this.position = position;
-        this._updateTransform(true, false, false);
+        this._updateTransform();
     },
 
     getPosition:function () {
@@ -73,13 +95,13 @@ anima.Node = new Class({
 
         this.position.x += dx;
         this.position.y += dy;
-        this._updateTransform(true, false, false);
+        this._updateTransform();
     },
 
     setScale:function (scale) {
 
         this.scale = scale;
-        this._updateTransform(false, true, false);
+        this._updateTransform();
     },
 
     getScale:function () {
@@ -87,19 +109,12 @@ anima.Node = new Class({
         return anima.clone(this.scale);
     },
 
-    scale:function (dsx, dsy) {
-
-        this.scale.x *= dsx;
-        this.scale.y *= dsy;
-        this._updateTransform(false, true, false);
-    },
-
-    removeElement: function() {
+    removeElement:function () {
 
         this.element$.remove();
     },
 
-    _updateTransform:function (pos, scale, origin) {
+    _updateTransform:function (posChanged, scaleChanged, originChanged) {
 
         var translation = 'translate(' + this.position.x + 'px, ' + this.position.y + 'px)';
         var scale = ' scale(' + this.scale.x + ', ' + this.scale.y + ')';
@@ -109,39 +124,18 @@ anima.Node = new Class({
 
         var origin = (this.origin.x * 100) + '% ' + (this.origin.y * 100) + '%';
 
-        var css;
-        if ((pos || scale) && origin) {
-            css = {
-                'transform':transformation,
-                '-ms-transform':transformation,
-                '-moz-transform':transformation,
-                '-webkit-transform':transformation,
-                '-o-transform':transformation,
+        this.element$.css({
+            'transform':transformation,
+            '-ms-transform':transformation,
+            '-moz-transform':transformation,
+            '-webkit-transform':transformation,
+            '-o-transform':transformation,
 
-                'transform-origin':origin,
-                '-ms-transform-origin':origin,
-                '-moz-transform-origin':origin,
-                '-webkit-transform-origin':origin,
-                '-o-transform-origin':origin
-            };
-        } else if (pos || scale) {
-            css = {
-                'transform':transformation,
-                '-ms-transform':transformation,
-                '-moz-transform':transformation,
-                '-webkit-transform':transformation,
-                '-o-transform':transformation
-            };
-        } else if (origin) {
-            css = {
-                'transform-origin':origin,
-                '-ms-transform-origin':origin,
-                '-moz-transform-origin':origin,
-                '-webkit-transform-origin':origin,
-                '-o-transform-origin':origin
-            };
-        }
-
-        this.element$.css(css);
+            'transform-origin':origin,
+            '-ms-transform-origin':origin,
+            '-moz-transform-origin':origin,
+            '-webkit-transform-origin':origin,
+            '-o-transform-origin':origin
+        });
     }
 });
