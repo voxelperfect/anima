@@ -51,8 +51,9 @@ anima.Node = new Class({
         }
         if (background.length > 0) {
             css['background'] = background;
-            css['background-repeat'] = 'no-repeat';
         }
+        css['background-repeat'] = 'no-repeat';
+        css['background-position'] = 'left top';
 
         if (!width) {
             width = this.layer.element$.width();

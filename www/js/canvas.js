@@ -15,7 +15,12 @@ anima.Canvas = new Class({
 
         this.element$ = $('#' + this.id);
         this.element$.css({
-            margin:'auto auto'
+            'padding':'0px',
+            'margin':'0px',
+            'width':'100%',
+            'height':'100%',
+            'overflow':'hidden',
+            'position':'relative'
         });
 
         this.animator = new anima.Animator();
@@ -28,6 +33,9 @@ anima.Canvas = new Class({
         this.element$.append('<div id="' + scene.id + '"></div>');
         scene.element$ = $('#' + scene.id);
         scene.element$.hide();
+        scene.element$.css({
+            'position':'absolute'
+        });
 
         this.scenes.push(scene);
         this.sceneMap[scene.id] = scene;
@@ -119,7 +127,7 @@ anima.Canvas = new Class({
             height = requiredHeight;
         }
 
-        var scale =  width / sourceWidth;
+        var scale = width / sourceWidth;
 
         this.origin = {
             x:0,
@@ -129,7 +137,7 @@ anima.Canvas = new Class({
             x:offsetX,
             y:offsetY
         };
-        this.scale ={
+        this.scale = {
             x:scale,
             y:scale
         };

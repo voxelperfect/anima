@@ -15,6 +15,9 @@ anima.Layer = new Class({
 
         this.element$.append('<div id="' + node.id + '"></div>');
         node.element$ = $('#' + node.id);
+        node.element$.css({
+            'position':'absolute'
+        });
 
         this.nodes.push(node);
         this.nodeMap[node.id] = node;

@@ -15,6 +15,9 @@ anima.Scene = new Class({
 
         this.element$.append('<div id="' + layer.id + '"></div>');
         layer.element$ = $('#' + layer.id);
+        layer.element$.css({
+            'position':'absolute'
+        });
 
         this.layers.push(layer);
         this.layerMap[layer.id] = layer;
