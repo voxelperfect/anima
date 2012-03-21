@@ -3,18 +3,18 @@ anima._canvases = [];
 anima.Canvas = new Class({
     Extends:anima.Node,
 
-    animator:null,
+    _animator:null,
 
-    scenes:[],
-    sceneMap:[],
-    currentScene:null,
+    _scenes:[],
+    _sceneMap:[],
+    _currentScene:null,
 
     initialize:function (id) {
 
         this.parent(id);
 
-        this.element$ = $('#' + this.id);
-        this.element$.css({
+        this._element$ = $('#' + this.id);
+        this._element$.css({
             'padding':'0px',
             'margin':'0px',
             'width':'100%',
@@ -23,29 +23,29 @@ anima.Canvas = new Class({
             'position':'relative'
         });
 
-        this.animator = new anima.Animator();
+        this._animator = new anima.Animator();
 
         anima._canvases.push(this);
     },
 
     addScene:function (scene) {
 
-        this.element$.append('<div id="' + scene.id + '"></div>');
-        scene.element$ = $('#' + scene.id);
-        scene.element$.hide();
-        scene.element$.css({
+        this._element$.append('<div id="' + scene.id + '"></div>');
+        scene._element$ = $('#' + scene.id);
+        scene._element$.hide();
+        scene._element$.css({
             'position':'absolute'
         });
 
-        this.scenes.push(scene);
-        this.sceneMap[scene.id] = scene;
+        this._scenes.push(scene);
+        this._sceneMap[scene.id] = scene;
 
-        scene.canvas = this;
+        scene._canvas = this;
     },
 
     getScene:function (id) {
 
-        return this.sceneMap[id];
+        return this._sceneMap[id];
     },
 
     setCurrentScene:function (id) {
@@ -54,15 +54,15 @@ anima.Canvas = new Class({
 
         var newScene = this.getScene(id);
         if (newScene) {
-            if (this.currentScene) {
-                this.animator.clearAnimations();
-                this.currentScene.element$.fadeOut(1000, function () {
-                    newScene.element$.fadeIn(1000);
-                    me.currentScene = scene;
+            if (this._currentScene) {
+                this._animator.clearAnimations();
+                this._currentScene._element$.fadeOut(1000, function () {
+                    newScene._element$.fadeIn(1000);
+                    me._currentScene = scene;
                 });
             } else {
-                newScene.element$.fadeIn(1000);
-                this.currentScene = newScene;
+                newScene._element$.fadeIn(1000);
+                this._currentScene = newScene;
             }
         }
     },
@@ -71,44 +71,46 @@ anima.Canvas = new Class({
 
         var scene = this.getScene();
         if (scene) {
-            var count = this.scenes.length;
+            var count = this._scenes.length;
             for (var i = 0; i < count; i++) {
-                if (this.scenes[i].id = id) {
-                    this.scenes.splice(i, 1);
-                    delete this.sceneMap[id];
-                    scene.removeElement();
+                if (this._scenes[i].id = id) {
+                    this._scenes.splice(i, 1);
+                    delete this._sceneMap[id];
+                    scene._removeElement();
                     return;
                 }
             }
-            scene.canvas = null;
+            scene._canvas = null;
         }
     },
 
     getAnimator:function () {
 
-        return this.animator;
-    },
-
-    getImageUrls:function (urls) {
-
-        var count = this.scenes.length;
-        for (var i = 0; i < count; i++) {
-            this.scenes[i].getImageUrls(urls);
-        }
+        return this._animator;
     },
 
     setBackground:function (color, url, width, height) {
 
         this.parent(color, url, width, height);
-        this.resize();
+        this._resize();
     },
 
-    resize:function () {
+    /* internal methods */
 
-        var sourceWidth = this.size.width;
-        var sourceHeight = this.size.height;
+    _getImageUrls:function (urls) {
 
-        var container$ = this.element$.parent();
+        var count = this._scenes.length;
+        for (var i = 0; i < count; i++) {
+            this._scenes[i]._getImageUrls(urls);
+        }
+    },
+
+    _resize:function () {
+
+        var sourceWidth = this._size.width;
+        var sourceHeight = this._size.height;
+
+        var container$ = this._element$.parent();
         var targetWidth = container$.width();
         var targetHeight = container$.height();
 
@@ -129,15 +131,15 @@ anima.Canvas = new Class({
 
         var scale = width / sourceWidth;
 
-        this.origin = {
+        this._origin = {
             x:0,
             y:0
         };
-        this.position = {
+        this._position = {
             x:offsetX,
             y:offsetY
         };
-        this.scale = {
+        this._scale = {
             x:scale,
             y:scale
         };
@@ -153,22 +155,22 @@ $(window).resize(function () {
     });
 });
 
-function update() {
+function _update() {
 
     $.each(anima._canvases, function (index, value) {
         value.getAnimator().animate();
     });
-    requestAnimFrame(update);
+    requestAnimFrame(_update);
 }
 
-anima.loadImages = function (callbackFn) {
+anima._loadImages = function (callbackFn) {
 
     $.mobile.showPageLoadingMsg("b", "Loading Images");
 
     var urls = [];
     try {
         $.each(anima._canvases, function (index, value) {
-            value.getImageUrls(urls);
+            value._getImageUrls(urls);
         });
     } catch (e) {
         console.log(e);
@@ -204,10 +206,10 @@ anima.loadImages = function (callbackFn) {
 
 anima.start = function (callbackFn) {
 
-    anima.loadImages(function () {
+    anima._loadImages(function () {
         if (callbackFn) {
             callbackFn.call();
         }
-        requestAnimFrame(update);
+        requestAnimFrame(_update);
     });
 };

@@ -1,10 +1,10 @@
 anima.Layer = new Class({
     Extends:anima.Node,
 
-    scene:null,
+    _scene:null,
 
-    nodes:[],
-    nodeMap:[],
+    _nodes:[],
+    _nodeMap:[],
 
     initialize:function (id) {
 
@@ -13,72 +13,74 @@ anima.Layer = new Class({
 
     addNode:function (node) {
 
-        this.element$.append('<div id="' + node.id + '"></div>');
-        node.element$ = $('#' + node.id);
-        node.element$.css({
+        this._element$.append('<div id="' + node.id + '"></div>');
+        node._element$ = $('#' + node.id);
+        node._element$.css({
             'position':'absolute'
         });
 
-        this.nodes.push(node);
-        this.nodeMap[node.id] = node;
+        this._nodes.push(node);
+        this._nodeMap[node.id] = node;
 
-        node.layer = this;
+        node._layer = this;
     },
 
     getNode:function (id) {
 
-        return this.nodeMap[id];
+        return this._nodeMap[id];
     },
 
     removeNode:function (id) {
 
         var node = this.getNode();
         if (node) {
-            var count = this.nodes.length;
+            var count = this._nodes.length;
             for (var i = 0; i < count; i++) {
-                if (this.nodes[i].id = id) {
-                    this.nodes.splice(i, 1);
-                    delete this.nodeMap[id];
-                    node.removeElement();
+                if (this._nodes[i].id = id) {
+                    this._nodes.splice(i, 1);
+                    delete this._nodeMap[id];
+                    node._removeElement();
                     return;
                 }
             }
-            node.layer = null;
-        }
-    },
-
-    getImageUrls:function (urls) {
-
-        var url;
-        var count = this.nodes.length;
-        for (var i = 0; i < count; i++) {
-            url = this.nodes[i].getImageUrl();
-            if (url) {
-                urls.push(url);
-            }
+            node._layer = null;
         }
     },
 
     setBackground:function (color, url, width, height) {
 
         if (!width) {
-            width = this.scene.element$.width();
+            width = this._scene._element$.width();
         }
         if (!height) {
-            height = this.scene.element$.height();
+            height = this._scene._element$.height();
         }
         this.parent(color, url, width, height);
     },
 
-    removeElement:function () {
+    /* internal methods */
 
-        var count = this.nodes.length;
+    _getImageUrls:function (urls) {
+
+        var url;
+        var count = this._nodes.length;
         for (var i = 0; i < count; i++) {
-            this.nodes[i].removeElement();
+            url = this._nodes[i].getImageUrl();
+            if (url) {
+                urls.push(url);
+            }
         }
-        this.nodes = [];
-        this.nodeMap = [];
+    },
 
-        this.element$.remove();
+    _removeElement:function () {
+
+        var count = this._nodes.length;
+        for (var i = 0; i < count; i++) {
+            this._nodes[i].removeElement();
+        }
+        this._nodes = [];
+        this._nodeMap = [];
+
+        this._element$.remove();
     }
 });

@@ -23,10 +23,10 @@ anima.Animator = new Class({
         }
     },
 
-    animationQueue:[],
-    lastAnimationID:0,
-    animationLoopTimerID:null,
-    animationTimeStart:0,
+    _animationQueue:[],
+    _lastAnimationID:0,
+    _animationLoopTimerID:null,
+    _animationTimeStart:0,
 
     initialize:function () {
 
@@ -34,14 +34,14 @@ anima.Animator = new Class({
 
     addTask:function (taskFn) {
 
-        this.animationQueue.push({
+        this._animationQueue.push({
             taskFn:taskFn
         });
     },
 
     addAnimation:function (interpolateValuesFn, startTime, duration, interpolator, onAnimationEndedFn) {
 
-        this.animationQueue.push({
+        this._animationQueue.push({
             id:this.lastAnimationID++,
             interpolateValuesFn:interpolateValuesFn,
             startTime:startTime,
@@ -53,50 +53,15 @@ anima.Animator = new Class({
 
     clearAnimations:function () {
 
-        this.animationQueue = [];
-    },
-
-    endAnimation:function (id) {
-
-        var animationQueue = this.animationQueue;
-
-        var i;
-
-        if (isString(id) && id.charAt(0) == '@') {
-            i = parseInt(id.substring(1));
-            animationQueue.splice(i, 1);
-            return;
-        }
-        var count = animationQueue.length;
-        var animation;
-        for (i = 0; i < count; i++) {
-            animation = animationQueue[i];
-            if (animation && animation.id == id) {
-                animationQueue.splice(i, 1);
-                animation.onAnimationEndedFn(animation);
-            }
-        }
-    },
-
-    interpolate:function (v0, v1, t) {
-
-        if (isNumber(v0)) {
-            return (v0 + (v1 - v0) * t);
-        } else if (isObject(v0)) {
-            return {
-                x:(v0.x + (v1.x - v0.x) * t),
-                y:(v0.y + (v1.y - v0.y) * t),
-                z:v0.z ? (v0.z + (v1.z - v0.z) * t) : 0
-            }
-        }
+        this._animationQueue = [];
     },
 
     animate:function () {
 
-        var animationQueue = this.animationQueue;
+        var animationQueue = this._animationQueue;
 
         var currentTime = new Date().getTime();
-        var loopTime = currentTime - this.animationTimeStart;
+        var loopTime = currentTime - this._animationTimeStart;
 
         var count = animationQueue.length;
         if (count == 0) {
@@ -112,7 +77,7 @@ anima.Animator = new Class({
             animation = animationQueue[i];
             if (animation.taskFn) {
                 animation.taskFn(loopTime);
-                if (this.animationQueue.length == 0) {
+                if (this._animationQueue.length == 0) {
                     return;
                 }
                 endedAnimations.push('@' + i);
@@ -138,7 +103,7 @@ anima.Animator = new Class({
                 }
             }
 
-            dt = interpolator.interpolate(dt, interpolator.exponent);
+            dt = interpolator._interpolate(dt, interpolator.exponent);
             animation.interpolateValuesFn(this, dt);
 
             if (end) {
@@ -150,9 +115,46 @@ anima.Animator = new Class({
         var id;
         for (i = 0; i < count; i++) {
             id = endedAnimations[i];
-            this.endAnimation(id);
+            this._endAnimation(id);
         }
 
         return loopTime;
+    },
+
+    /* internal methods */
+
+    _endAnimation:function (id) {
+
+        var animationQueue = this._animationQueue;
+
+        var i;
+
+        if (isString(id) && id.charAt(0) == '@') {
+            i = parseInt(id.substring(1));
+            animationQueue.splice(i, 1);
+            return;
+        }
+        var count = animationQueue.length;
+        var animation;
+        for (i = 0; i < count; i++) {
+            animation = animationQueue[i];
+            if (animation && animation.id == id) {
+                animationQueue.splice(i, 1);
+                animation.onAnimationEndedFn(animation);
+            }
+        }
+    },
+
+    _interpolate:function (v0, v1, t) {
+
+        if (isNumber(v0)) {
+            return (v0 + (v1 - v0) * t);
+        } else if (isObject(v0)) {
+            return {
+                x:(v0.x + (v1.x - v0.x) * t),
+                y:(v0.y + (v1.y - v0.y) * t),
+                z:v0.z ? (v0.z + (v1.z - v0.z) * t) : 0
+            }
+        }
     }
 });

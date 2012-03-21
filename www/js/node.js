@@ -1,22 +1,22 @@
 anima.Node = new Class({
 
-    id:null,
-    layer:null,
-    element$:null,
+    _id:null,
+    _layer:null,
+    _element$:null,
 
-    position:{
+    _position:{
         x:0,
         y:0
     },
-    size:{
+    _size:{
         width:0,
         height:0
     },
-    scale:{
+    _scale:{
         x:1.0,
         y:1.0
     },
-    origin:{
+    _origin:{
         x:0.5,
         y:0.5
     },
@@ -28,7 +28,7 @@ anima.Node = new Class({
 
     getImageUrl:function () {
 
-        var background = this.element$.css('background');
+        var background = this._element$.css('background');
         if (background) {
             var pos1 = background.indexOf('url');
             var pos2 = background.indexOf(')');
@@ -36,6 +36,11 @@ anima.Node = new Class({
         } else {
             return null;
         }
+    },
+
+    getElement:function () {
+
+        return this._element$;
     },
 
     setBackground:function (color, url, width, height) {
@@ -64,68 +69,77 @@ anima.Node = new Class({
         }
         css.height = height;
 
-        this.element$.css(css);
+        this._element$.css(css);
 
-        this.size.width = width;
-        this.size.height = height;
+        this._size.width = width;
+        this._size.height = height;
     },
 
     setOrigin:function (origin) {
 
-        this.origin = origin;
+        this._origin = origin;
         this._updateTransform();
     },
 
     getOrigin:function () {
 
-        return anima.clone(this.origin);
+        return anima.clone(this._origin);
     },
 
     setPosition:function (position) {
 
-        this.position = position;
+        this._position = position;
         this._updateTransform();
     },
 
     getPosition:function () {
 
-        return anima.clone(this.position);
+        return anima.clone(this._position);
     },
 
     move:function (dx, dy) {
 
-        this.position.x += dx;
-        this.position.y += dy;
+        this._position.x += dx;
+        this._position.y += dy;
         this._updateTransform();
     },
 
     setScale:function (scale) {
 
-        this.scale = scale;
+        this._scale = scale;
         this._updateTransform();
     },
 
     getScale:function () {
 
-        return anima.clone(this.scale);
+        return anima.clone(this._scale);
     },
 
-    removeElement:function () {
+    scale:function (dsx, dsy) {
 
-        this.element$.remove();
+        this._scale.x *= dsx;
+        this._scale.y *= dsy;
+        this._updateTransform();
     },
 
-    _updateTransform:function (posChanged, scaleChanged, originChanged) {
+    /* internal methods */
 
-        var translation = 'translate(' + this.position.x + 'px, ' + this.position.y + 'px)';
-        var scale = ' scale(' + this.scale.x + ', ' + this.scale.y + ')';
+    _removeElement:function () {
+
+        this._element$.remove();
+    },
+
+    _updateTransform:function () {
+
+        var translation = 'translate(' + this._position.x + 'px, ' + this._position.y + 'px)';
+        var scale = ' scale(' + this._scale.x + ', ' + this._scale.y + ')';
         var acceleration = ' translateZ(0px)';
 
         var transformation = translation + scale + acceleration;
 
-        var origin = (this.origin.x * 100) + '% ' + (this.origin.y * 100) + '%';
+        var origin = (this._origin.x * 100) + '% ' + (this._origin.y * 100) + '%';
 
-        this.element$.css({
+        this._element$.css({
             'transform':transformation,
             '-ms-transform':transformation,
             '-moz-transform':transformation,
