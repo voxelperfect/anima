@@ -42,15 +42,18 @@ anima.Canvas = new Class({
 
     setCurrentScene:function (id) {
 
+        var me = this;
+
         var newScene = this.getScene(id);
         if (newScene) {
             if (this.currentScene) {
+                this.animator.clearAnimations();
                 this.currentScene.element$.fadeOut(1000, function () {
-                    newScene.element$.fadeIn();
-                    this.currentScene = scene;
+                    newScene.element$.fadeIn(1000);
+                    me.currentScene = scene;
                 });
             } else {
-                newScene.element$.fadeIn();
+                newScene.element$.fadeIn(1000);
                 this.currentScene = newScene;
             }
         }
@@ -86,35 +89,52 @@ anima.Canvas = new Class({
         }
     },
 
-    resize:function () {
+    setBackground:function (color, url, width, height) {
 
-        var me = this;
-
-        this.animator.addTask(function (loopTime) {
-            me.animator.clearAnimations();
-        });
+        this.parent(color, url, width, height);
+        this.resize();
     },
 
-    _adjustWindowSize:function (sourceWidth, sourceHeight, targetWidth, targetHeight) {
+    resize:function () {
 
-        var adjusted = {
-            offsetX:0,
-            offsetY:0,
-            width:targetWidth,
-            height:targetHeight
-        };
+        var sourceWidth = this.size.width;
+        var sourceHeight = this.size.height;
+
+        var container$ = this.element$.parent();
+        var targetWidth = container$.width();
+        var targetHeight = container$.height();
+
+        var offsetX = 0;
+        var offsetY = 0;
+        var width = targetWidth;
+        var height = targetHeight;
 
         var requiredWidth = sourceWidth * targetHeight / sourceHeight;
         if (requiredWidth < targetWidth) {
-            adjusted.offsetX = (targetWidth - requiredWidth) / 2;
-            adjusted.width = requiredWidth;
+            offsetX = (targetWidth - requiredWidth) / 2;
+            width = requiredWidth;
         } else {
             var requiredHeight = sourceHeight * targetWidth / sourceWidth;
-            adjusted.offsetY = (targetHeight - requiredHeight) / 2;
-            adjusted.height = requiredHeight;
+            offsetY = (targetHeight - requiredHeight) / 2;
+            height = requiredHeight;
         }
 
-        return adjusted;
+        var scale =  width / sourceWidth;
+
+        this.origin = {
+            x:0,
+            y:0
+        };
+        this.position = {
+            x:offsetX,
+            y:offsetY
+        };
+        this.scale ={
+            x:scale,
+            y:scale
+        };
+
+        this._updateTransform();
     }
 });
 

@@ -2,7 +2,7 @@
 $(function() {
 
     var canvas = new anima.Canvas('mainCanvas');
-    canvas.setBackground('black', null, 800, 600);
+    canvas.setBackground('gray', null, 800, 600);
 
     var scene = new anima.Scene('scene1');
     canvas.addScene(scene);
