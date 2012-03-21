@@ -11,6 +11,11 @@ anima.Scene = new Class({
         this.parent(id);
     },
 
+    getCanvas: function() {
+
+        return this._canvas;
+    },
+
     addLayer:function (layer) {
 
         this._element$.append('<div id="' + layer.id + '"></div>');
@@ -47,18 +52,51 @@ anima.Scene = new Class({
         }
     },
 
-    setBackground:function (color, url, width, height) {
+    setBackground:function (color, url) {
 
-        if (!width) {
-            width = this._canvas._element$.width();
-        }
-        if (!height) {
-            height = this._canvas._element$.height();
-        }
+        var width = this._canvas._element$.width();
+        var height = this._canvas._element$.height();
         this.parent(color, url, width, height);
     },
 
+    zoomInTo:function (box) {
+
+        var targetBox = anima.clone(box);
+        this._mapBoxToScene(targetBox);
+
+
+    },
+
+    zoomOut:function () {
+
+    },
+
     /* internal methods */
+
+    _mapBoxToScene:function (box) {
+
+        var boxWidth = box.x2 - box.x1;
+        var boxHeight = box.y2 - box.y1;
+        var boxRatio = boxWidth / boxHeight;
+
+        var windowRatio = this._size.width / this._size.height;
+        var newBoxWidth, newBoxHeight, offset;
+        if (windowRatio < 1) {
+            newBoxWidth = boxWidth;
+            newBoxHeight = boxWidth / windowRatio;
+            offset = (newBoxHeight - boxHeight) / 2;
+            box.y1 -= offset;
+            box.y2 += offset;
+        } else {
+            newBoxWidth = boxHeight * windowRatio;
+            newBoxHeight = boxHeight;
+            offset = (newBoxWidth - boxWidth) / 2;
+            box.x1 -= offset;
+            box.x2 += offset;
+        }
+
+        box.scale = this._size.width / (box.x2 - box.x1);
+    },
 
     _getImageUrls:function (urls) {
 

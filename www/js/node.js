@@ -38,6 +38,11 @@ anima.Node = new Class({
         }
     },
 
+    getLayer: function() {
+
+        return this._layer;
+    },
+
     getElement:function () {
 
         return this._element$;
@@ -120,6 +125,24 @@ anima.Node = new Class({
         this._scale.x *= dsx;
         this._scale.y *= dsy;
         this._updateTransform();
+    },
+
+    on:function (eventType, eventData, handler) {
+
+        if (arguments.length == 3) {
+            this._element$.bind(eventType, eventData, handler);
+        } else if (arguments.length == 2) {
+            this._element$.bind(eventType, eventData);
+        }
+    },
+
+    off:function (eventType, handler) {
+
+        if (arguments.length == 2) {
+            this._element$.unbind(eventType, handler);
+        } else if (arguments.length == 1) {
+            this._element$.unbind(eventType);
+        }
     },
 
     /* internal methods */

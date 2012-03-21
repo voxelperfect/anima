@@ -11,6 +11,11 @@ anima.Layer = new Class({
         this.parent(id);
     },
 
+    getScene: function() {
+
+        return this._scene;
+    },
+
     addNode:function (node) {
 
         this._element$.append('<div id="' + node.id + '"></div>');

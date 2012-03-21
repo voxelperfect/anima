@@ -67,6 +67,11 @@ anima.Canvas = new Class({
         }
     },
 
+    getCurrentScene:function () {
+
+        return this._currentScene;
+    },
+
     removeScene:function (id) {
 
         var scene = this.getScene();
@@ -151,7 +156,7 @@ anima.Canvas = new Class({
 $(window).resize(function () {
 
     $.each(anima._canvases, function (index, value) {
-        value.resize();
+        value._resize();
     });
 });
 
