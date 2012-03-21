@@ -42,7 +42,7 @@ anima.Animator = new Class({
     addAnimation:function (interpolateValuesFn, startTime, duration, interpolator, onAnimationEndedFn) {
 
         this._animationQueue.push({
-            id:this.lastAnimationID++,
+            id:this._lastAnimationID++,
             interpolateValuesFn:interpolateValuesFn,
             startTime:startTime,
             duration:duration,
@@ -103,7 +103,7 @@ anima.Animator = new Class({
                 }
             }
 
-            dt = interpolator._interpolate(dt, interpolator.exponent);
+            dt = interpolator.interpolate(dt, interpolator.exponent);
             animation.interpolateValuesFn(this, dt);
 
             if (end) {
@@ -121,6 +121,19 @@ anima.Animator = new Class({
         return loopTime;
     },
 
+    interpolate:function (v0, v1, t) {
+
+        if (anima.isNumber(v0)) {
+            return (v0 + (v1 - v0) * t);
+        } else if (anima.isObject(v0)) {
+            return {
+                x:(v0.x + (v1.x - v0.x) * t),
+                y:(v0.y + (v1.y - v0.y) * t),
+                z:v0.z ? (v0.z + (v1.z - v0.z) * t) : 0
+            }
+        }
+    },
+
     /* internal methods */
 
     _endAnimation:function (id) {
@@ -129,7 +142,7 @@ anima.Animator = new Class({
 
         var i;
 
-        if (isString(id) && id.charAt(0) == '@') {
+        if (anima.isString(id) && id.charAt(0) == '@') {
             i = parseInt(id.substring(1));
             animationQueue.splice(i, 1);
             return;
@@ -140,20 +153,9 @@ anima.Animator = new Class({
             animation = animationQueue[i];
             if (animation && animation.id == id) {
                 animationQueue.splice(i, 1);
-                animation.onAnimationEndedFn(animation);
-            }
-        }
-    },
-
-    _interpolate:function (v0, v1, t) {
-
-        if (isNumber(v0)) {
-            return (v0 + (v1 - v0) * t);
-        } else if (isObject(v0)) {
-            return {
-                x:(v0.x + (v1.x - v0.x) * t),
-                y:(v0.y + (v1.y - v0.y) * t),
-                z:v0.z ? (v0.z + (v1.z - v0.z) * t) : 0
+                if (animation.onAnimationEndedFn) {
+                    animation.onAnimationEndedFn(animation);
+                }
             }
         }
     }

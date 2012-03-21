@@ -11,7 +11,7 @@ anima.Layer = new Class({
         this.parent(id);
     },
 
-    getScene: function() {
+    getScene:function () {
 
         return this._scene;
     },
@@ -61,6 +61,11 @@ anima.Layer = new Class({
             height = this._scene._element$.height();
         }
         this.parent(color, url, width, height);
+    },
+
+    getAnimator:function () {
+
+        return this._scene._canvas._animator;
     },
 
     /* internal methods */

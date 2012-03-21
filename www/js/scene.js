@@ -11,7 +11,7 @@ anima.Scene = new Class({
         this.parent(id);
     },
 
-    getCanvas: function() {
+    getCanvas:function () {
 
         return this._canvas;
     },
@@ -59,43 +59,73 @@ anima.Scene = new Class({
         this.parent(color, url, width, height);
     },
 
-    zoomInTo:function (box) {
+    setView:function (view, duration, interpolator, callbackFn) {
 
-        var targetBox = anima.clone(box);
-        this._mapBoxToScene(targetBox);
+        if (!view) {
+            view = {
+                x1:0,
+                y1:0,
+                x2:this._canvas._size.width,
+                y2:this._canvas._size.height
+            };
+        }
 
+        var me = this;
 
+        view = this._adjustViewAspectRatio(view);
+
+        var x1 = this._position.x;
+        var y1 = this._position.y;
+        var x2 = -view.x1 * view.scale;
+        var y2 = -view.y1 * view.scale;
+
+        var s1 = this._scale.x;
+        var s2 = view.scale;
+
+        this._canvas._animator.addAnimation(
+            function (animator, dt) {
+
+                me._scale.x = me._scale.y = animator.interpolate(s1, s2, dt);
+                me._position.x = animator.interpolate(x1, x2, dt);
+                me._position.y = animator.interpolate(y1, y2, dt);
+
+                me._updateTransform();
+            },
+            0, duration,
+            interpolator,
+            callbackFn);
     },
 
-    zoomOut:function () {
+    getAnimator:function () {
 
+        return this._canvas._animator;
     },
 
     /* internal methods */
 
-    _mapBoxToScene:function (box) {
+    _adjustViewAspectRatio:function (view) {
 
-        var boxWidth = box.x2 - box.x1;
-        var boxHeight = box.y2 - box.y1;
-        var boxRatio = boxWidth / boxHeight;
+        var adjustedBox = anima.clone(view);
 
-        var windowRatio = this._size.width / this._size.height;
-        var newBoxWidth, newBoxHeight, offset;
-        if (windowRatio < 1) {
-            newBoxWidth = boxWidth;
-            newBoxHeight = boxWidth / windowRatio;
-            offset = (newBoxHeight - boxHeight) / 2;
-            box.y1 -= offset;
-            box.y2 += offset;
+        var boxWidth = view.x2 - view.x1;
+        var boxHeight = view.y2 - view.y1;
+
+        var sceneRatio = this._size.width / this._size.height;
+        if (sceneRatio < 1) {
+            var newBoxHeight = boxWidth / sceneRatio;
+            var offset = (newBoxHeight - boxHeight) / 2;
+            adjustedBox.y1 -= offset;
+            adjustedBox.y2 += offset;
         } else {
-            newBoxWidth = boxHeight * windowRatio;
-            newBoxHeight = boxHeight;
-            offset = (newBoxWidth - boxWidth) / 2;
-            box.x1 -= offset;
-            box.x2 += offset;
+            var newBoxWidth = boxHeight * sceneRatio;
+            var offset = (newBoxWidth - boxWidth) / 2;
+            adjustedBox.x1 -= offset;
+            adjustedBox.x2 += offset;
         }
 
-        box.scale = this._size.width / (box.x2 - box.x1);
+        adjustedBox.scale = this._size.width / (adjustedBox.x2 - adjustedBox.x1);
+
+        return adjustedBox;
     },
 
     _getImageUrls:function (urls) {

@@ -48,20 +48,24 @@ anima.Canvas = new Class({
         return this._sceneMap[id];
     },
 
-    setCurrentScene:function (id) {
+    setCurrentScene:function (id, duration) {
 
         var me = this;
+
+        if (!duration) {
+            duration = 1500;
+        }
 
         var newScene = this.getScene(id);
         if (newScene) {
             if (this._currentScene) {
                 this._animator.clearAnimations();
-                this._currentScene._element$.fadeOut(1000, function () {
-                    newScene._element$.fadeIn(1000);
+                this._currentScene._element$.fadeOut(duration, function () {
+                    newScene._element$.fadeIn(duration);
                     me._currentScene = scene;
                 });
             } else {
-                newScene._element$.fadeIn(1000);
+                newScene._element$.fadeIn(duration);
                 this._currentScene = newScene;
             }
         }

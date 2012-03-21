@@ -21,6 +21,8 @@ anima.Node = new Class({
         y:0.5
     },
 
+    _data:{},
+
     initialize:function (id) {
 
         this.id = id;
@@ -38,7 +40,7 @@ anima.Node = new Class({
         }
     },
 
-    getLayer: function() {
+    getLayer:function () {
 
         return this._layer;
     },
@@ -46,6 +48,25 @@ anima.Node = new Class({
     getElement:function () {
 
         return this._element$;
+    },
+
+    get:function (propertyName) {
+
+        return this._data[propertyName];
+    },
+
+    set:function (propertyName, value) {
+
+        if (value) {
+            this._data[propertName] = value;
+        } else {
+            delete this._data[propertyName];
+        }
+    },
+
+    getAnimator:function () {
+
+        return this._layer._scene._canvas._animator;
     },
 
     setBackground:function (color, url, width, height) {
@@ -127,22 +148,14 @@ anima.Node = new Class({
         this._updateTransform();
     },
 
-    on:function (eventType, eventData, handler) {
+    on:function (eventType, handler) {
 
-        if (arguments.length == 3) {
-            this._element$.bind(eventType, eventData, handler);
-        } else if (arguments.length == 2) {
-            this._element$.bind(eventType, eventData);
-        }
+        this._element$.bind(eventType, this, handler);
     },
 
     off:function (eventType, handler) {
 
-        if (arguments.length == 2) {
-            this._element$.unbind(eventType, handler);
-        } else if (arguments.length == 1) {
-            this._element$.unbind(eventType);
-        }
+        this._element$.unbind(eventType, handler);
     },
 
     /* internal methods */
