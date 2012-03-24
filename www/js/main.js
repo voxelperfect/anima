@@ -49,6 +49,10 @@ $(function () {
     var layer = new anima.Layer('layer1');
     scene.addLayer(layer);
     layer.setBackground();
+    layer.setOrigin({
+        x:0,
+        y:0
+    });
 
     var node;
 

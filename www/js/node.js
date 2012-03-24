@@ -20,8 +20,13 @@ anima.Node = new Class({
         x:0.5,
         y:0.5
     },
+    _angle:0,
+
+    _zIndex:0,
 
     _data:{},
+
+    _transformer:anima.defaultTransformer,
 
     initialize:function (id) {
 
@@ -64,6 +69,17 @@ anima.Node = new Class({
         }
     },
 
+    setZIndex:function (zIndex) {
+
+        this._zIndex = zIndex;
+        this._element$.css('z-index', zIndex);
+    },
+
+    getZIndex:function () {
+
+        return this._zIndex;
+    },
+
     getAnimator:function () {
 
         return this._layer._scene._canvas._animator;
@@ -103,7 +119,7 @@ anima.Node = new Class({
 
     setOrigin:function (origin) {
 
-        this._origin = origin;
+        this._origin = anima.clone(origin);
         this._updateTransform();
     },
 
@@ -114,7 +130,7 @@ anima.Node = new Class({
 
     setPosition:function (position) {
 
-        this._position = position;
+        this._position = anima.clone(position);
         this._updateTransform();
     },
 
@@ -132,7 +148,7 @@ anima.Node = new Class({
 
     setScale:function (scale) {
 
-        this._scale = scale;
+        this._scale = anima.clone(scale);
         this._updateTransform();
     },
 
@@ -145,6 +161,23 @@ anima.Node = new Class({
 
         this._scale.x *= dsx;
         this._scale.y *= dsy;
+        this._updateTransform();
+    },
+
+    setAngle:function (angle) {
+
+        this._angle = angle;
+        this._updateTransform();
+    },
+
+    getAngle:function () {
+
+        return this._angle;
+    },
+
+    rotate:function (da) {
+
+        this._angle += da;
         this._updateTransform();
     },
 
@@ -167,26 +200,6 @@ anima.Node = new Class({
 
     _updateTransform:function () {
 
-        var translation = 'translate(' + this._position.x + 'px, ' + this._position.y + 'px)';
-        var scale = ' scale(' + this._scale.x + ', ' + this._scale.y + ')';
-        var acceleration = ' translateZ(0px)';
-
-        var transformation = translation + scale + acceleration;
-
-        var origin = (this._origin.x * 100) + '% ' + (this._origin.y * 100) + '%';
-
-        this._element$.css({
-            'transform':transformation,
-            '-ms-transform':transformation,
-            '-moz-transform':transformation,
-            '-webkit-transform':transformation,
-            '-o-transform':transformation,
-
-            'transform-origin':origin,
-            '-ms-transform-origin':origin,
-            '-moz-transform-origin':origin,
-            '-webkit-transform-origin':origin,
-            '-o-transform-origin':origin
-        });
+        this._transformer.setTransform(this);
     }
 });

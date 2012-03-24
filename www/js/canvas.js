@@ -20,7 +20,8 @@ anima.Canvas = new Class({
             'width':'100%',
             'height':'100%',
             'overflow':'hidden',
-            'position':'relative'
+            'position':'absolute',
+            'zoom':1
         });
 
         this._animator = new anima.Animator();
@@ -34,7 +35,8 @@ anima.Canvas = new Class({
         scene._element$ = $('#' + scene.id);
         scene._element$.hide();
         scene._element$.css({
-            'position':'absolute'
+            'position':'absolute',
+            '-webkit-backface-visibility':'hidden'
         });
 
         this._scenes.push(scene);
@@ -164,12 +166,12 @@ $(window).resize(function () {
     });
 });
 
-function _update() {
+function _anima_update() {
 
     $.each(anima._canvases, function (index, value) {
         value.getAnimator().animate();
     });
-    requestAnimFrame(_update);
+    window.requestAnimationFrame(_anima_update, '_anima_update()');
 }
 
 anima._loadImages = function (callbackFn) {
@@ -219,6 +221,6 @@ anima.start = function (callbackFn) {
         if (callbackFn) {
             callbackFn.call();
         }
-        requestAnimFrame(_update);
+        window.requestAnimationFrame(_anima_update, '_anima_update()');
     });
 };

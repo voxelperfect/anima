@@ -4,16 +4,22 @@ $.anima = anima;
 
 anima.fpsIntervalRate = 60;
 
-window.requestAnimFrame = (function () {
-    return  window.requestAnimationFrame ||
-        window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.msRequestAnimationFrame ||
-        function (/* function */ callback, /* DOMElement */ element) {
-            window.setTimeout(callback, 1000 / fpsIntervalRate);
-        };
-})();
+if (!window.requestAnimationFrame) {
+    window.requestAnimationFrame = ( function () {
+
+        return window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function (callback, callbackCode) {
+                if (!$.browser.msie) {
+                    window.setTimeout(callback, 1000 / anima.fpsIntervalRate);
+                } else {
+                    window.setTimeout(callbackCode, 1000 / anima.fpsIntervalRate);
+                }
+            };
+    } )();
+}
 
 anima.getRequestParameter = function (name) {
 

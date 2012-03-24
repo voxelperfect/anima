@@ -6,6 +6,8 @@ anima.Scene = new Class({
     _layers:[],
     _layerMap:[],
 
+    _view:null,
+
     initialize:function (id) {
 
         this.parent(id);
@@ -61,6 +63,7 @@ anima.Scene = new Class({
 
     setView:function (view, duration, interpolator, callbackFn) {
 
+        var reset = false;
         if (!view) {
             view = {
                 x1:0,
@@ -68,6 +71,7 @@ anima.Scene = new Class({
                 x2:this._canvas._size.width,
                 y2:this._canvas._size.height
             };
+            reset = true;
         }
 
         var me = this;
@@ -94,6 +98,18 @@ anima.Scene = new Class({
             0, duration,
             interpolator,
             callbackFn);
+
+        this._view = reset ? null : view;
+    },
+
+    getView:function () {
+
+        return anima.clone(_view);
+    },
+
+    inView: function() {
+
+        return (this._view != null);
     },
 
     getAnimator:function () {
