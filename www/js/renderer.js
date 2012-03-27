@@ -104,7 +104,7 @@ anima.RendererCSS3 = new Class({
             '-ms-transform-origin':origin,
             '-moz-transform-origin':origin,
             '-webkit-transform-origin':origin,
-            '-o-transform-origin':origin,
+            '-o-transform-origin':origin
         });
 
         node._element$.css({
@@ -140,7 +140,7 @@ anima.RendererCSS3 = new Class({
     }
 });
 
-anima.RendererCSS2 = new Class({
+anima.RendererIE = new Class({
     Extends:anima.RendererCSS3,
 
     initialize:function () {
@@ -176,9 +176,19 @@ anima.RendererCSS2 = new Class({
             'left':box.x,
             'top':box.y,
             'width':box.width,
-            'height':box.height,
-            'background-size':(box.width + 'px ' + box.height + 'px')
+            'height':box.height
         });
+
+        if (node._background.url) {
+            var scaleFilter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"
+                + node._background.url
+                + "',sizingMethod='scale')";
+
+            node._element$.css({
+                'filter':scaleFilter,
+                '-ms-filter':scaleFilter
+            });
+        }
     },
 
     _addScaledBoxMethod:function (node) {
@@ -267,9 +277,7 @@ anima.RendererCSS2 = new Class({
 
 if ($.browser.msie) {
     var version = parseInt($.browser.version[0]);
-    anima.defaultRenderer = (version <= 8) ? new anima.RendererCSS2() : new anima.RendererCSS3();
+    anima.defaultRenderer = (version <= 8) ? new anima.RendererIE() : new anima.RendererCSS3();
 } else {
     anima.defaultRenderer = new anima.RendererCSS3();
 }
-
-anima.defaultRenderer = new anima.RendererCSS3();

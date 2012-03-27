@@ -25,7 +25,7 @@ anima.Node = new Class({
 
     _background:{
         color:null,
-        imageUrl:null
+        url:null
     },
 
     _zIndex:0,
@@ -59,6 +59,11 @@ anima.Node = new Class({
             y:0.5
         };
         this._angle = 0;
+
+        this._background = {
+            color:null,
+            url:null
+        };
 
         this._data = {};
 
