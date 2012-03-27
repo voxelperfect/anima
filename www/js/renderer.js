@@ -1,6 +1,7 @@
 anima.RendererCSS3 = new Class({
 
     initialize:function () {
+
     },
 
     createCanvas:function (canvas) {
@@ -89,28 +90,33 @@ anima.RendererCSS3 = new Class({
 
     updateTransform:function (node) {
 
-        var transformation = this._getTransform(node);
+        var translation = 'translate(' + node._position.x + 'px, ' + node._position.y + 'px)';
+        var scale = ' scale(' + node._scale.x + ', ' + node._scale.y + ')';
+        var acceleration = anima.isWebkit ? ' translateZ(0px)' : '';
+        var transformation = translation + scale + acceleration;
+
+        node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
+    },
+
+    updateOrigin:function (node) {
 
         var origin = (node._origin.x * 100) + '% ' + (node._origin.y * 100) + '%';
+        node._element$.css(anima.cssVendorPrefix + 'transform-origin', origin);
+    },
 
-        node._element$.css({
-            'transform':transformation,
-            '-ms-transform':transformation,
-            '-moz-transform':transformation,
-            '-webkit-transform':transformation,
-            '-o-transform':transformation,
-
-            'transform-origin':origin,
-            '-ms-transform-origin':origin,
-            '-moz-transform-origin':origin,
-            '-webkit-transform-origin':origin,
-            '-o-transform-origin':origin
-        });
+    updateSize:function (node) {
 
         node._element$.css({
             'width':node._size.width,
             'height':node._size.height
         });
+    },
+
+    updateAll:function (node) {
+
+        this.updateTransform(node);
+        this.updateSize(node);
+        this.updateOrigin(node);
     },
 
     on:function (node, eventType, handler) {
@@ -126,17 +132,6 @@ anima.RendererCSS3 = new Class({
     removeElement:function (node) {
 
         node._element$.remove();
-    },
-
-    /* internal methods */
-
-    _getTransform:function (node) {
-
-        var translation = 'translate(' + node._position.x + 'px, ' + node._position.y + 'px)';
-        var scale = ' scale(' + node._scale.x + ', ' + node._scale.y + ')';
-        var acceleration = $.browser.webkit ? ' translateZ(0px)' : '';
-
-        return translation + scale + acceleration;
     }
 });
 
@@ -161,9 +156,45 @@ anima.RendererIE = new Class({
         this._addScaledBoxMethod(node);
     },
 
+    setBackground:function (node) {
+
+        var css = {};
+
+        var background = '';
+        var scaleFilter = '';
+
+        if (node._background.color) {
+            background += node._background.color;
+        }
+        if (node._background.url) {
+            background += ' url(' + node._background.url + ')';
+            var scaleFilter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"
+                + node._background.url
+                + "',sizingMethod='scale')";
+        }
+        if (background.length > 0) {
+            css['background'] = background;
+        }
+        css['background-repeat'] = 'no-repeat';
+        css['background-position'] = 'left top';
+
+        css['filter'] = scaleFilter;
+        css['-ms-filter'] = scaleFilter;
+
+        node._element$.css(css);
+    },
+
     updateTransform:function (node) {
 
         node.forEachNode(node, this._applyTransform);
+    },
+
+    updateOrigin:function (node) {
+
+    },
+
+    updateSize:function (node) {
+
     },
 
     /* internal methods */
@@ -178,17 +209,6 @@ anima.RendererIE = new Class({
             'width':box.width,
             'height':box.height
         });
-
-        if (node._background.url) {
-            var scaleFilter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"
-                + node._background.url
-                + "',sizingMethod='scale')";
-
-            node._element$.css({
-                'filter':scaleFilter,
-                '-ms-filter':scaleFilter
-            });
-        }
     },
 
     _addScaledBoxMethod:function (node) {
@@ -275,9 +295,4 @@ anima.RendererIE = new Class({
     }
 });
 
-if ($.browser.msie) {
-    var version = parseInt($.browser.version[0]);
-    anima.defaultRenderer = (version <= 8) ? new anima.RendererIE() : new anima.RendererCSS3();
-} else {
-    anima.defaultRenderer = new anima.RendererCSS3();
-}
+anima.defaultRenderer = anima.isIE8 ? new anima.RendererIE() : new anima.RendererCSS3();

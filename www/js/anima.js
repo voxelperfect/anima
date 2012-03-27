@@ -1,8 +1,25 @@
 var anima = {};
 
-$.anima = anima;
+anima.isIE8 = false;
+if ($.browser.msie) {
+    var version = parseInt($.browser.version[0]);
+    anima.isIE8 = (version <= 8);
+}
 
-anima.frameRate = 60; // fps
+anima.cssVendorPrefix = '';
+if ($.browser.webkit || $.browser.safari) {
+    anima.cssVendorPrefix = '-webkit-';
+} else if ($.browser.mozilla) {
+    anima.cssVendorPrefix = '-moz-';
+} else if ($.browser.opera) {
+    anima.cssVendorPrefix = '-o-';
+} else if ($.browser.msie) {
+    anima.cssVendorPrefix = '-ms-';
+}
+
+anima.isWebkit = ($.browser.webkit || $.browser.safari);
+
+anima.frameRate = anima.isIE8 ? 60 : 60; // fps
 
 if (!window.requestAnimationFrame) {
     window.requestAnimationFrame = ( function () {

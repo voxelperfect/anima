@@ -67,7 +67,7 @@ anima.Scene = new Class({
         this.parent(color, url, this._canvas._size.width, this._canvas._size.height, true);
 
         if (!postponeTransform) {
-            this._renderer.updateTransform(this);
+            this._renderer.updateAll(this);
         }
     },
 
@@ -151,7 +151,12 @@ anima.Scene = new Class({
 
     _getImageUrls:function (urls) {
 
-        var count = this._layers.count;
+        var url = this._background.url;
+        if (url) {
+            urls.push(url);
+        }
+
+        var count = this._layers.length;
         for (var i = 0; i < count; i++) {
             this._layers[i]._getImageUrls(urls);
         }
@@ -159,7 +164,7 @@ anima.Scene = new Class({
 
     _removeElement:function () {
 
-        var count = this._layers.length();
+        var count = this._layers.length;
         for (var i = 0; i < count; i++) {
             this._layers[i].removeElement();
         }

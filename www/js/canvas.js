@@ -100,6 +100,11 @@ anima.Canvas = new Class({
 
     _getImageUrls:function (urls) {
 
+        var url = this._background.url;
+        if (url) {
+            urls.push(url);
+        }
+
         var count = this._scenes.length;
         for (var i = 0; i < count; i++) {
             this._scenes[i]._getImageUrls(urls);
@@ -145,14 +150,16 @@ anima.Canvas = new Class({
             y:scale
         };
 
-        this._renderer.updateTransform(this);
+        this._renderer.updateAll(this);
     }
 });
 
 $(window).resize(function () {
 
     $.each(anima._canvases, function (index, value) {
-        value._resize();
+        value.getAnimator().addTask(function () {
+            value._resize();
+        });
     });
 });
 
@@ -161,12 +168,13 @@ function _anima_update() {
     $.each(anima._canvases, function (index, value) {
         value.getAnimator().animate();
     });
+
     window.requestAnimationFrame(_anima_update, '_anima_update()');
 }
 
 anima._loadImages = function (callbackFn) {
 
-    $.mobile.showPageLoadingMsg("b", "Loading Images");
+    $.mobile.showPageLoadingMsg("a", "Loading Images");
 
     var urls = [];
     try {
@@ -206,6 +214,8 @@ anima._loadImages = function (callbackFn) {
 };
 
 anima.start = function (callbackFn) {
+
+    $.mobile.loadingMessageTextVisible = true;
 
     anima._loadImages(function () {
         if (callbackFn) {

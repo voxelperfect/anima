@@ -133,14 +133,14 @@ anima.Node = new Class({
 
         this._renderer.setBackground(this);
         if (!postponeTransform) {
-            this._renderer.updateTransform(this);
+            this._renderer.updateAll(this);
         }
     },
 
     setOrigin:function (origin) {
 
         this._origin = anima.clone(origin);
-        this._renderer.updateTransform(this);
+        this._renderer.updateOrigin(this);
     },
 
     getOrigin:function () {

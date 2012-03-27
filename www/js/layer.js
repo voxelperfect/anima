@@ -73,7 +73,7 @@ anima.Layer = new Class({
         this.parent(color, url, width, height, true);
 
         if (!postponeTransform) {
-            this._renderer.updateTransform(this);
+            this._renderer.updateAll(this);
         }
     },
 
@@ -82,6 +82,12 @@ anima.Layer = new Class({
     _getImageUrls:function (urls) {
 
         var url;
+
+        url = this._background.url;
+        if (url) {
+            urls.push(url);
+        }
+
         var count = this._nodes.length;
         for (var i = 0; i < count; i++) {
             url = this._nodes[i].getImageUrl();

@@ -30,7 +30,7 @@ var pictureFrames = {
 
 $(function () {
 
-    var canvas = new anima.Canvas('mainCanvas', true);
+    var canvas = new anima.Canvas('mainCanvas');
     canvas.setBackground(
         'black',
         null,
@@ -77,24 +77,25 @@ $(function () {
         node = event.data;
         var animator = node.getAnimator();
 
-        scene.setViewport(
-            pictureFrame.zoomed,
-            2500,
-            {
-                interpolate:animator.interpolators.exponentialInOut,
-                exponent:1,
-                pingPong:false
-            },
-            function () {
-                scene.setViewport(
-                    null,
-                    2500,
-                    {
-                        interpolate:animator.interpolators.exponentialInOut,
-                        exponent:1,
-                        pingPong:false
-                    });
-            });
+        if (!scene.inViewport()) {
+            scene.setViewport(
+                pictureFrame.zoomed,
+                2500,
+                {
+                    interpolate:animator.interpolators.exponentialInOut,
+                    exponent:1,
+                    pingPong:false
+                });
+        } else {
+            scene.setViewport(
+                null,
+                2500,
+                {
+                    interpolate:animator.interpolators.exponentialInOut,
+                    exponent:1,
+                    pingPong:false
+                });
+        }
     });
 
     anima.start(function () {

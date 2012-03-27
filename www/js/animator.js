@@ -91,7 +91,7 @@ anima.Animator = new Class({
             if (animation.startTime == 0) {
                 animation.startTime = loopTime;
                 animation.frame = 0;
-                animation.totalFrames = Math.round(animation.duration * anima.frameRate / 1000.0);
+                animation.totalFrames = Math.round(0.5 + animation.duration * anima.frameRate / 1000.0);
             }
 
             if (this._adaptive) {
