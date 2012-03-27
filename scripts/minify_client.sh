@@ -1,11 +1,13 @@
 rm -rf ../deploy
 mkdir ../deploy
 
-cat ../www/js/anima.js ../www/js/renderer.js ../www/js/node.js ../www/js/layer.js ../www/js/scene.js ../www/js/animator.js ../www/js/canvas.js ../www/js/main.js >> anima.js
-uglifyjs --mangle-toplevel --unsafe --output ../deploy/anima.min.js anima.js
+cat ../www/js/anima.js ../www/js/renderer.js ../www/js/node.js ../www/js/layer.js ../www/js/scene.js ../www/js/animator.js ../www/js/canvas.js >> anima.js
+uglifyjs --max-line-len 1024 --unsafe --output ../deploy/anima.min.js anima.js
+cat anima.js ../www/js/main.js >> app.js
+uglifyjs --max-line-len 1024 --mangle-toplevel --unsafe --output ../deploy/app.min.js app.js
+cp anima.js ../deploy/
 rm anima.js
-
-# cp ../www/js/main.js ../deploy/
+rm app.js
 
 mkdir ../deploy/resources
 cp -R ../www/resources/css ../deploy/resources
@@ -26,7 +28,5 @@ sed -i '' 's/<script type="text\/javascript" src="js\/node.js"><\/script>//g' ..
 sed -i '' 's/<script type="text\/javascript" src="js\/layer.js"><\/script>//g' ../deploy/index.html
 sed -i '' 's/<script type="text\/javascript" src="js\/scene.js"><\/script>//g' ../deploy/index.html
 sed -i '' 's/<script type="text\/javascript" src="js\/animator.js"><\/script>//g' ../deploy/index.html
-sed -i '' 's/<script type="text\/javascript" src="js\/canvas.js"><\/script>/<script type="text\/javascript" src="anima.min.js"><\/script>/g' ../deploy/index.html
-
-sed -i '' 's/<script type="text\/javascript" src="js\/main.js"><\/script>//g' ../deploy/index.html
-# sed -i '' 's/<script type="text\/javascript" src="js\/main.js"><\/script>/<script type="text\/javascript" src="main.js"><\/script>/g' ../deploy/index.html
+sed -i '' 's/<script type="text\/javascript" src="js\/canvas.js"><\/script>//g' ../deploy/index.html
+sed -i '' 's/<script type="text\/javascript" src="js\/main.js"><\/script>/<script type="text\/javascript" src="app.min.js"><\/script>/g' ../deploy/index.html
