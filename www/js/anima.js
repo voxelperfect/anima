@@ -2,7 +2,7 @@ var anima = {};
 
 $.anima = anima;
 
-anima.fpsIntervalRate = 60;
+anima.frameRate = 60; // fps
 
 if (!window.requestAnimationFrame) {
     window.requestAnimationFrame = ( function () {
@@ -13,9 +13,9 @@ if (!window.requestAnimationFrame) {
             window.msRequestAnimationFrame ||
             function (callback, callbackCode) {
                 if (!$.browser.msie) {
-                    window.setTimeout(callback, 1000 / anima.fpsIntervalRate);
+                    window.setTimeout(callback, 1000 / anima.frameRate);
                 } else {
-                    window.setTimeout(callbackCode, 1000 / anima.fpsIntervalRate);
+                    window.setTimeout(callbackCode, 1000 / anima.frameRate);
                 }
             };
     } )();

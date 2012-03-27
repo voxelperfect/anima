@@ -23,13 +23,17 @@ anima.Animator = new Class({
         }
     },
 
+    _adaptive:false,
+
     _animationQueue:[],
     _lastAnimationID:0,
+
     _animationLoopTimerID:null,
     _animationTimeStart:0,
 
-    initialize:function () {
+    initialize:function (adaptive) {
 
+        this._adaptive = adaptive;
     },
 
     addTask:function (taskFn) {
@@ -86,9 +90,15 @@ anima.Animator = new Class({
 
             if (animation.startTime == 0) {
                 animation.startTime = loopTime;
+                animation.frame = 0;
+                animation.totalFrames = Math.round(animation.duration * anima.frameRate / 1000.0);
             }
 
-            dt = (loopTime - animation.startTime) / animation.duration;
+            if (this._adaptive) {
+                dt = animation.frame / animation.totalFrames;
+            } else {
+                dt = (loopTime - animation.startTime) / animation.duration;
+            }
             end = (dt > 1.0);
             if (end) {
                 dt = 1.0;
@@ -108,6 +118,8 @@ anima.Animator = new Class({
 
             if (end) {
                 endedAnimations.push(animation.id);
+            } else {
+                animation.frame++;
             }
         }
 

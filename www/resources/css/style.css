@@ -18,4 +18,6 @@
     top: 0px;
 
     background-color: #000;
+
+    -webkit-backface-visibility: hidden;
 }

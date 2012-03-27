@@ -1,16 +1,21 @@
 anima.Scene = new Class({
-    Extends:anima.Layer,
+    Extends:anima.Node,
 
     _canvas:null,
 
     _layers:[],
     _layerMap:[],
 
-    _view:null,
+    _viewport:null,
 
     initialize:function (id) {
 
         this.parent(id);
+
+        this._type = 'Scene';
+
+        this._origin.x = 0;
+        this._origin.y = 0;
     },
 
     getCanvas:function () {
@@ -18,18 +23,21 @@ anima.Scene = new Class({
         return this._canvas;
     },
 
+    getParent:function () {
+
+        return this._canvas;
+    },
+
     addLayer:function (layer) {
 
-        this._element$.append('<div id="' + layer.id + '"></div>');
-        layer._element$ = $('#' + layer.id);
-        layer._element$.css({
-            'position':'absolute'
-        });
+        this._renderer.createElement(this, layer);
 
         this._layers.push(layer);
         this._layerMap[layer.id] = layer;
 
         layer._scene = this;
+        layer._animator = this._animator;
+        layer._canvas = this._canvas;
     },
 
     getLayer:function (id) {
@@ -54,18 +62,20 @@ anima.Scene = new Class({
         }
     },
 
-    setBackground:function (color, url) {
+    setBackground:function (color, url, postponeTransform) {
 
-        var width = this._canvas._element$.width();
-        var height = this._canvas._element$.height();
-        this.parent(color, url, width, height);
+        this.parent(color, url, this._canvas._size.width, this._canvas._size.height, true);
+
+        if (!postponeTransform) {
+            this._renderer.updateTransform(this);
+        }
     },
 
-    setView:function (view, duration, interpolator, callbackFn) {
+    setViewport:function (viewport, duration, interpolator, callbackFn) {
 
         var reset = false;
-        if (!view) {
-            view = {
+        if (!viewport) {
+            viewport = {
                 x1:0,
                 y1:0,
                 x2:this._canvas._size.width,
@@ -76,15 +86,15 @@ anima.Scene = new Class({
 
         var me = this;
 
-        view = this._adjustViewAspectRatio(view);
+        viewport = this._adjustViewAspectRatio(viewport);
 
         var x1 = this._position.x;
         var y1 = this._position.y;
-        var x2 = -view.x1 * view.scale;
-        var y2 = -view.y1 * view.scale;
+        var x2 = -viewport.x1 * viewport.scale;
+        var y2 = -viewport.y1 * viewport.scale;
 
         var s1 = this._scale.x;
-        var s2 = view.scale;
+        var s2 = viewport.scale;
 
         this._canvas._animator.addAnimation(
             function (animator, dt) {
@@ -93,28 +103,23 @@ anima.Scene = new Class({
                 me._position.x = animator.interpolate(x1, x2, dt);
                 me._position.y = animator.interpolate(y1, y2, dt);
 
-                me._updateTransform();
+                me._renderer.updateTransform(me);
             },
             0, duration,
             interpolator,
             callbackFn);
 
-        this._view = reset ? null : view;
+        this._viewport = reset ? null : viewport;
     },
 
-    getView:function () {
+    getViewport:function () {
 
         return anima.clone(_view);
     },
 
-    inView: function() {
+    inViewport:function () {
 
-        return (this._view != null);
-    },
-
-    getAnimator:function () {
-
-        return this._canvas._animator;
+        return (this._viewport != null);
     },
 
     /* internal methods */
@@ -161,6 +166,63 @@ anima.Scene = new Class({
         this._layers = [];
         this._layerMap = [];
 
-        this._element$.remove();
+        this.parent();
+    },
+
+    /* unsupported methods */
+
+    setOrigin:function (origin) {
+
+        throw "unsupported operation";
+    },
+
+    getOrigin:function () {
+
+        throw "unsupported operation";
+    },
+
+    setPosition:function (position) {
+
+        throw "unsupported operation";
+    },
+
+    getPosition:function () {
+
+        throw "unsupported operation";
+    },
+
+    move:function (dx, dy) {
+
+        throw "unsupported operation";
+    },
+
+    setScale:function (scale) {
+
+        throw "unsupported operation";
+    },
+
+    getScale:function () {
+
+        throw "unsupported operation";
+    },
+
+    scale:function (dsx, dsy) {
+
+        throw "unsupported operation";
+    },
+
+    setAngle:function (angle) {
+
+        throw "unsupported operation";
+    },
+
+    getAngle:function () {
+
+        throw "unsupported operation";
+    },
+
+    rotate:function (da) {
+
+        throw "unsupported operation";
     }
 });

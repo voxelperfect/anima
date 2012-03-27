@@ -9,6 +9,11 @@ anima.Layer = new Class({
     initialize:function (id) {
 
         this.parent(id);
+
+        this._type = 'Layer';
+
+        this._origin.x = 0;
+        this._origin.y = 0;
     },
 
     getScene:function () {
@@ -16,18 +21,21 @@ anima.Layer = new Class({
         return this._scene;
     },
 
+    getParent:function () {
+
+        return this._scene;
+    },
+
     addNode:function (node) {
 
-        this._element$.append('<div id="' + node.id + '"></div>');
-        node._element$ = $('#' + node.id);
-        node._element$.css({
-            'position':'absolute'
-        });
+        this._renderer.createElement(this, node);
 
         this._nodes.push(node);
         this._nodeMap[node.id] = node;
 
         node._layer = this;
+        node._animator = this._animator;
+        node._canvas = this._canvas;
     },
 
     getNode:function (id) {
@@ -52,20 +60,21 @@ anima.Layer = new Class({
         }
     },
 
-    setBackground:function (color, url, width, height) {
+    setBackground:function (color, url, width, height, postponeTransform) {
 
-        if (!width) {
-            width = this._scene._element$.width();
+        if ((!width || !height) && this._scene) {
+            if (!width) {
+                width = this._scene._size.width;
+            }
+            if (!height) {
+                height = this._scene._size.height;
+            }
         }
-        if (!height) {
-            height = this._scene._element$.height();
+        this.parent(color, url, width, height, true);
+
+        if (!postponeTransform) {
+            this._renderer.updateTransform(this);
         }
-        this.parent(color, url, width, height);
-    },
-
-    getAnimator:function () {
-
-        return this._scene._canvas._animator;
     },
 
     /* internal methods */
@@ -91,6 +100,33 @@ anima.Layer = new Class({
         this._nodes = [];
         this._nodeMap = [];
 
-        this._element$.remove();
+        this.parent();
+    },
+
+    /* unsupported methods */
+
+    setOrigin:function (origin) {
+
+        throw "unsupported operation";
+    },
+
+    getOrigin:function () {
+
+        throw "unsupported operation";
+    },
+
+    setAngle:function (angle) {
+
+        throw "unsupported operation";
+    },
+
+    getAngle:function () {
+
+        throw "unsupported operation";
+    },
+
+    rotate:function (da) {
+
+        throw "unsupported operation";
     }
 });

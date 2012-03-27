@@ -30,7 +30,7 @@ var pictureFrames = {
 
 $(function () {
 
-    var canvas = new anima.Canvas('mainCanvas');
+    var canvas = new anima.Canvas('mainCanvas', true);
     canvas.setBackground(
         'black',
         null,
@@ -41,18 +41,10 @@ $(function () {
     scene.setBackground(
         'black',
         '../../mpiros/www/resources/images/image_3600_60det.jpg');
-    scene.setOrigin({
-        x:0,
-        y:0
-    });
 
     var layer = new anima.Layer('layer1');
     scene.addLayer(layer);
     layer.setBackground();
-    layer.setOrigin({
-        x:0,
-        y:0
-    });
 
     var node;
 
@@ -85,7 +77,7 @@ $(function () {
         node = event.data;
         var animator = node.getAnimator();
 
-        scene.setView(
+        scene.setViewport(
             pictureFrame.zoomed,
             2500,
             {
@@ -94,7 +86,7 @@ $(function () {
                 pingPong:false
             },
             function () {
-                scene.setView(
+                scene.setViewport(
                     null,
                     2500,
                     {

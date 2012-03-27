@@ -9,39 +9,34 @@ anima.Canvas = new Class({
     _sceneMap:[],
     _currentScene:null,
 
-    initialize:function (id) {
+    initialize:function (id, adaptive) {
 
         this.parent(id);
 
-        this._element$ = $('#' + this.id);
-        this._element$.css({
-            'padding':'0px',
-            'margin':'0px',
-            'width':'100%',
-            'height':'100%',
-            'overflow':'hidden',
-            'position':'absolute',
-            'zoom':1
-        });
+        this._type = 'Canvas';
 
-        this._animator = new anima.Animator();
+        this._renderer.createCanvas(this);
+
+        this._animator = new anima.Animator(adaptive);
 
         anima._canvases.push(this);
     },
 
+    getParent:function () {
+
+        return null;
+    },
+
     addScene:function (scene) {
 
-        this._element$.append('<div id="' + scene.id + '"></div>');
-        scene._element$ = $('#' + scene.id);
-        scene._element$.hide();
-        scene._element$.css({
-            'position':'absolute',
-            '-webkit-backface-visibility':'hidden'
-        });
+        this._renderer.createElement(this, scene);
+        this._renderer.hide(scene);
 
         this._scenes.push(scene);
         this._sceneMap[scene.id] = scene;
 
+        scene._canvas = this;
+        scene._animator = this._animator;
         scene._canvas = this;
     },
 
@@ -62,12 +57,12 @@ anima.Canvas = new Class({
         if (newScene) {
             if (this._currentScene) {
                 this._animator.clearAnimations();
-                this._currentScene._element$.fadeOut(duration, function () {
-                    newScene._element$.fadeIn(duration);
+                this._renderer.fadeOut(this._currentScene, duration, function () {
+                    this._renderer.fadeIn(newScene, duration);
                     me._currentScene = scene;
                 });
             } else {
-                newScene._element$.fadeIn(duration);
+                this._renderer.fadeIn(newScene, duration);
                 this._currentScene = newScene;
             }
         }
@@ -95,14 +90,9 @@ anima.Canvas = new Class({
         }
     },
 
-    getAnimator:function () {
-
-        return this._animator;
-    },
-
     setBackground:function (color, url, width, height) {
 
-        this.parent(color, url, width, height);
+        this.parent(color, url, width, height, true);
         this._resize();
     },
 
@@ -121,9 +111,9 @@ anima.Canvas = new Class({
         var sourceWidth = this._size.width;
         var sourceHeight = this._size.height;
 
-        var container$ = this._element$.parent();
-        var targetWidth = container$.width();
-        var targetHeight = container$.height();
+        var containerSize = this._renderer.getParentElementSize(this);
+        var targetWidth = containerSize.width;
+        var targetHeight = containerSize.height;
 
         var offsetX = 0;
         var offsetY = 0;
@@ -155,7 +145,7 @@ anima.Canvas = new Class({
             y:scale
         };
 
-        this._updateTransform();
+        this._renderer.updateTransform(this);
     }
 });
 
