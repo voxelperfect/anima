@@ -1,28 +1,5 @@
 anima.Animator = new Class({
 
-    interpolators:{
-
-        linear:function (t) {
-            return t;
-        },
-
-        exponentialIn:function (t, exp) {
-            return Math.pow(t, exp);
-        },
-
-        exponentialOut:function (t, exp) {
-            return 1 - Math.pow(1 - t, exp);
-        },
-
-        exponentialInOut:function (t, exp) {
-            if (t * 2 < 1) {
-                return Math.pow(t * 2, exp) / 2.0;
-            } else {
-                return 1 - Math.abs(Math.pow(t * 2 - 2, exp)) / 2.0;
-            }
-        }
-    },
-
     _adaptive:false,
 
     _animationQueue:[],
@@ -43,14 +20,14 @@ anima.Animator = new Class({
         });
     },
 
-    addAnimation:function (interpolateValuesFn, startTime, duration, interpolator, onAnimationEndedFn) {
+    addAnimation:function (interpolateValuesFn, startTime, duration, easing, onAnimationEndedFn) {
 
         this._animationQueue.push({
             id:this._lastAnimationID++,
             interpolateValuesFn:interpolateValuesFn,
             startTime:startTime,
             duration:duration,
-            interpolator:interpolator,
+            easing:easing,
             onAnimationEndedFn:onAnimationEndedFn
         });
     },
@@ -74,7 +51,7 @@ anima.Animator = new Class({
 
         var endedAnimations = [];
 
-        var i, animation, dt, newValue, interpolator;
+        var i, animation, t, newValue, easing;
         var p, property, end, css;
 
         for (i = 0; i < count; i++) {
@@ -95,26 +72,17 @@ anima.Animator = new Class({
             }
 
             if (this._adaptive) {
-                dt = animation.frame / animation.totalFrames;
+                t = animation.frame * animation.duration / animation.totalFrames;
             } else {
-                dt = (loopTime - animation.startTime) / animation.duration;
+                t = loopTime - animation.startTime;
             }
-            end = (dt > 1.0);
+            end = (t > animation.duration);
             if (end) {
-                dt = 1.0;
+                t = animation.duration;
             }
 
-            interpolator = animation.interpolator;
-            if (interpolator.pingPong) {
-                if (dt < 0.5) {
-                    dt *= 2;
-                } else {
-                    dt = 1 - (dt - 0.5) * 2;
-                }
-            }
-
-            dt = interpolator.interpolate(dt, interpolator.exponent);
-            animation.interpolateValuesFn(this, dt);
+            t = animation.easing(null, t, 0.0, 1.0, animation.duration);
+            animation.interpolateValuesFn(this, t);
 
             if (end) {
                 endedAnimations.push(animation.id);

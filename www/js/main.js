@@ -30,7 +30,7 @@ var pictureFrames = {
 
 $('#mainPage').live('pageshow', function (event, ui) {
 
-    var canvas = new anima.Canvas('mainCanvas');
+    var canvas = new anima.Canvas('mainCanvas', true);
     canvas.setBackground(
         'black',
         null,
@@ -80,21 +80,13 @@ $('#mainPage').live('pageshow', function (event, ui) {
         if (!scene.inViewport()) {
             scene.setViewport(
                 pictureFrame.zoomed,
-                2500,
-                {
-                    interpolate:animator.interpolators.exponentialInOut,
-                    exponent:1,
-                    pingPong:false
-                });
+                2000,
+                anima.Easing.easeInOutSine);
         } else {
             scene.setViewport(
                 null,
-                2500,
-                {
-                    interpolate:animator.interpolators.exponentialInOut,
-                    exponent:1,
-                    pingPong:false
-                });
+                2000,
+                anima.Easing.easeInOutSine);
         }
     });
 

@@ -69,7 +69,7 @@ anima.Scene = new Class({
         }
     },
 
-    setViewport:function (viewport, duration, interpolator, callbackFn) {
+    setViewport:function (viewport, duration, ease, callbackFn) {
 
         var reset = false;
         if (!viewport) {
@@ -104,7 +104,7 @@ anima.Scene = new Class({
                 me._renderer.updateTransform(me);
             },
             0, duration,
-            interpolator,
+            ease,
             function (animation) {
                 if (callbackFn) {
                     callbackFn(animation, viewport);
