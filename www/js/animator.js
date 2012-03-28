@@ -152,15 +152,18 @@ anima.Animator = new Class({
 
         var animationQueue = this._animationQueue;
 
-        var i;
+        var i, animation;
 
         if (anima.isString(id) && id.charAt(0) == '@') {
             i = parseInt(id.substring(1));
+            animation = animationQueue[i];
             animationQueue.splice(i, 1);
+            if (animation && animation.onAnimationEndedFn) {
+                animation.onAnimationEndedFn(animation);
+            }
             return;
         }
         var count = animationQueue.length;
-        var animation;
         for (i = 0; i < count; i++) {
             animation = animationQueue[i];
             if (animation && animation.id == id) {

@@ -60,21 +60,12 @@ anima.Layer = new Class({
         }
     },
 
-    setBackground:function (color, url, width, height, postponeTransform) {
+    setBackground:function () {
 
-        if ((!width || !height) && this._scene) {
-            if (!width) {
-                width = this._scene._size.width;
-            }
-            if (!height) {
-                height = this._scene._size.height;
-            }
-        }
-        this.parent(color, url, width, height, true);
+        var width = this._scene._size.width;
+        var height = this._scene._size.height;
 
-        if (!postponeTransform) {
-            this._renderer.updateAll(this);
-        }
+        this.parent(null, null, width, height, true);
     },
 
     /* internal methods */

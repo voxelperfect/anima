@@ -106,7 +106,7 @@ anima.Node = new Class({
 
     setZIndex:function (zIndex) {
 
-        node._zIndex = zIndex;
+        this._zIndex = zIndex;
         this._renderer.setZIndex(this);
     },
 

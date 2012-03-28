@@ -22,7 +22,19 @@ anima.RendererCSS3 = new Class({
 
     createElement:function (parent, node) {
 
-        parent._element$.append('<div id="' + node.id + '"></div>');
+        var div = '<div id="' + node.id + '"></div>';
+        var appended = false;
+        if (parent._type == 'Layer') {
+            var count = parent._nodes.length;
+            if (count > 0) {
+                parent._nodes[count - 1]._element$.after(div);
+                appended = true;
+            }
+        }
+        if (!appended) {
+            this.getElement(parent).append(div);
+        }
+
         node._element$ = $('#' + node.id);
         node._element$.css({
             'position':'absolute'
@@ -31,31 +43,11 @@ anima.RendererCSS3 = new Class({
 
     getParentElementSize:function (node) {
 
-        var parent$ = node._element$.parent();
+        var parent$ = this.getElement(node).parent();
         return {
             width:parent$.width(),
             height:parent$.height()
         }
-    },
-
-    hide:function (node) {
-
-        node._element$.hide();
-    },
-
-    show:function (node) {
-
-        node._element$.show();
-    },
-
-    fadeIn:function (node, duration, callbackFn) {
-
-        node._element$.fadeIn(duration, callbackFn);
-    },
-
-    fadeOut:function (node, duration, callbackFn) {
-
-        node._element$.fadeOut(duration, callbackFn);
     },
 
     setZIndex:function (node) {
@@ -64,6 +56,10 @@ anima.RendererCSS3 = new Class({
     },
 
     setBackground:function (node) {
+
+        if (!node._element$) {
+            return;
+        }
 
         var css = {};
 
@@ -85,16 +81,23 @@ anima.RendererCSS3 = new Class({
 
     getElement:function (node) {
 
-        return node._element$;
+        while (node != null && !node._element$) {
+            node = node.getParent();
+        }
+        return (node != null) ? node._element$ : null;
     },
 
     updateTransform:function (node) {
 
-        var translation = 'translate(' + node._position.x + 'px, ' + node._position.y + 'px)';
-        var scale = ' scale(' + node._scale.x + ', ' + node._scale.y + ')';
-        var acceleration = anima.isWebkit ? ' translateZ(0px)' : '';
-        var transformation = translation + scale + acceleration;
+        var x = (node._position.x + 0.5) << 0;
+        var y = (node._position.y + 0.5) << 0;
+        var translation = 'translate(' + x + 'px, ' + y + 'px)';
 
+        var scale = ' scale(' + node._scale.x + ', ' + node._scale.y + ')';
+
+        var acceleration = anima.isWebkit ? ' translateZ(0px)' : '';
+
+        var transformation = translation + scale + acceleration;
         node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
     },
 
@@ -157,6 +160,10 @@ anima.RendererIE = new Class({
     },
 
     setBackground:function (node) {
+
+        if (!node._element$) {
+            return;
+        }
 
         var css = {};
 

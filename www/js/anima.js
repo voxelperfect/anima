@@ -90,3 +90,9 @@ anima.clone = function (obj) {
 
     return $.extend({}, obj);
 };
+
+// ultra fast rounding (tip: inline for max. performance)
+anima.round = function(value) {
+
+    return ((value + 0.5) << 0);
+};

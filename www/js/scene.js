@@ -30,8 +30,6 @@ anima.Scene = new Class({
 
     addLayer:function (layer) {
 
-        this._renderer.createElement(this, layer);
-
         this._layers.push(layer);
         this._layerMap[layer.id] = layer;
 
@@ -107,7 +105,11 @@ anima.Scene = new Class({
             },
             0, duration,
             interpolator,
-            callbackFn);
+            function (animation) {
+                if (callbackFn) {
+                    callbackFn(animation, viewport);
+                }
+            });
 
         this._viewport = reset ? null : viewport;
     },
@@ -134,12 +136,12 @@ anima.Scene = new Class({
         var sceneRatio = this._size.width / this._size.height;
         if (sceneRatio < 1) {
             var newBoxHeight = boxWidth / sceneRatio;
-            var offset = (newBoxHeight - boxHeight) / 2;
+            var offset = ((newBoxHeight - boxHeight) / 2 + 0.5) << 0;
             adjustedBox.y1 -= offset;
             adjustedBox.y2 += offset;
         } else {
             var newBoxWidth = boxHeight * sceneRatio;
-            var offset = (newBoxWidth - boxWidth) / 2;
+            var offset = ((newBoxWidth - boxWidth) / 2 + 0.5) << 0;
             adjustedBox.x1 -= offset;
             adjustedBox.x2 += offset;
         }

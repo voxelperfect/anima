@@ -30,7 +30,7 @@ anima.Canvas = new Class({
     addScene:function (scene) {
 
         this._renderer.createElement(this, scene);
-        this._renderer.hide(scene);
+        scene._element$.hide();
 
         this._scenes.push(scene);
         this._sceneMap[scene.id] = scene;
@@ -57,12 +57,12 @@ anima.Canvas = new Class({
         if (newScene) {
             if (this._currentScene) {
                 this._animator.clearAnimations();
-                this._renderer.fadeOut(this._currentScene, duration, function () {
-                    this._renderer.fadeIn(newScene, duration);
+                this._currentScene._element$.fadeOut(duration, function () {
+                    newScene._element$.fadeOut(duration);
                     me._currentScene = scene;
                 });
             } else {
-                this._renderer.fadeIn(newScene, duration);
+                newScene._element$.fadeIn(duration);
                 this._currentScene = newScene;
             }
         }

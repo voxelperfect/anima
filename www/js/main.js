@@ -28,7 +28,7 @@ var pictureFrames = {
     }
 };
 
-$(function () {
+$('#mainPage').live('pageshow', function (event, ui) {
 
     var canvas = new anima.Canvas('mainCanvas');
     canvas.setBackground(
@@ -40,7 +40,7 @@ $(function () {
     canvas.addScene(scene);
     scene.setBackground(
         'black',
-        '../../mpiros/www/resources/images/image_3600_60det.jpg');
+        '../../mpiros/www/resources/images/back_img_final.jpg');
 
     var layer = new anima.Layer('layer1');
     scene.addLayer(layer);
