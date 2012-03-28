@@ -174,7 +174,6 @@ anima.RendererIE = new Class({
             background += node._background.color;
         }
         if (node._background.url) {
-            background += ' url(' + node._background.url + ')';
             var scaleFilter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"
                 + node._background.url
                 + "',sizingMethod='scale')";
@@ -207,6 +206,10 @@ anima.RendererIE = new Class({
     /* internal methods */
 
     _applyTransform:function (node) {
+
+        if (!node.getScaledBox) {
+            return;
+        }
 
         var box = node.getScaledBox();
 
