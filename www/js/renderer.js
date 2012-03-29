@@ -75,8 +75,8 @@ anima.RendererCSS3 = new Class({
         }
 
         if (node._background.url) {
-            css['background-repeat'] = 'no-repeat';
-            css['background-position'] = 'left top';
+                css['background-repeat'] = 'no-repeat';
+                css['background-position'] = 'left top';
         }
 
         node._element$.css(css);

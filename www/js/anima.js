@@ -1,9 +1,6 @@
 var anima = {};
 
-anima.version = '0.4.0 build 5';
-if (console && console.log) {
-    console.log('powered by Anima ' + anima.version);
-}
+anima.version = '0.4.0 build 6';
 
 anima.isIE8 = false;
 if ($.browser.msie) {
