@@ -1,46 +1,48 @@
+var global_scale = 0.5;
+
 var pictureFrames = {
     'the_place':{
-        x1:2142,
-        y1:96,
-        x2:2875,
-        y2:648,
+        x1:2142*global_scale,
+        y1:96*global_scale,
+        x2:2875*global_scale,
+        y2:648*global_scale,
         zoomed:{
-            x1:1886,
-            y1:0,
-            x2:2900,
-            y2:816
+            x1:1886*global_scale,
+            y1:0*global_scale,
+            x2:2900*global_scale,
+            y2:816*global_scale
         },
         imagePrefix:'the_place',
         textOverlay:{
-            width:235,
-            height:816,
+            width:235*global_scale,
+            height:816*global_scale,
             backBox:{
-                x1:14,
-                y1:784,
-                x2:56,
-                y2:804
+                x1:14*global_scale,
+                y1:784*global_scale,
+                x2:56*global_scale,
+                y2:804*global_scale
             }
         },
         titleSize:{
-            width:79,
-            height:23
+            width:79*global_scale,
+            height:23*global_scale
         }
     }
 };
 
 $('#mainPage').live('pageshow', function (event, ui) {
 
-    var canvas = new anima.Canvas('mainCanvas', true);
+    var canvas = new anima.Canvas('mainCanvas');
     canvas.setBackground(
         'black',
         null,
-        3600, 2126);
+        3600*global_scale, 2126*global_scale);
 
     var scene = new anima.Scene('scene1');
     canvas.addScene(scene);
     scene.setBackground(
         'black',
-        '../../mpiros/www/resources/images/back_img_final.jpg');
+        'resources/images/back_img.jpg');
 
     var layer = new anima.Layer('layer1');
     scene.addLayer(layer);
@@ -50,18 +52,18 @@ $('#mainPage').live('pageshow', function (event, ui) {
 
     node = new anima.Node('red');
     layer.addNode(node);
-    node.setBackground('red', null, 50, 50);
+    node.setBackground('red', null, 50*global_scale, 50*global_scale);
     node.setPosition({
-        x:30,
-        y:30
+        x:30*global_scale,
+        y:30*global_scale
     });
 
     node = new anima.Node('green');
     layer.addNode(node);
-    node.setBackground('green', null, 50, 50);
+    node.setBackground('green', null, 50*global_scale, 50*global_scale);
     node.setPosition({
-        x:700,
-        y:30
+        x:700*global_scale,
+        y:30*global_scale
     });
 
     var pictureFrame = pictureFrames['the_place'];

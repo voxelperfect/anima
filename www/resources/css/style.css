@@ -27,14 +27,3 @@
     -webkit-backface-visibility: hidden;
 }
 
-.fast-scaling {
-    image-rendering: -moz-crisp-edges;
-    image-rendering: -o-crisp-edges;
-    image-rendering: -webkit-optimize-contrast;
-    -ms-interpolation-mode: nearest-neighbor;
-}
-
-.quality-scaling {
-    image-rendering: optimizeQuality;
-    -ms-interpolation-mode: bicubic;
-}

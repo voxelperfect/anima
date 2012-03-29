@@ -1,5 +1,10 @@
 var anima = {};
 
+anima.version = '0.4.0 build 5';
+if (console && console.log) {
+    console.log('powered by Anima ' + anima.version);
+}
+
 anima.isIE8 = false;
 if ($.browser.msie) {
     var version = parseInt($.browser.version[0]);
@@ -92,7 +97,7 @@ anima.clone = function (obj) {
 };
 
 // ultra fast rounding (tip: inline for max. performance)
-anima.round = function(value) {
+anima.round = function (value) {
 
     return ((value + 0.5) << 0);
 };

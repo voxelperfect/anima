@@ -73,8 +73,11 @@ anima.RendererCSS3 = new Class({
         if (background.length > 0) {
             css['background'] = background;
         }
-        css['background-repeat'] = 'no-repeat';
-        css['background-position'] = 'left top';
+
+        if (node._background.url) {
+            css['background-repeat'] = 'no-repeat';
+            css['background-position'] = 'left top';
+        }
 
         node._element$.css(css);
     },
@@ -95,7 +98,7 @@ anima.RendererCSS3 = new Class({
 
         var scale = ' scale(' + node._scale.x + ', ' + node._scale.y + ')';
 
-        var acceleration = anima.isWebkit ? ' translateZ(0px)' : '';
+        var acceleration = anima.isWebkit ? ' translateZ(0)' : '';
 
         var transformation = translation + scale + acceleration;
         node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
@@ -181,11 +184,14 @@ anima.RendererIE = new Class({
         if (background.length > 0) {
             css['background'] = background;
         }
-        css['background-repeat'] = 'no-repeat';
-        css['background-position'] = 'left top';
 
-        css['filter'] = scaleFilter;
-        css['-ms-filter'] = scaleFilter;
+        if (node._background.url) {
+            css['background-repeat'] = 'no-repeat';
+            css['background-position'] = 'left top';
+
+            css['filter'] = scaleFilter;
+            css['-ms-filter'] = scaleFilter;
+        }
 
         node._element$.css(css);
     },
@@ -214,10 +220,10 @@ anima.RendererIE = new Class({
         var box = node.getScaledBox();
 
         node._element$.css({
-            'left':box.x,
-            'top':box.y,
-            'width':box.width,
-            'height':box.height
+            'left':(box.x + 0.5) << 0,
+            'top':(box.y + 0.5) << 0,
+            'width':(box.width + 0.5) << 0,
+            'height':(box.height + 0.5) << 0
         });
     },
 
