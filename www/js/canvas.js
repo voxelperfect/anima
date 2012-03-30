@@ -50,7 +50,7 @@ anima.Canvas = new Class({
         var me = this;
 
         if (!duration) {
-            duration = 1500;
+            duration = 1000;
         }
 
         var newScene = this.getScene(id);
@@ -58,8 +58,8 @@ anima.Canvas = new Class({
             if (this._currentScene) {
                 this._animator.clearAnimations();
                 this._currentScene._element$.fadeOut(duration, function () {
-                    newScene._element$.fadeOut(duration);
-                    me._currentScene = scene;
+                    newScene._element$.fadeIn(duration);
+                    me._currentScene = newScene;
                 });
             } else {
                 newScene._element$.fadeIn(duration);

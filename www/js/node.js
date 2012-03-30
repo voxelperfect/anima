@@ -98,7 +98,7 @@ anima.Node = new Class({
     set:function (propertyName, value) {
 
         if (value) {
-            this._data[propertName] = value;
+            this._data[propertyName] = value;
         } else {
             delete this._data[propertyName];
         }

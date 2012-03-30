@@ -20,9 +20,22 @@ anima.RendererCSS3 = new Class({
         });
     },
 
+    getElementIdContext: function(parent) {
+
+        var id = '';
+        do {
+            id = parent.id + '_' + id;
+            parent = parent.getParent();
+        } while (parent != null);
+
+        return id;
+    },
+
     createElement:function (parent, node) {
 
-        var div = '<div id="' + node.id + '"></div>';
+        var elementId = this.getElementIdContext(parent) + node.id;
+
+        var div = '<div id="' + elementId + '"></div>';
         var appended = false;
         if (parent._type == 'Layer') {
             var count = parent._nodes.length;
@@ -35,7 +48,7 @@ anima.RendererCSS3 = new Class({
             this.getElement(parent).append(div);
         }
 
-        node._element$ = $('#' + node.id);
+        node._element$ = $('#' + elementId);
         node._element$.css({
             'position':'absolute'
         });
