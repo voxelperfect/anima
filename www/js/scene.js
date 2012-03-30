@@ -69,7 +69,7 @@ anima.Scene = new Class({
         }
     },
 
-    setViewport:function (viewport, duration, ease, callbackFn) {
+    setViewport:function (viewport, duration, easing, callbackFn) {
 
         var reset = false;
         if (!viewport) {
@@ -94,22 +94,49 @@ anima.Scene = new Class({
         var s1 = this._scale.x;
         var s2 = viewport.scale;
 
-        this._canvas._animator.addAnimation(
-            function (animator, dt) {
+        if (anima.cssTransitionEndEvent && anima.isObject(easing)) {
+            var css = {};
+            css[anima.cssVendorPrefix + 'transition-properties'] = 'transform';
+            css[anima.cssVendorPrefix + 'transition-duration'] = duration + 'ms';
+            css[anima.cssVendorPrefix + 'transition-timing-function'] = easing.css;
+            this._element$.css(css);
 
-                me._scale.x = me._scale.y = animator.interpolate(s1, s2, dt);
-                me._position.x = animator.interpolate(x1, x2, dt);
-                me._position.y = animator.interpolate(y1, y2, dt);
+            this._element$.bind(anima.cssTransitionEndEvent, function () {
+                me._element$.unbind(anima.cssTransitionEndEvent);
 
-                me._renderer.updateTransform(me);
-            },
-            0, duration,
-            ease,
-            function (animation) {
+                var css = {};
+                css[anima.cssVendorPrefix + 'transition-property'] = '';
+                css[anima.cssVendorPrefix + 'transition-duration'] = '';
+                css[anima.cssVendorPrefix + 'transition-timing-function'] = '';
+                me._element$.css(css);
+
                 if (callbackFn) {
-                    callbackFn(animation, viewport);
+                    callbackFn(null, viewport);
                 }
             });
+
+            this._scale.x = this._scale.y = s2;
+            this._position.x = x2;
+            this._position.y = y2;
+            this._renderer.updateTransform(me);
+        } else {
+            this._canvas._animator.addAnimation(
+                function (animator, dt) {
+
+                    me._scale.x = me._scale.y = animator.interpolate(s1, s2, dt);
+                    me._position.x = animator.interpolate(x1, x2, dt);
+                    me._position.y = animator.interpolate(y1, y2, dt);
+
+                    me._renderer.updateTransform(me);
+                },
+                0, duration,
+                easing,
+                function (animation) {
+                    if (callbackFn) {
+                        callbackFn(animation, viewport);
+                    }
+                });
+        }
 
         this._viewport = reset ? null : viewport;
     },

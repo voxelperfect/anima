@@ -83,12 +83,12 @@ $('#mainPage').live('pageshow', function (event, ui) {
             scene.setViewport(
                 pictureFrame.zoomed,
                 2000,
-                anima.Easing.easeInOutSine);
+                anima.Easing.transition['ease-in-out-sine']);
         } else {
             scene.setViewport(
                 null,
                 2000,
-                anima.Easing.easeInOutSine);
+                anima.Easing.transition['ease-in-out-sine']);
         }
     });
 

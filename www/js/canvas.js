@@ -163,6 +163,15 @@ $(window).resize(function () {
     });
 });
 
+$(window).bind('orientationchange', function (event, orientation) {
+
+    $.each(anima._canvases, function (index, value) {
+        value.getAnimator().addTask(function () {
+            value._resize();
+        });
+    });
+})
+
 function _anima_update() {
 
     $.each(anima._canvases, function (index, value) {

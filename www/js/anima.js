@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.4.0 build 6';
+anima.version = '0.4.0 build 8';
 
 anima.isIE8 = false;
 if ($.browser.msie) {
@@ -9,6 +9,7 @@ if ($.browser.msie) {
 }
 
 anima.cssVendorPrefix = '';
+anima.cssTransitionEndEvent = '';
 if ($.browser.webkit || $.browser.safari) {
     anima.cssVendorPrefix = '-webkit-';
 } else if ($.browser.mozilla) {
@@ -19,9 +20,24 @@ if ($.browser.webkit || $.browser.safari) {
     anima.cssVendorPrefix = '-ms-';
 }
 
+anima.cssTransitionEndEvent = null;
+if ($.support.cssTransitions) {
+    if ($.browser.webkit || $.browser.safari) {
+        anima.cssTransitionEndEvent = 'webkitTransitionEnd';
+    } else if ($.browser.mozilla) {
+        anima.cssTransitionEndEvent = 'transitionend';
+    } else if ($.browser.opera) {
+        anima.cssTransitionEndEvent = 'oTransitionEnd';
+    } else if ($.browser.msie) {
+        anima.cssTransitionEndEvent = 'MSTransitionEnd';
+    } else {
+        anima.cssTransitionEndEvent = 'transitionend';
+    }
+}
+
 anima.isWebkit = ($.browser.webkit || $.browser.safari);
 
-anima.frameRate = anima.isIE8 ? 60 : 60; // fps
+anima.frameRate = 30; // fps
 
 if (!window.requestAnimationFrame) {
     window.requestAnimationFrame = ( function () {

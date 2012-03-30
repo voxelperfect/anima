@@ -41,6 +41,9 @@ anima.Animator = new Class({
 
         var animationQueue = this._animationQueue;
 
+        if (this._animationTimeStart == 0) {
+            this._animationTimeStart = new Date().getTime();
+        }
         var currentTime = new Date().getTime();
         var loopTime = currentTime - this._animationTimeStart;
 
@@ -53,6 +56,7 @@ anima.Animator = new Class({
 
         var i, animation, t, newValue, easing;
         var p, property, end, css;
+        var easingFn;
 
         for (i = 0; i < count; i++) {
             animation = animationQueue[i];
@@ -72,6 +76,7 @@ anima.Animator = new Class({
             }
 
             if (this._adaptive) {
+                // TODO needs more work here...
                 t = animation.frame * animation.duration / animation.totalFrames;
             } else {
                 t = loopTime - animation.startTime;
@@ -81,6 +86,7 @@ anima.Animator = new Class({
                 t = animation.duration;
             }
 
+            easingFn = anima.isObject(animation.easing) ? animation.easing.fn : animation.easing;
             t = animation.easing(null, t, 0.0, 1.0, animation.duration);
             animation.interpolateValuesFn(this, t);
 
