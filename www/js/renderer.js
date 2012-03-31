@@ -20,7 +20,7 @@ anima.RendererCSS3 = new Class({
         });
     },
 
-    getElementIdContext: function(parent) {
+    getElementIdContext:function (parent) {
 
         var id = '';
         do {
@@ -88,8 +88,8 @@ anima.RendererCSS3 = new Class({
         }
 
         if (node._background.url) {
-                css['background-repeat'] = 'no-repeat';
-                css['background-position'] = 'left top';
+            css['background-repeat'] = 'no-repeat';
+            css['background-position'] = 'left top';
         }
 
         node._element$.css(css);
@@ -105,6 +105,12 @@ anima.RendererCSS3 = new Class({
 
     updateTransform:function (node) {
 
+        var rotation = '';
+        if (node._angle != 0) {
+            var degrees = node._angle * (180.0 / Math.PI);
+            rotation = 'rotate(' + degrees + 'deg) ';
+        }
+
         var x = (node._position.x + 0.5) << 0;
         var y = (node._position.y + 0.5) << 0;
         var translation = 'translate(' + x + 'px, ' + y + 'px)';
@@ -113,7 +119,7 @@ anima.RendererCSS3 = new Class({
 
         var acceleration = anima.isWebkit ? ' translateZ(0)' : '';
 
-        var transformation = translation + scale + acceleration;
+        var transformation = rotation + translation + scale + acceleration;
         node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
     },
 

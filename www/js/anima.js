@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.4.0 build 9';
+anima.version = '0.5.0 build 1';
 
 anima.isIE8 = false;
 if ($.browser.msie) {
