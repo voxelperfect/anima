@@ -13,9 +13,9 @@ anima.Body = new Class({
         this._physicalSize = anima.clone(physicalSize);
     },
 
-    setBackground:function (color, url, width, height, postponeTransform) {
+    setBackground:function (color, url, width, height) {
 
-        this.parent(color, url, width, height, postponeTransform);
+        this.parent(color, url, width, height, true);
 
         var level = this._layer._scene;
         var proportionalWidth = this._physicalSize.width * level.getPhysicsScale();
@@ -38,7 +38,15 @@ anima.Body = new Class({
 
         this._body.CreateFixture(fixDef);
 
+        var level = this._layer._scene;
+        this._position = {
+            x:bodyDef.position.x * level._physicsScale,
+            y:bodyDef.position.y * level._physicsScale
+        }
+
         this._calculateCentroidOffset();
+
+        this._renderer.updateAll(this);
     },
 
     getPhysicalSize:function () {
@@ -131,7 +139,7 @@ anima.Body = new Class({
         return shape;
     },
 
-    _calculateCentroidOffset:function (element) {
+    _calculateCentroidOffset:function () {
 
         var aabb = this._body.GetFixtureList().GetAABB();
         var centroid = aabb.GetCenter();
@@ -140,6 +148,11 @@ anima.Body = new Class({
         this._centroidOffset = {
             x:centroid.x - center.x,
             y:centroid.y - center.y
+        }
+
+        this._origin = {
+            x:(center.x - aabb.lowerBound.x) / this._physicalSize.width,
+            y:(center.y - aabb.lowerBound.y) / this._physicalSize.height
         }
     }
 });

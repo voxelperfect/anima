@@ -3,7 +3,7 @@ echo "Packaging Anima..."
 rm -rf ../deploy
 mkdir ../deploy
 
-cat ../www/js/anima.js ../www/js/renderer.js ../www/js/node.js ../www/js/layer.js ../www/js/scene.js ../www/js/easing.js ../www/js/animator.js ../www/js/canvas.js ../www/js/level.js ../www/js/body.js >> anima.js
+cat ../www/js/anima.js ../www/js/sound.js ../www/js/renderer.js ../www/js/node.js ../www/js/layer.js ../www/js/scene.js ../www/js/easing.js ../www/js/animator.js ../www/js/canvas.js ../www/js/level.js ../www/js/body.js >> anima.js
 /usr/local/lib/node_modules/uglify-js/bin/uglifyjs --max-line-len 1024 --unsafe --output ../deploy/anima.min.js anima.js
 cat anima.js ../www/js/main.js >> app.js
 /usr/local/lib/node_modules/uglify-js/bin/uglifyjs --max-line-len 1024 --mangle-toplevel --unsafe --output ../deploy/app.min.js app.js

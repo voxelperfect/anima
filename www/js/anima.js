@@ -128,3 +128,5 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef,
     b2PI = Box2D.Common.Math.PI;
 
+soundManager.url = 'resources/swf';
+soundManager.useHTML5Audio = true;

@@ -227,9 +227,11 @@ anima.start = function (callbackFn) {
     $.mobile.loadingMessageTextVisible = true;
 
     anima._loadImages(function () {
-        if (callbackFn) {
-            callbackFn.call();
-        }
-        window.requestAnimationFrame(_anima_update, '_anima_update()');
+        soundManager.onready(function () {
+            if (callbackFn) {
+                callbackFn.call();
+            }
+            window.requestAnimationFrame(_anima_update, '_anima_update()');
+        });
     });
 };

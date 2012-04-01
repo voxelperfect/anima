@@ -63,11 +63,6 @@ anima.RendererCSS3 = new Class({
         }
     },
 
-    setZIndex:function (node) {
-
-        node._element$.css('z-index', node._zIndex);
-    },
-
     setBackground:function (node) {
 
         if (!node._element$) {
@@ -106,7 +101,7 @@ anima.RendererCSS3 = new Class({
     updateTransform:function (node) {
 
         var rotation = '';
-        if (node._angle != 0) {
+        if (node._angle && node._angle != 0) {
             var degrees = node._angle * (180.0 / Math.PI);
             rotation = 'rotate(' + degrees + 'deg) ';
         }

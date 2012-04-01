@@ -28,8 +28,6 @@ anima.Node = new Class({
         url:null
     },
 
-    _zIndex:0,
-
     _data:null,
 
     _canvas:null,
@@ -102,17 +100,6 @@ anima.Node = new Class({
         } else {
             delete this._data[propertyName];
         }
-    },
-
-    setZIndex:function (zIndex) {
-
-        this._zIndex = zIndex;
-        this._renderer.setZIndex(this);
-    },
-
-    getZIndex:function () {
-
-        return this._zIndex;
     },
 
     setBackground:function (color, url, width, height, postponeTransform) {

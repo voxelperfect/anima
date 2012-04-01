@@ -1,4 +1,3 @@
-
 var canvas = null;
 
 soundManager.url = 'resources/swf';
@@ -12,6 +11,7 @@ function getImageUrl(level, imageName) {
 function createCommode(layer) {
 
     var level = layer.getScene();
+    var levelHeight = level.getPhysicalSize().height;
 
     var physicalSize = {
         width:0.48,
@@ -24,12 +24,10 @@ function createCommode(layer) {
     var imageHeight = 159;
     body.setBackground(null, getImageUrl(level, 'commode'), imageWidth, imageHeight);
 
-    // TODO setPosition based on bodyDef (again automatic in body class !!
-
     var bodyDef = new b2BodyDef;
     bodyDef.type = b2Body.b2_staticBody;
     bodyDef.position.x = physicalSize.width / 2;
-    bodyDef.position.y = (this.physicalHeight - physicalSize.height + (physicalSize.height / 2));
+    bodyDef.position.y = (levelHeight - physicalSize.height + (physicalSize.height / 2));
 
     var fixDef = new b2FixtureDef;
     fixDef.density = 1.0;
@@ -49,7 +47,6 @@ function createLevel0() {
 
     var layer = new anima.Layer('environment');
     level.addLayer(layer);
-    layer.setBackground();
 
     createCommode(layer);
 }

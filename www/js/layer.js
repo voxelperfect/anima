@@ -1,19 +1,35 @@
 anima.Layer = new Class({
-    Extends:anima.Node,
 
+    _type:null,
+
+    _id:null,
     _scene:null,
+
+    _scale:null,
+
+    _data:null,
+
+    _canvas:null,
+    _animator:null,
+    _renderer:null,
 
     _nodes:[],
     _nodeMap:[],
 
     initialize:function (id) {
 
-        this.parent(id);
+        this.id = id;
 
         this._type = 'Layer';
 
-        this._origin.x = 0;
-        this._origin.y = 0;
+        this._scale = {
+            x:1.0,
+            y:1.0
+        };
+
+        this._data = {};
+
+        this._renderer = anima.defaultRenderer;
     },
 
     getScene:function () {
@@ -24,6 +40,25 @@ anima.Layer = new Class({
     getParent:function () {
 
         return this._scene;
+    },
+
+    getElement:function () {
+
+        return this._renderer.getElement(this);
+    },
+
+    get:function (propertyName) {
+
+        return this._data[propertyName];
+    },
+
+    set:function (propertyName, value) {
+
+        if (value) {
+            this._data[propertyName] = value;
+        } else {
+            delete this._data[propertyName];
+        }
     },
 
     addNode:function (node) {
@@ -60,12 +95,27 @@ anima.Layer = new Class({
         }
     },
 
-    setBackground:function () {
+    setScale:function (scale) {
 
-        var width = this._scene._size.width;
-        var height = this._scene._size.height;
+        this._scale = anima.clone(scale);
+        this._renderer.updateTransform(this);
+    },
 
-        this.parent(null, null, width, height, true);
+    getScale:function () {
+
+        return anima.clone(this._scale);
+    },
+
+    scale:function (dsx, dsy) {
+
+        this._scale.x *= dsx;
+        this._scale.y *= dsy;
+        this._renderer.updateTransform(this);
+    },
+
+    getAnimator:function () {
+
+        return this._animator;
     },
 
     /* internal methods */
@@ -73,11 +123,6 @@ anima.Layer = new Class({
     _getImageUrls:function (urls) {
 
         var url;
-
-        url = this._background.url;
-        if (url) {
-            urls.push(url);
-        }
 
         var count = this._nodes.length;
         for (var i = 0; i < count; i++) {
@@ -96,34 +141,5 @@ anima.Layer = new Class({
         }
         this._nodes = [];
         this._nodeMap = [];
-
-        this.parent();
-    },
-
-    /* unsupported methods */
-
-    setOrigin:function (origin) {
-
-        throw "unsupported operation";
-    },
-
-    getOrigin:function () {
-
-        throw "unsupported operation";
-    },
-
-    setAngle:function (angle) {
-
-        throw "unsupported operation";
-    },
-
-    getAngle:function () {
-
-        throw "unsupported operation";
-    },
-
-    rotate:function (da) {
-
-        throw "unsupported operation";
     }
 });

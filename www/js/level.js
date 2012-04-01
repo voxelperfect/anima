@@ -37,5 +37,10 @@ anima.Level = new Class({
     getPhysicsScale:function () {
 
         return this._physicsScale;
+    },
+
+    getPhysicalSize:function () {
+
+        return anima.clone(this._physicalSize);
     }
 });
