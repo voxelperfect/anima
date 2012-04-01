@@ -1,98 +1,69 @@
-var global_scale = 0.5;
 
-var pictureFrames = {
-    'the_place':{
-        x1:2142*global_scale,
-        y1:96*global_scale,
-        x2:2875*global_scale,
-        y2:648*global_scale,
-        zoomed:{
-            x1:1886*global_scale,
-            y1:0*global_scale,
-            x2:2900*global_scale,
-            y2:816*global_scale
-        },
-        imagePrefix:'the_place',
-        textOverlay:{
-            width:235*global_scale,
-            height:816*global_scale,
-            backBox:{
-                x1:14*global_scale,
-                y1:784*global_scale,
-                x2:56*global_scale,
-                y2:804*global_scale
-            }
-        },
-        titleSize:{
-            width:79*global_scale,
-            height:23*global_scale
-        }
-    }
-};
+var canvas = null;
+
+soundManager.url = 'resources/swf';
+soundManager.useHTML5Audio = true;
+
+function getImageUrl(level, imageName) {
+
+    return 'resources/images/' + level.id + '/' + imageName + '.png';
+}
+
+function createCommode(layer) {
+
+    var level = layer.getScene();
+
+    var physicalSize = {
+        width:0.48,
+        height:0.31
+    };
+    var body = new anima.Body('commode', physicalSize);
+    layer.addNode(body);
+
+    var imageWidth = 249;
+    var imageHeight = 159;
+    body.setBackground(null, getImageUrl(level, 'commode'), imageWidth, imageHeight);
+
+    // TODO setPosition based on bodyDef (again automatic in body class !!
+
+    var bodyDef = new b2BodyDef;
+    bodyDef.type = b2Body.b2_staticBody;
+    bodyDef.position.x = physicalSize.width / 2;
+    bodyDef.position.y = (this.physicalHeight - physicalSize.height + (physicalSize.height / 2));
+
+    var fixDef = new b2FixtureDef;
+    fixDef.density = 1.0;
+    fixDef.friction = 0.5;
+    fixDef.restitution = 0.2;
+    fixDef.shape = new b2PolygonShape;
+    fixDef.shape.SetAsBox(physicalSize.width / 2, physicalSize.height / 2);
+
+    body.define(bodyDef, fixDef);
+}
+
+function createLevel0() {
+
+    var level = new anima.Level('level0', 2.0, new b2Vec2(0, 9.81)); // 2m wide, gravity = 9.81 m/sec2
+    canvas.addScene(level);
+    level.setBackground('black', getImageUrl(level, 'background'));
+
+    var layer = new anima.Layer('environment');
+    level.addLayer(layer);
+    layer.setBackground();
+
+    createCommode(layer);
+}
 
 $('#mainPage').live('pageshow', function (event, ui) {
 
-    var canvas = new anima.Canvas('mainCanvas');
-    canvas.setBackground(
-        'black',
-        null,
-        3600*global_scale, 2126*global_scale);
+    canvas = new anima.Canvas('main-canvas');
+    canvas.setBackground('black', null, 1575, 787);
 
-    var scene = new anima.Scene('scene1');
-    canvas.addScene(scene);
-    scene.setBackground(
-        'black',
-        'resources/images/back_img.jpg');
-
-    var layer = new anima.Layer('layer1');
-    scene.addLayer(layer);
-    layer.setBackground();
-
-    var node;
-
-    node = new anima.Node('red');
-    layer.addNode(node);
-    node.setBackground('red', null, 50*global_scale, 50*global_scale);
-    node.setPosition({
-        x:30*global_scale,
-        y:30*global_scale
-    });
-
-    node = new anima.Node('green');
-    layer.addNode(node);
-    node.setBackground('green', null, 50*global_scale, 50*global_scale);
-    node.setPosition({
-        x:700*global_scale,
-        y:30*global_scale
-    });
-
-    var pictureFrame = pictureFrames['the_place'];
-    node = new anima.Node('the_place');
-    layer.addNode(node);
-    node.setBackground(null, null, pictureFrame.x2 - pictureFrame.x1, pictureFrame.y2 - pictureFrame.y1);
-    node.setPosition({
-        x:pictureFrame.x1,
-        y:pictureFrame.y1
-    });
-    node.getElement().css('cursor', 'pointer');
-    node.on('tap', function (event) {
-        node = event.data;
-        var animator = node.getAnimator();
-
-        if (!scene.inViewport()) {
-            scene.setViewport(
-                pictureFrame.zoomed,
-                2000,
-                anima.Easing.transition['ease-in-out-sine']);
-        } else {
-            scene.setViewport(
-                null,
-                2000,
-                anima.Easing.transition['ease-in-out-sine']);
-        }
-    });
+    createLevel0();
 
     anima.start(function () {
-        canvas.setCurrentScene('scene1');
+
+        canvas.setCurrentScene('level0');
     });
 });
+
