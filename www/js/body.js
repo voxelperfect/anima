@@ -18,8 +18,8 @@ anima.Body = new Class({
         var level = this._layer._scene;
         var ps = level.getPhysicsScale();
         this._physicalSize = {
-            width: this._size.width / ps,
-            height: this._size.height / ps
+            width:this._size.width / ps,
+            height:this._size.height / ps
         };
     },
 
@@ -31,6 +31,11 @@ anima.Body = new Class({
         this._body.SetUserData({
             node:this
         });
+
+        if (fixDef.svgPoints) {
+            fixDef.shape = this._svgToShape(fixDef.svgPoints);
+            fixDef.svgPoints = null;
+        }
 
         this._body.CreateFixture(fixDef);
 
@@ -92,21 +97,25 @@ anima.Body = new Class({
         }
     },
 
-    _calculateShapeScale:function (shapePoints, physicalShapeWidth, physicalShapeHeight) {
+    _calculateShapeScale:function (shapePoints) {
 
-        var shapeSize = this.calculateShapeSize(shapePoints);
+        var level = this._layer._scene;
+
+        var shapeSize = this._calculateShapeSize(shapePoints);
 
         var requiredShapeSize = {
-            width:physicalShapeWidth * this.physicsScale,
-            height:physicalShapeHeight * this.physicsScale
+            width:this._physicalSize.width * level._physicsScale,
+            height:this._physicalSize.height * level._physicsScale
         };
 
         return shapeSize.width / requiredShapeSize.width;
     },
 
-    _svgToShape:function (shapePoints, physicalShapeWidth, physicalShapeHeight) {
+    _svgToShape:function (shapePoints) {
 
-        var shapeScale = this.calculateShapeScale(shapePoints, physicalShapeWidth, physicalShapeHeight);
+        var level = this._layer._scene;
+
+        var shapeScale = this._calculateShapeScale(shapePoints);
 
         var x, y;
         var i;
@@ -126,8 +135,8 @@ anima.Body = new Class({
         var shape = new b2PolygonShape;
         vectors = [];
         for (i = 0; i < count; i++) {
-            x = (vertices[i].x - centroid.x) / this.physicsScale;
-            y = (vertices[i].y - centroid.y) / this.physicsScale;
+            x = (vertices[i].x - centroid.x) / level._physicsScale;
+            y = (vertices[i].y - centroid.y) / level._physicsScale;
             vectors.push(new b2Vec2(x, y));
         }
         shape.SetAsArray(vectors, vectors.length);

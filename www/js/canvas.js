@@ -98,6 +98,29 @@ anima.Canvas = new Class({
 
     /* internal methods */
 
+    _update:function () {
+
+        var hasLevel = (this._currentScene && this._currentScene._world) ? true : false;
+
+        if (hasLevel) {
+            var level = this._currentScene;
+
+            var world = level._world;
+            world.Step(
+                anima.frameRate, //frame-rate
+                20, //velocity iterations
+                20  //position iterations
+            );
+            world.ClearForces();
+        }
+
+        var loopTime = this._animator.animate();
+
+        if (hasLevel) {
+            level._update(loopTime);
+        }
+    },
+
     _getImageUrls:function (urls) {
 
         var url = this._background.url;
@@ -175,7 +198,7 @@ $(window).bind('orientationchange', function (event, orientation) {
 function _anima_update() {
 
     $.each(anima._canvases, function (index, value) {
-        value.getAnimator().animate();
+        value._update();
     });
 
     window.requestAnimationFrame(_anima_update, '_anima_update()');

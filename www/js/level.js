@@ -42,5 +42,37 @@ anima.Level = new Class({
     getPhysicalSize:function () {
 
         return anima.clone(this._physicalSize);
+    },
+
+    /* internal methods */
+
+    _update:function (loopTime) {
+
+        var layer, node;
+        var count = this._layers.length;
+        for (var i = 0; i < count; i++) {
+            layer = this._layers[i];
+            for (var j = 0; j < layer._nodes.length; j++) {
+                node = layer._nodes[j];
+                if (node._body
+                    && node._body.IsAwake()
+                    && node._body.GetType() == b2Body.b2_dynamicBody) {
+
+                    this._updateBody(node);
+                }
+            }
+        }
+    },
+
+    _updateBody: function(node) {
+
+        var center = node._body.GetWorldCenter();
+        node._position.x = ((center.x + node._centroidOffset.x) * this._physicsScale) << 0;
+        node._position.y = ((center.y + node._centroidOffset.y) * this._physicsScale) << 0;
+
+        node._angle = node._body.GetAngle();
+
+        this._renderer.updateAll(node);
     }
+
 });
