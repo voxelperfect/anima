@@ -3,9 +3,12 @@ var canvas = null;
 soundManager.url = 'resources/swf';
 soundManager.useHTML5Audio = true;
 
-function getImageUrl(level, imageName) {
+function getImageUrl(level, imageName, extension) {
 
-    return 'resources/images/' + level.id + '/' + imageName + '.png';
+    if (!extension) {
+        extension = 'png';
+    }
+    return 'resources/images/' + level.id + '/' + imageName + '.' + extension;
 }
 
 function createCommode(layer) {
@@ -13,16 +16,11 @@ function createCommode(layer) {
     var level = layer.getScene();
     var levelHeight = level.getPhysicalSize().height;
 
-    var physicalSize = {
-        width:0.48,
-        height:0.31
-    };
-    var body = new anima.Body('commode', physicalSize);
+    var body = new anima.Body('commode');
     layer.addNode(body);
 
-    var imageWidth = 249;
-    var imageHeight = 159;
-    body.setBackground(null, getImageUrl(level, 'commode'), imageWidth, imageHeight);
+    body.setBackground(null, getImageUrl(level, 'commode'), 378, 241);
+    var physicalSize = body.getPhysicalSize();
 
     var bodyDef = new b2BodyDef;
     bodyDef.type = b2Body.b2_staticBody;
@@ -43,7 +41,7 @@ function createLevel0() {
 
     var level = new anima.Level('level0', 2.0, new b2Vec2(0, 9.81)); // 2m wide, gravity = 9.81 m/sec2
     canvas.addScene(level);
-    level.setBackground('black', getImageUrl(level, 'background'));
+    level.setBackground('black', getImageUrl(level, 'background', 'jpg'));
 
     var layer = new anima.Layer('environment');
     level.addLayer(layer);

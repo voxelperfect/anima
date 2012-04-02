@@ -106,8 +106,8 @@ anima.RendererCSS3 = new Class({
             rotation = 'rotate(' + degrees + 'deg) ';
         }
 
-        var x = (node._position.x + 0.5) << 0;
-        var y = (node._position.y + 0.5) << 0;
+        var x = (node._position.x - node._origin.x*node._size.width + 0.5) << 0;
+        var y = (node._position.y - node._origin.y*node._size.height + 0.5) << 0;
         var translation = 'translate(' + x + 'px, ' + y + 'px)';
 
         var scale = ' scale(' + node._scale.x + ', ' + node._scale.y + ')';
@@ -134,9 +134,9 @@ anima.RendererCSS3 = new Class({
 
     updateAll:function (node) {
 
-        this.updateTransform(node);
-        this.updateSize(node);
         this.updateOrigin(node);
+        this.updateSize(node);
+        this.updateTransform(node);
     },
 
     on:function (node, eventType, handler) {

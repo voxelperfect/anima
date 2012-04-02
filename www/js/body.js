@@ -6,11 +6,9 @@ anima.Body = new Class({
 
     _centroidOffset:null,
 
-    initialize:function (id, physicalSize) {
+    initialize:function (id) {
 
         this.parent(id);
-
-        this._physicalSize = anima.clone(physicalSize);
     },
 
     setBackground:function (color, url, width, height) {
@@ -18,13 +16,11 @@ anima.Body = new Class({
         this.parent(color, url, width, height, true);
 
         var level = this._layer._scene;
-        var proportionalWidth = this._physicalSize.width * level.getPhysicsScale();
-        var scale = proportionalWidth / this._size.width;
-
-        this.setScale({
-            x:scale,
-            y:scale
-        });
+        var ps = level.getPhysicsScale();
+        this._physicalSize = {
+            width: this._size.width / ps,
+            height: this._size.height / ps
+        };
     },
 
     define:function (bodyDef, fixDef) {
