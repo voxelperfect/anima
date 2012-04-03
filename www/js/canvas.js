@@ -98,26 +98,46 @@ anima.Canvas = new Class({
 
     /* internal methods */
 
+    _FIXED_TIMESTEP:1.0 / anima.physicsFrameRate,
+    _MINIMUM_TIMESTEP:1.0 / (anima.physicsFrameRate * 10.0),
+    _VELOCITY_ITERATIONS:8,
+    _POSITION_ITERATIONS:8,
+    _MAXIMUM_NUMBER_OF_STEPS:anima.frameRate,
+
+    _step:function (level) {
+
+        var world = level._world;
+
+        var frameTime = 1.0 / anima.frameRate;
+        var stepsPerformed = 0;
+        while ((frameTime > 0.0) && (stepsPerformed < this._MAXIMUM_NUMBER_OF_STEPS)) {
+            var deltaTime = Math.min(frameTime, this._FIXED_TIMESTEP);
+            frameTime -= deltaTime;
+            if (frameTime < this._MINIMUM_TIMESTEP) {
+                deltaTime += frameTime;
+                frameTime = 0.0;
+            }
+            world.Step(deltaTime, this._VELOCITY_ITERATIONS, this._POSITION_ITERATIONS);
+            stepsPerformed++;
+
+            level._logic();
+        }
+        world.ClearForces();
+    },
+
     _update:function () {
 
-        var hasLevel = (this._currentScene && this._currentScene._world) ? true : false;
+        var level = this._currentScene;
+        var hasLevel = (level && level._world) ? true : false;
 
         if (hasLevel) {
-            var level = this._currentScene;
-
-            var world = level._world;
-            world.Step(
-                anima.frameRate, //frame-rate
-                20, //velocity iterations
-                20  //position iterations
-            );
-            world.ClearForces();
+            this._step(level);
         }
 
         var loopTime = this._animator.animate();
 
         if (hasLevel) {
-            level._update(loopTime);
+            level._update();
         }
     },
 

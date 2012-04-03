@@ -17,7 +17,7 @@ anima.Level = new Class({
 
         this._world = new b2World(
             gravity, // gravity
-            true               // allow sleep
+            true  // allow sleep
         );
     },
 
@@ -46,7 +46,22 @@ anima.Level = new Class({
 
     /* internal methods */
 
-    _update:function (loopTime) {
+    _logic:function () {
+
+        var layer, node;
+        var count = this._layers.length;
+        for (var i = 0; i < count; i++) {
+            layer = this._layers[i];
+            for (var j = 0; j < layer._nodes.length; j++) {
+                node = layer._nodes[j];
+                if (node._logicFn) {
+                    node._logicFn(node);
+                }
+            }
+        }
+    },
+
+    _update:function () {
 
         var layer, node;
         var count = this._layers.length;
@@ -64,11 +79,11 @@ anima.Level = new Class({
         }
     },
 
-    _updateBody: function(node) {
+    _updateBody:function (node) {
 
         var center = node._body.GetWorldCenter();
-        node._position.x = ((center.x + node._centroidOffset.x) * this._physicsScale) << 0;
-        node._position.y = ((center.y + node._centroidOffset.y) * this._physicsScale) << 0;
+        node._position.x = (center.x + node._centroidOffset.x) * this._physicsScale;
+        node._position.y = (center.y + node._centroidOffset.y) * this._physicsScale;
 
         node._angle = node._body.GetAngle();
 

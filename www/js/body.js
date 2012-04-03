@@ -6,6 +6,8 @@ anima.Body = new Class({
 
     _centroidOffset:null,
 
+    _logicFn: null,
+
     initialize:function (id) {
 
         this.parent(id);
@@ -48,6 +50,26 @@ anima.Body = new Class({
         this._calculateCentroidOffset();
 
         this._renderer.updateAll(this);
+    },
+
+    getLevel: function() {
+
+        return this._layer._scene;
+    },
+
+    setLogic: function(logicFn) {
+
+        this._logicFn = logicFn;
+    },
+
+    getLogic: function() {
+
+        return this._logicFn;
+    },
+
+    getPhysicalBody: function() {
+
+        return this._body;
     },
 
     getPhysicalSize:function () {

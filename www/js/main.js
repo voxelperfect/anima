@@ -28,7 +28,6 @@ function createCommode(layer) {
     bodyDef.position.y = (levelHeight - physicalSize.height + (physicalSize.height / 2));
 
     var fixDef = new b2FixtureDef;
-    fixDef.density = 1.0;
     fixDef.friction = 0.5;
     fixDef.restitution = 0.2;
     fixDef.shape = new b2PolygonShape;
@@ -55,7 +54,6 @@ function createPlatform(layer) {
 
     var fixDef = new b2FixtureDef;
     fixDef.shape = new b2PolygonShape;
-    fixDef.density = 1.0;
     fixDef.friction = 0.5;
     fixDef.restitution = 0.2;
     fixDef.shape.SetAsBox(physicalSize.width / 2, physicalSize.height / 2);
@@ -63,10 +61,10 @@ function createPlatform(layer) {
     body.define(bodyDef, fixDef);
 }
 
-var characterPosX = 0.2;
-var characterPosY = 0.4; //0.6;
-
 function createCharacter(layer) {
+
+    var characterPosX = 0.2;
+    var characterPosY = 0.1; //0.6;
 
     var level = layer.getScene();
     var levelHeight = level.getPhysicalSize().height;
@@ -83,9 +81,10 @@ function createCharacter(layer) {
     bodyDef.position.x = characterPosX;
     bodyDef.position.y = characterPosY;
     bodyDef.fixedRotation = false;
+    bodyDef.bullet = true;
 
     var fixDef = new b2FixtureDef;
-    fixDef.density = 1.5;
+    fixDef.mass = 5.0;
     fixDef.friction = 0.5;
     fixDef.restitution = 0.2;
     fixDef.svgPoints = [
@@ -99,6 +98,27 @@ function createCharacter(layer) {
     ];
 
     body.define(bodyDef, fixDef);
+
+    body.setLogic(function (body) {
+
+        var level = body.getLevel();
+        var physicalBody = body.getPhysicalBody();
+        var center = physicalBody.GetWorldCenter();
+        if (center.y > level.getPhysicalSize().height) {
+            physicalBody.SetPositionAndAngle(new b2Vec2(characterPosX, characterPosY), 0);
+            physicalBody.SetLinearVelocity(new b2Vec2(0, 0));
+            physicalBody.SetAngularVelocity(0);
+        }
+    });
+
+    body.on('tap', function () {
+
+        body.getAnimator().addTask(function (loopTime) {
+            if (!body.getPhysicalBody().IsAwake()) {
+                body.applyImpulse(40, 10);
+            }
+        });
+    });
 }
 
 function createLevel0() {

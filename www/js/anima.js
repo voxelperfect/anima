@@ -38,6 +38,7 @@ if ($.support.cssTransitions) {
 anima.isWebkit = ($.browser.webkit || $.browser.safari);
 
 anima.frameRate = 30; // fps
+anima.physicsFrameRate = 2 * anima.frameRate;
 
 if (!window.requestAnimationFrame) {
     window.requestAnimationFrame = ( function () {
