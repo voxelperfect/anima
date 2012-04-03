@@ -276,7 +276,7 @@ anima.start = function (callbackFn) {
     $.mobile.loadingMessageTextVisible = true;
 
     anima._loadImages(function () {
-        soundManager.onready(function () {
+        anima._initializeSound(function () {
             anima._onResize();
             if (callbackFn) {
                 callbackFn.call();

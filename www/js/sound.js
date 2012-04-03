@@ -1,14 +1,14 @@
 anima.Sound = new Class({
 
     _sound:null,
-    _loop: false,
+    _loop:false,
 
     initialize:function (id, url, loop) {
 
         this._sound = soundManager.createSound({
             id:'music',
             url:'resources/sounds/music.mp3',
-            autoload: true
+            autoload:true
         });
 
         this._loop = loop;
@@ -24,17 +24,17 @@ anima.Sound = new Class({
         }
     },
 
-    isPlaying: function() {
+    isPlaying:function () {
 
         return this._sound.playState;
     },
 
-    stop: function() {
+    stop:function () {
 
         this._sound.stop();
     },
 
-    play: function() {
+    play:function () {
 
         var options = {};
         if (this._loop) {
@@ -44,8 +44,26 @@ anima.Sound = new Class({
         this._sound.play(options);
     },
 
-    pause: function() {
+    pause:function () {
 
         this._sound.pause();
     }
 });
+
+anima._initializeSound = function (callback) {
+
+    window.soundManager = new SoundManager();
+    soundManager.url = 'resources/swf';
+
+    if (anima.isIE) {
+        soundManager.hasHTML5 = false;
+        soundManager.preferFlash = true;
+    } else {
+        soundManager.useHTML5Audio = true;
+    }
+
+    soundManager.onready(callback);
+    soundManager.ontimeout(callback);
+
+    soundManager.beginDelayedInit();
+};
