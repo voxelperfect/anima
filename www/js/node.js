@@ -5,34 +5,22 @@ anima.Node = new Class({
     _id:null,
     _layer:null,
 
-    _position:{
-        x:0,
-        y:0
-    },
-    _size:{
-        width:0,
-        height:0
-    },
-    _scale:{
-        x:1.0,
-        y:1.0
-    },
-    _origin:{
-        x:0.5,
-        y:0.5
-    },
+    _position:null,
+    _size:null,
+    _scale:null,
+    _origin:null,
     _angle:0,
 
-    _background:{
-        color:null,
-        url:null
-    },
+    _background:null,
 
     _data:null,
 
     _canvas:null,
     _animator:null,
     _renderer:null,
+
+    _dragging:false,
+    _draggingHandler:null,
 
     initialize:function (id) {
 
@@ -53,8 +41,8 @@ anima.Node = new Class({
             y:1.0
         };
         this._origin = {
-            x:0.5,
-            y:0.5
+            x:0.0,
+            y:0.0
         };
         this._angle = 0;
 
@@ -81,6 +69,11 @@ anima.Node = new Class({
     getParent:function () {
 
         return this._layer;
+    },
+
+    getCanvas:function () {
+
+        return this._canvas;
     },
 
     getElement:function () {
@@ -190,12 +183,26 @@ anima.Node = new Class({
 
     on:function (eventType, handler) {
 
-        this._renderer.on(this, eventType, handler);
+        if (eventType == 'vdrag') {
+            this._draggingHandler = handler;
+            this._renderer.on(this, 'vmousedown', anima._dragHandler);
+            this._renderer.on(this, 'vmousemove', anima._dragHandler);
+            this._renderer.on(this, 'vmouseup', anima._dragHandler);
+        } else {
+            this._renderer.on(this, eventType, handler);
+        }
     },
 
     off:function (eventType, handler) {
 
-        this._renderer.on(this, eventType, handler);
+        if (eventType == 'vdrag') {
+            this._draggingHandler = null;
+            this._renderer.off(this, 'vmousedown', anima._dragHandler);
+            this._renderer.off(this, 'vmousemove', anima._dragHandler);
+            this._renderer.off(this, 'vmouseup', anima._dragHandler);
+        } else {
+            this._renderer.off(this, eventType, handler);
+        }
     },
 
     getAnimator:function () {
@@ -233,3 +240,32 @@ anima.Node = new Class({
         this._renderer.removeElement(this);
     }
 });
+
+anima._dragHandler = function(event) {
+
+    event.stopPropagation();
+    anima.preventDefault(event);
+
+    var node = event.data;
+
+    var type = event.type;
+    switch (type) {
+        case 'vmousedown':
+            node._dragging = true;
+            if (node._draggingHandler) {
+                node._draggingHandler(event, 'dragstart');
+            }
+            break;
+        case 'vmousemove':
+            if (node._dragging && node._draggingHandler) {
+                node._draggingHandler(event, 'dragmove');
+            }
+            break;
+        case 'vmouseup':
+            node._dragging = false;
+            if (node._draggingHandler) {
+                node._draggingHandler(event, 'dragend');
+            }
+            break;
+    }
+}

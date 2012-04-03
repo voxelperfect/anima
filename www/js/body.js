@@ -77,10 +77,10 @@ anima.Body = new Class({
         return anima.clone(this._physicalSize);
     },
 
-    applyImpulse:function (degrees, power) {
+    applyImpulse:function (angle, power) {
 
-        this._body.ApplyImpulse(new b2Vec2(Math.cos(degrees * (Math.PI / 180)) * power,
-            Math.sin(degrees * (Math.PI / 180)) * power),
+        this._body.ApplyImpulse(
+            new b2Vec2(Math.cos(angle) * power, Math.sin(angle) * power),
             this._body.GetWorldCenter());
     },
 

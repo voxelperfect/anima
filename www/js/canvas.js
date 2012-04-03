@@ -27,6 +27,11 @@ anima.Canvas = new Class({
         return null;
     },
 
+    getCanvas:function () {
+
+        return this._canvas;
+    },
+
     addScene:function (scene) {
 
         this._renderer.createElement(this, scene);
@@ -197,22 +202,23 @@ anima.Canvas = new Class({
     }
 });
 
-$(window).resize(function () {
+anima._onResize = function () {
 
     $.each(anima._canvases, function (index, value) {
         value.getAnimator().addTask(function () {
             value._resize();
         });
     });
+};
+
+$(window).resize(function () {
+
+    anima._onResize();
 });
 
 $(window).bind('orientationchange', function (event, orientation) {
 
-    $.each(anima._canvases, function (index, value) {
-        value.getAnimator().addTask(function () {
-            value._resize();
-        });
-    });
+    anima._onResize();
 })
 
 function _anima_update() {
@@ -271,6 +277,7 @@ anima.start = function (callbackFn) {
 
     anima._loadImages(function () {
         soundManager.onready(function () {
+            anima._onResize();
             if (callbackFn) {
                 callbackFn.call();
             }

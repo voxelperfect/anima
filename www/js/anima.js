@@ -2,8 +2,10 @@ var anima = {};
 
 anima.version = '0.5.0 build 1';
 
+anima.isIE = false;
 anima.isIE8 = false;
 if ($.browser.msie) {
+    anima.isIE = true;
     var version = parseInt($.browser.version[0]);
     anima.isIE8 = (version <= 8);
 }
@@ -115,6 +117,25 @@ anima.round = function (value) {
 
     return ((value + 0.5) << 0);
 };
+
+anima.toDegrees = function (radians) {
+
+    return radians * 180.0 / Math.PI;
+}
+
+anima.toRadians = function (degrees) {
+
+    return degrees * Math.PI / 180.0;
+}
+
+anima.preventDefault = function (event) {
+
+    if (anima.isIE) {
+        event.returnValue = false;
+    } else if (event.preventDefault) {
+        event.preventDefault();
+    }
+}
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2BodyDef = Box2D.Dynamics.b2BodyDef,

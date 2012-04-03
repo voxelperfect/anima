@@ -100,21 +100,21 @@ anima.RendererCSS3 = new Class({
 
     updateTransform:function (node) {
 
-        var rotation = '';
-        if (node._angle && node._angle != 0) {
-            var degrees = node._angle * (180.0 / Math.PI);
-            rotation = 'rotate(' + degrees + 'deg) ';
-        }
-
-        var x = (node._position.x - node._origin.x*node._size.width + 0.5) << 0;
-        var y = (node._position.y - node._origin.y*node._size.height + 0.5) << 0;
+        var x = (node._position.x - node._origin.x * node._size.width + 0.5) << 0;
+        var y = (node._position.y - node._origin.y * node._size.height + 0.5) << 0;
         var translation = 'translate(' + x + 'px, ' + y + 'px)';
 
         var scale = ' scale(' + node._scale.x + ', ' + node._scale.y + ')';
 
+        var rotation = '';
+        if (node._angle && node._angle != 0) {
+            var degrees = -anima.toDegrees(node._angle);
+            rotation = 'rotate(' + degrees + 'deg) ';
+        }
+
         var acceleration = anima.isWebkit ? ' translateZ(0)' : '';
 
-        var transformation = rotation + translation + scale + acceleration;
+        var transformation = translation + scale + rotation + acceleration;
         node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
     },
 

@@ -110,14 +110,48 @@ function createCharacter(layer) {
             physicalBody.SetAngularVelocity(0);
         }
     });
+}
 
-    body.on('tap', function () {
+function createArrow(layer) {
 
-        body.getAnimator().addTask(function (loopTime) {
-            if (!body.getPhysicalBody().IsAwake()) {
-                body.applyImpulse(40, 10);
+    var level = layer.getScene();
+    var character = level.getLayer('characters').getNode('character');
+
+    var arrowX = 200;
+    var arrowY = 250;
+
+    var node = new anima.Node('arrow');
+    layer.addNode(node);
+
+    var arrowWidth = 178;
+    var arrowHeight = 97;
+    node.setBackground(null, getImageUrl(layer.getScene(), 'arrow'), arrowWidth, arrowHeight);
+    node.setPosition({
+        x:arrowX,
+        y:arrowY
+    });
+    node.setOrigin({
+        x:0,
+        y:0.5
+    });
+    node.setAngle(anima.toRadians(40));
+
+    var arrow = node;
+    node.getCanvas().on('vdrag', function (event, vtype) {
+
+        if (vtype == 'dragmove') {
+            var dx = event.clientX - arrowX;
+            var dy = event.clientY - (arrowY - arrowHeight / 2);
+            var angle = -Math.PI / 2 + Math.atan2(dx, dy);
+            var power = Math.sqrt(dx * dx + dy * dy);
+            node.setAngle(angle);
+        } else if (vtype == 'dragend') {
+            if (!character.getPhysicalBody().IsAwake()) {
+                character.getAnimator().addTask(function (loopTime) {
+                    character.applyImpulse(arrow.getAngle(), 10);
+                });
             }
-        });
+        }
     });
 }
 
@@ -127,12 +161,20 @@ function createLevel0() {
     canvas.addScene(level);
     level.setBackground('black', getImageUrl(level, 'background', 'jpg'));
 
-    var layer = new anima.Layer('environment');
-    level.addLayer(layer);
+    var layer;
 
+    layer = new anima.Layer('environment');
+    level.addLayer(layer);
     createCommode(layer);
     createPlatform(layer);
+
+    layer = new anima.Layer('characters');
+    level.addLayer(layer);
     createCharacter(layer);
+
+    layer = new anima.Layer('gizmos');
+    level.addLayer(layer);
+    createArrow(layer);
 }
 
 $('#mainPage').live('pageshow', function (event, ui) {
