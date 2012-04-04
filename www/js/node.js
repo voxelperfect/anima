@@ -102,10 +102,10 @@ anima.Node = new Class({
 
         if (this._layer) {
             if (!width) {
-                width = this._layer._size.width;
+                width = this._layer._scene._size.width;
             }
             if (!height) {
-                height = this._layer._size.height;
+                height = this._layer._scene._size.height;
             }
         }
         this._size.width = width;

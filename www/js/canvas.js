@@ -232,7 +232,7 @@ function _anima_update() {
 
 anima._loadImages = function (callbackFn) {
 
-    $.mobile.showPageLoadingMsg("a", "Loading Images");
+    $.mobile.showPageLoadingMsg();
 
     var urls = [];
     try {
@@ -273,7 +273,7 @@ anima._loadImages = function (callbackFn) {
 
 anima.start = function (callbackFn) {
 
-    $.mobile.loadingMessageTextVisible = true;
+    $.mobile.loadingMessageTextVisible = false;
 
     anima._loadImages(function () {
         anima._initializeSound(function () {
