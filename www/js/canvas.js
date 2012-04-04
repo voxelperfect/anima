@@ -230,7 +230,7 @@ function _anima_update() {
     window.requestAnimationFrame(_anima_update, '_anima_update()');
 }
 
-anima._loadImages = function (callbackFn) {
+anima._loadImages = function (progressFn, callbackFn) {
 
     $.mobile.showPageLoadingMsg();
 
@@ -257,8 +257,12 @@ anima._loadImages = function (callbackFn) {
     for (var i = 0; i < totalImages; i++) {
         image = new Image();
         image.onload = function () {
+            loadedImages++;
 
-            if (++loadedImages >= totalImages) {
+            if (progressFn) {
+                progressFn(anima.round(loadedImages * 100.0/totalImages));
+            }
+            if (loadedImages >= totalImages) {
                 $.mobile.hidePageLoadingMsg();
                 if (callbackFn) {
                     callbackFn.call();
@@ -271,11 +275,11 @@ anima._loadImages = function (callbackFn) {
     }
 };
 
-anima.start = function (callbackFn) {
+anima.start = function (progressFn, callbackFn) {
 
     $.mobile.loadingMessageTextVisible = false;
 
-    anima._loadImages(function () {
+    anima._loadImages(progressFn, function () {
         anima._initializeSound(function () {
             anima._onResize();
             if (callbackFn) {
