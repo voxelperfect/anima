@@ -5,13 +5,15 @@ anima.Sound = new Class({
 
     initialize:function (id, url, loop) {
 
-        this._sound = soundManager.createSound({
-            id:'music',
-            url:'resources/sounds/music.mp3',
-            autoload:true
-        });
+        if (window.soundManager != undefined) {
+            this._sound = soundManager.createSound({
+                id:'music',
+                url:'resources/sounds/music.mp3',
+                autoload:true
+            });
 
-        this._loop = loop;
+            this._loop = loop;
+        }
     },
 
     toggle:function () {
@@ -26,44 +28,60 @@ anima.Sound = new Class({
 
     isPlaying:function () {
 
-        return this._sound.playState;
+        return this._sound ? this._sound.playState : false;
     },
 
     stop:function () {
 
-        this._sound.stop();
+        if (this._sound) {
+            this._sound.stop();
+        }
     },
 
     play:function () {
 
-        var options = {};
-        if (this._loop) {
-            options.onfinish = this.play;
-        }
+        if (this._sound) {
+            var options = {};
+            if (this._loop) {
+                options.onfinish = this.play;
+            }
 
-        this._sound.play(options);
+            this._sound.play(options);
+        }
     },
 
     pause:function () {
 
-        this._sound.pause();
+        if (this._sound) {
+            this._sound.pause();
+        }
     }
 });
 
 anima._initializeSound = function (callback) {
 
-    window.soundManager = new SoundManager();
-    soundManager.url = 'resources/swf';
+    window.SM2_DEFER = true;
 
-    if (anima.isIE) {
-        soundManager.hasHTML5 = false;
-        soundManager.preferFlash = true;
-    } else {
-        soundManager.useHTML5Audio = true;
-    }
+    anima.getScript('js/lib/soundmanager2-nodebug.js', // 'js/lib/soundmanager2-nodebug-jsmin.js',
+        {
+            "success":function (data, textStatus, jqXHR) {
 
-    soundManager.onready(callback);
-    soundManager.ontimeout(callback);
+                try {
+                    window.soundManager = new SoundManager();
+                    soundManager.url = 'resources/swf';
 
-    soundManager.beginDelayedInit();
+                    soundManager.onready(callback);
+                    soundManager.ontimeout(callback);
+
+                    soundManager.beginDelayedInit();
+                } catch (e) {
+                    callback();
+                }
+            },
+
+            "error":function (jqXHR, textStatus, errorThrown) {
+
+                callback();
+            }
+        });
 };

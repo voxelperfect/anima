@@ -39,7 +39,7 @@ jQuery.extend({ bez:function (coOrdArray) {
             return c * polyBez([coOrdArray[0], coOrdArray[1]], [coOrdArray[2], coOrdArray[3]])(t / d) + b;
         }
     }
-    return encodedFuncName;
+    return jQuery.easing[encodedFuncName];
 }});
 
 anima.Easing = {

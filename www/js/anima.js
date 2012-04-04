@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.5.0 build 1';
+anima.version = '0.5.1 build 1';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -137,6 +137,17 @@ anima.preventDefault = function (event) {
     }
 }
 
+anima.getScript = function (url, options) {
+
+    options = $.extend(options || {}, {
+        dataType:"script",
+        cache:true,
+        url:url
+    });
+
+    return $.ajax(options);
+};
+
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2BodyDef = Box2D.Dynamics.b2BodyDef,
     b2Body = Box2D.Dynamics.b2Body,
@@ -149,3 +160,4 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
     b2RevoluteJointDef = Box2D.Dynamics.Joints.b2RevoluteJointDef,
     b2PI = Box2D.Common.Math.PI;
+

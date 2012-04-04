@@ -87,7 +87,7 @@ anima.Animator = new Class({
             }
 
             easingFn = anima.isObject(animation.easing) ? animation.easing.fn : animation.easing;
-            t = animation.easing(null, t, 0.0, 1.0, animation.duration);
+            t = easingFn(null, t, 0.0, 1.0, animation.duration);
             animation.interpolateValuesFn(this, t);
 
             if (end) {
