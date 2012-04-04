@@ -126,7 +126,7 @@ function SoundManager(smURL, smID) {
   };
   this.hasHTML5 = (function() {
     try {
-      return anima.isIE ? false : (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined');
+      return $.browser.msie ? false : (typeof Audio !== 'undefined' && typeof new Audio().canPlayType !== 'undefined');
     } catch(e) {
       return false;
     }
@@ -1610,7 +1610,7 @@ function SoundManager(smURL, smID) {
     }
   };
   _testHTML5 = function() {
-    if (anima.isIE) {
+    if ($.browser.msie) {
         return false;
     }
     if (!_s.useHTML5Audio || typeof Audio === 'undefined') {
