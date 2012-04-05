@@ -43,7 +43,9 @@ anima.Sound = new Class({
         if (this._sound) {
             var options = {};
             if (this._loop) {
-                options.onfinish = this.play;
+                options.onfinish = function () {
+                    this.play();
+                }
             }
 
             this._sound.play(options);
