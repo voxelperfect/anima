@@ -202,7 +202,7 @@ anima.Canvas = new Class({
     }
 });
 
-anima._onResize = function () {
+anima.onResize = function () {
 
     $.each(anima._canvases, function (index, value) {
         value.getAnimator().addTask(function () {
@@ -213,12 +213,12 @@ anima._onResize = function () {
 
 $(window).resize(function () {
 
-    anima._onResize();
+    anima.onResize();
 });
 
 $(window).bind('orientationchange', function (event, orientation) {
 
-    anima._onResize();
+    anima.onResize();
 })
 
 function _anima_update() {
@@ -260,7 +260,7 @@ anima._loadImages = function (progressFn, callbackFn) {
             loadedImages++;
 
             if (progressFn) {
-                progressFn(anima.round(loadedImages * 100.0/totalImages));
+                progressFn(anima.round(loadedImages * 100.0 / totalImages));
             }
             if (loadedImages >= totalImages) {
                 $.mobile.hidePageLoadingMsg();
@@ -281,7 +281,7 @@ anima.start = function (progressFn, callbackFn) {
 
     anima._loadImages(progressFn, function () {
         anima._initializeSound(function () {
-            anima._onResize();
+            anima.onResize();
             if (callbackFn) {
                 callbackFn.call();
             }
