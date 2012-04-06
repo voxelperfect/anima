@@ -221,7 +221,7 @@ function createArrow(layer) {
             var theta = Math.atan2(dx, dy);
             node.setAngle(theta - Math.PI / 2);
 
-            var power = Math.max(0.0, Math.min(1.0, (Math.sqrt(dx * dx + dy * dy) - arrowWidth/2) / arrowWidth));
+            var power = Math.max(0.0, Math.min(1.0, (Math.sqrt(dx * dx + dy * dy) - arrowWidth / 2) / arrowWidth));
             arrow.setCurrentSprite(power * totalSprites);
             arrow.set('power', power * CHARACTER_IMPULSE);
 
@@ -252,6 +252,52 @@ function createArrow(layer) {
     });
 }
 
+function createSkoros(layer, id, posX, posY) {
+
+    var level = layer.getScene();
+    var levelHeight = level.getPhysicalSize().height;
+
+    var body = new anima.Body(id);
+    layer.addNode(body);
+
+    body.setBackground(null, getImageUrl(level, 'skoros'), 100, 100);
+    body.setSpriteGrid({
+        row:7,
+        columns:8,
+        totalSprites:50
+    });
+    var physicalSize = body.getPhysicalSize();
+
+    var bodyDef = new b2BodyDef;
+    bodyDef.type = b2Body.b2_staticBody;
+    bodyDef.allowSleep = true;
+    bodyDef.position.x = posX;
+    bodyDef.position.y = posY;
+    bodyDef.fixedRotation = false;
+
+    var fixDef = new b2FixtureDef;
+    fixDef.mass = 1.0;
+    fixDef.friction = 0.5;
+    fixDef.restitution = 0.2;
+    fixDef.svgPoints = [
+        {x:248.718, y:346.851},
+        {x:264.129, y:312.945},
+        {x:294.953, y:312.945},
+        {x:314.988, y:354.557},
+        {x:302.659, y:434.698},
+        {x:261.047, y:443.945},
+        {x:241.012, y:400.792}
+    ];
+    body.define(bodyDef, fixDef);
+
+    var animator = body.getAnimator();
+    animator.addAnimation(function (animator, t) {
+        var characterSprites = body.getSpriteGrid().totalSprites;
+        var index = t * characterSprites / 2000;
+        body.setCurrentSprite(index);
+    }, 0, 2000, null, null, true);
+}
+
 function createLevel0() {
 
     var level = new anima.Level('level0', 2.0 * WORLD_SCALE, new b2Vec2(0, GRAVITY)); // 2m wide, gravity = 9.81 m/sec2
@@ -268,6 +314,7 @@ function createLevel0() {
     layer = new anima.Layer('characters');
     level.addLayer(layer);
     createCharacter(layer);
+    createSkoros(layer, 'skoros-1', 1.5 * WORLD_SCALE, 0.5 * WORLD_SCALE);
 
     layer = new anima.Layer('gizmos');
     level.addLayer(layer);

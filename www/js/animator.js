@@ -20,7 +20,7 @@ anima.Animator = new Class({
         });
     },
 
-    addAnimation:function (interpolateValuesFn, startTime, duration, easing, onAnimationEndedFn) {
+    addAnimation:function (interpolateValuesFn, startTime, duration, easing, onAnimationEndedFn, loop) {
 
         var animationId = this._lastAnimationID++;
         this._animationQueue.push({
@@ -29,7 +29,8 @@ anima.Animator = new Class({
             startTime:startTime,
             duration:duration,
             easing:easing,
-            onAnimationEndedFn:onAnimationEndedFn
+            onAnimationEndedFn:onAnimationEndedFn,
+            loop:loop
         });
         return animationId;
     },
@@ -95,7 +96,11 @@ anima.Animator = new Class({
             animation.interpolateValuesFn(this, t);
 
             if (end) {
-                endedAnimations.push(animation.id);
+                if (animation.loop) {
+                    animation.startTime = 0;
+                } else {
+                    endedAnimations.push(animation.id);
+                }
             } else {
                 animation.frame++;
             }
@@ -124,7 +129,7 @@ anima.Animator = new Class({
         }
     },
 
-    endAnimation: function(id) {
+    endAnimation:function (id) {
 
         var me = this;
         this.addTask(function (loopTime) {
