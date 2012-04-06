@@ -7,8 +7,8 @@ anima.RendererCSS3 = new Class({
     createCanvas:function (canvas) {
 
         var parent$ = $('#pageContent');
-        parent$.append('<div id="' + canvas.id + '"></div>');
-        canvas._element$ = $('#' + canvas.id);
+        parent$.append('<div id="' + canvas._id + '"></div>');
+        canvas._element$ = $('#' + canvas._id);
 
         canvas._element$.css({
             'padding':'0px',
@@ -24,7 +24,7 @@ anima.RendererCSS3 = new Class({
 
         var id = '';
         do {
-            id = parent.id + '_' + id;
+            id = parent._id + '_' + id;
             parent = parent.getParent();
         } while (parent != null);
 
@@ -33,7 +33,7 @@ anima.RendererCSS3 = new Class({
 
     createElement:function (parent, node) {
 
-        var elementId = this.getElementIdContext(parent) + node.id;
+        var elementId = this.getElementIdContext(parent) + node._id;
 
         var div = '<div id="' + elementId + '"></div>';
         var appended = false;

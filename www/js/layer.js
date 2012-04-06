@@ -18,7 +18,7 @@ anima.Layer = new Class({
 
     initialize:function (id) {
 
-        this.id = id;
+        this._id = id;
 
         this._type = 'Layer';
 
@@ -30,6 +30,11 @@ anima.Layer = new Class({
         this._data = {};
 
         this._renderer = anima.defaultRenderer;
+    },
+
+    getId:function () {
+
+        return this._id;
     },
 
     getScene:function () {
@@ -66,7 +71,7 @@ anima.Layer = new Class({
         this._renderer.createElement(this, node);
 
         this._nodes.push(node);
-        this._nodeMap[node.id] = node;
+        this._nodeMap[node._id] = node;
 
         node._layer = this;
         node._animator = this._animator;
@@ -84,7 +89,7 @@ anima.Layer = new Class({
         if (node) {
             var count = this._nodes.length;
             for (var i = 0; i < count; i++) {
-                if (this._nodes[i].id = id) {
+                if (this._nodes[i]._id = id) {
                     this._nodes.splice(i, 1);
                     delete this._nodeMap[id];
                     node._removeElement();

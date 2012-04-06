@@ -38,7 +38,7 @@ anima.Canvas = new Class({
         scene._element$.hide();
 
         this._scenes.push(scene);
-        this._sceneMap[scene.id] = scene;
+        this._sceneMap[scene._id] = scene;
 
         scene._canvas = this;
         scene._animator = this._animator;
@@ -84,7 +84,7 @@ anima.Canvas = new Class({
         if (scene) {
             var count = this._scenes.length;
             for (var i = 0; i < count; i++) {
-                if (this._scenes[i].id = id) {
+                if (this._scenes[i]._id = id) {
                     this._scenes.splice(i, 1);
                     delete this._sceneMap[id];
                     scene._removeElement();
@@ -124,9 +124,8 @@ anima.Canvas = new Class({
             }
             world.Step(deltaTime, this._VELOCITY_ITERATIONS, this._POSITION_ITERATIONS);
             stepsPerformed++;
-
-            level._logic();
         }
+        level._logic();
         world.ClearForces();
     },
 

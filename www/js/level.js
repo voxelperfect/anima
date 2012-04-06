@@ -44,6 +44,34 @@ anima.Level = new Class({
         return anima.clone(this._physicalSize);
     },
 
+    setContactListener:function (listenerFn) {
+
+        var me = this;
+
+        var listener = new Box2D.Dynamics.b2ContactListener;
+
+        listener.BeginContact = function (contact) {
+
+            var bodyA = contact.GetFixtureA().GetBody().GetUserData().node;
+            var bodyB = contact.GetFixtureB().GetBody().GetUserData().node;
+            listenerFn(bodyA, bodyB);
+        };
+
+        listener.EndContact = function (contact) {
+
+        };
+
+        listener.PostSolve = function (contact, impulse) {
+
+        };
+
+        listener.PreSolve = function (contact, oldManifold) {
+
+        };
+
+        this._world.SetContactListener(listener);
+    },
+
     /* internal methods */
 
     _logic:function () {

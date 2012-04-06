@@ -1,18 +1,18 @@
 var canvas = null;
 
-// http://www.hobistic.com/anima/deploy/index.html?scale=18.0&mass=2&impulse=50.0&gravity=9.81&damp=1.0
+// http://www.hobistic.com/anima/deploy/index.html?scale=18.0&mass=2&impulse=14&gravity=7&damp=0.2
 var WORLD_SCALE = parseFloat(anima.getRequestParameter('scale', '18.0'));
 var CHARACTER_MASS = parseFloat(anima.getRequestParameter('mass', '2.0'));
-var CHARACTER_IMPULSE = parseFloat(anima.getRequestParameter('impulse', '50.0'));
-var GRAVITY = parseFloat(anima.getRequestParameter('gravity', '9.81'));
-var LINEAR_DAMPING = parseFloat(anima.getRequestParameter('damp', '1.0'));
+var CHARACTER_IMPULSE = parseFloat(anima.getRequestParameter('impulse', '14.0'));
+var GRAVITY = parseFloat(anima.getRequestParameter('gravity', '7.0'));
+var LINEAR_DAMPING = parseFloat(anima.getRequestParameter('damp', '0.2'));
 
 function getImageUrl(level, imageName, extension) {
 
     if (!extension) {
         extension = 'png';
     }
-    return 'resources/images/' + level.id + '/' + imageName + '.' + extension;
+    return 'resources/images/' + level.getId() + '/' + imageName + '.' + extension;
 }
 
 function debug(layer, message) {
@@ -320,6 +320,28 @@ function createLevel0() {
     level.addLayer(layer);
     createArrow(layer);
     createDebugBox(layer);
+
+    level.setContactListener(function (bodyA, bodyB) {
+
+        var defeatedBody = null;
+        if (bodyA.getId() == 'character' && bodyB.getId().startsWith('skoros')) {
+            defeatedBody = bodyB;
+        } else if (bodyB.getId() == 'character' && bodyA.getId().startsWith('skoros')) {
+            defeatedBody = bodyA;
+        }
+        if (defeatedBody) {
+            var animator = defeatedBody.getAnimator();
+            if (defeatedBody.get('hit')) {
+
+            } else {
+                defeatedBody.set('true');
+                animator.addAnimation(function (animator, t) {
+                    var opacity = animator.interpolate(0.5, 1.0, t);
+                    defeatedBody.getElement().css('opacity', opacity);
+                }, 0, 1000, anima.Easing.easeInOutBounce, null, true);
+            }
+        }
+    });
 }
 
 $('#mainPage').live('pageshow', function (event, ui) {

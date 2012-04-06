@@ -31,7 +31,7 @@ anima.Scene = new Class({
     addLayer:function (layer) {
 
         this._layers.push(layer);
-        this._layerMap[layer.id] = layer;
+        this._layerMap[layer._id] = layer;
 
         layer._scene = this;
         layer._animator = this._animator;
@@ -49,7 +49,7 @@ anima.Scene = new Class({
         if (layer) {
             var count = this._layers.length;
             for (var i = 0; i < count; i++) {
-                if (this._layers[i].id = id) {
+                if (this._layers[i]._id = id) {
                     this._layers.splice(i, 1);
                     delete this._layerMap[id];
                     layer._removeElement();

@@ -204,7 +204,7 @@ anima.Easing = {
     },
 
     easeInBounce:function (x, t, b, c, d) {
-        return c - jQuery.easing.easeOutBounce(x, d - t, 0, c, d) + b;
+        return c - anima.Easing.easeOutBounce(x, d - t, 0, c, d) + b;
     },
 
     easeOutBounce:function (x, t, b, c, d) {
@@ -220,8 +220,8 @@ anima.Easing = {
     },
 
     easeInOutBounce:function (x, t, b, c, d) {
-        if (t < d / 2) return jQuery.easing.easeInBounce(x, t * 2, 0, c, d) * .5 + b;
-        return jQuery.easing.easeOutBounce(x, t * 2 - d, 0, c, d) * .5 + c * .5 + b;
+        if (t < d / 2) return anima.Easing.easeInBounce(x, t * 2, 0, c, d) * .5 + b;
+        return anima.Easing.easeOutBounce(x, t * 2 - d, 0, c, d) * .5 + c * .5 + b;
     },
 
     transition:{

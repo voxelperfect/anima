@@ -27,7 +27,7 @@ anima.Node = new Class({
 
     initialize:function (id) {
 
-        this.id = id;
+        this._id = id;
 
         this._type = 'Node';
 
@@ -63,6 +63,11 @@ anima.Node = new Class({
         this._data = {};
 
         this._renderer = anima.defaultRenderer;
+    },
+
+    getId:function () {
+
+        return this._id;
     },
 
     getImageUrl:function () {
