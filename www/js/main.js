@@ -1,7 +1,6 @@
 var canvas = null;
 
-soundManager.url = 'resources/swf';
-soundManager.useHTML5Audio = true;
+var WORLD_SCALE = 10.0;
 
 function getImageUrl(level, imageName, extension) {
 
@@ -9,6 +8,34 @@ function getImageUrl(level, imageName, extension) {
         extension = 'png';
     }
     return 'resources/images/' + level.id + '/' + imageName + '.' + extension;
+}
+
+function debug(layer, message) {
+
+    var node = layer.getScene().getLayer('gizmos').getNode('debugBox');
+    node.getElement().html(message);
+}
+
+function createDebugBox(layer) {
+
+    var node = new anima.Node('debugBox');
+    layer.addNode(node);
+
+    node.setBackground(null, null, 400, 30);
+    node.setPosition({
+        x:0,
+        y:0
+    });
+
+    node.setFont({
+        'size':'30px',
+        'weight':'bold',
+        'color':'black'
+    });
+
+    node.getElement().css({
+        opacity:0.5
+    })
 }
 
 function createCommode(layer) {
@@ -49,8 +76,8 @@ function createPlatform(layer) {
 
     var bodyDef = new b2BodyDef;
     bodyDef.type = b2Body.b2_staticBody;
-    bodyDef.position.x = 0.53;
-    bodyDef.position.y = levelHeight - 0.32;
+    bodyDef.position.x = 0.53 * WORLD_SCALE;
+    bodyDef.position.y = levelHeight - 0.32 * WORLD_SCALE;
 
     var fixDef = new b2FixtureDef;
     fixDef.shape = new b2PolygonShape;
@@ -63,8 +90,8 @@ function createPlatform(layer) {
 
 function createCharacter(layer) {
 
-    var characterPosX = 0.2;
-    var characterPosY = 0.1; //0.6;
+    var characterPosX = 0.5 * WORLD_SCALE;
+    var characterPosY = 0.1 * WORLD_SCALE; //0.6;
 
     var level = layer.getScene();
     var levelHeight = level.getPhysicalSize().height;
@@ -123,15 +150,15 @@ function createArrow(layer) {
     var node = new anima.Node('arrow');
     layer.addNode(node);
 
-    var arrowWidth = 178;
-    var arrowHeight = 97;
+    var arrowWidth = 160;
+    var arrowHeight = 76;
     node.setBackground(null, getImageUrl(layer.getScene(), 'arrow'), arrowWidth, arrowHeight);
     node.setPosition({
         x:arrowX,
         y:arrowY
     });
     node.setOrigin({
-        x:0,
+        x:0.5,
         y:0.5
     });
     node.setAngle(anima.toRadians(40));
@@ -140,15 +167,21 @@ function createArrow(layer) {
     node.getCanvas().on('vdrag', function (event, vtype) {
 
         if (vtype == 'dragmove') {
-            var dx = event.clientX - arrowX;
-            var dy = event.clientY - (arrowY - arrowHeight / 2);
-            var angle = -Math.PI / 2 + Math.atan2(dx, dy);
-            var power = Math.sqrt(dx * dx + dy * dy);
-            node.setAngle(angle);
+            var dx = event.clientX - (arrowX + arrowWidth / 2);
+            var dy = event.clientY - (arrowY + arrowHeight / 2);
+            var theta = Math.atan2(dx, dy);
+            node.setAngle(theta - Math.PI / 2);
+
+            var power = Math.min(1.0, Math.sqrt(dx * dx + dy * dy) / arrowWidth);
+            arrow.set('power', power * 10 * WORLD_SCALE / 2);
+
+            /**/
+            debug(layer, anima.round(anima.toDegrees(theta - Math.PI / 2)) + ' @ ' + power.toFixed(2));
+            /**/
         } else if (vtype == 'dragend') {
             if (!character.getPhysicalBody().IsAwake()) {
                 character.getAnimator().addTask(function (loopTime) {
-                    character.applyImpulse(arrow.getAngle(), 10);
+                    character.applyImpulse(arrow.getAngle(), arrow.get('power'));
                 });
             }
         }
@@ -157,7 +190,7 @@ function createArrow(layer) {
 
 function createLevel0() {
 
-    var level = new anima.Level('level0', 2.0, new b2Vec2(0, 9.81)); // 2m wide, gravity = 9.81 m/sec2
+    var level = new anima.Level('level0', 2.0 * WORLD_SCALE, new b2Vec2(0, 9.81)); // 2m wide, gravity = 9.81 m/sec2
     canvas.addScene(level);
     level.setBackground('black', getImageUrl(level, 'background', 'jpg'));
 
@@ -175,18 +208,47 @@ function createLevel0() {
     layer = new anima.Layer('gizmos');
     level.addLayer(layer);
     createArrow(layer);
+    createDebugBox(layer);
 }
 
 $('#mainPage').live('pageshow', function (event, ui) {
+
+    document.title = 'Game';
+
+    $('#mainPage').trigger('updatelayout');
+    anima.onResize();
+
+    canvas.setCurrentScene('level0');
+});
+
+$(function () {
 
     canvas = new anima.Canvas('main-canvas');
     canvas.setBackground('black', null, 1575, 787);
 
     createLevel0();
 
-    anima.start(function () {
-
-        canvas.setCurrentScene('level0');
+    $('.ui-loader').css({
+        'opacity':0.4,
+        'overflow':'hidden',
+        'top':'70%'
     });
+
+    anima.start(
+        function (percent) {
+            var loadIcon$ = $('.ui-loader .ui-icon-loading');
+            loadIcon$.html('' + percent);
+        },
+        function () {
+
+            $.mobile.changePage($('#mainPage'), {
+                transition:'fade',
+                dataUrl:'#mainPage',
+                changeHash:false
+            });
+            document.title = 'Game';
+        });
 });
+
+
 

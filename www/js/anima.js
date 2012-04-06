@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.5.3 build 1';
+anima.version = '0.5.4 build 1';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -40,7 +40,7 @@ if ($.support.cssTransitions) {
 anima.isWebkit = ($.browser.webkit || $.browser.safari);
 
 anima.frameRate = 30; // fps
-anima.physicsFrameRate = 2 * anima.frameRate;
+anima.physicsFrameRate = 4 * anima.frameRate;
 
 if (!window.requestAnimationFrame) {
     window.requestAnimationFrame = ( function () {

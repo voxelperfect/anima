@@ -16,16 +16,17 @@ mkdir ../deploy/resources
 cp -R ../www/resources/css ../deploy/resources
 cp -R ../www/resources/images ../deploy/resources
 cp -R ../www/resources/jqmobile ../deploy/resources
+# cp -R ../www/resources/sounds ../deploy/resources
+cp -R ../www/resources/swf ../deploy/resources
 echo "    copied resources"
 
-cp ../www/js/lib/jquery-1.7.2.min.js ../deploy/
-cp ../www/js/lib/jquery.mobile-1.1.0-rc.1.min.js ../deploy/
-cp ../www/js/lib/mootools-core-1.4.5.js ../deploy/
+mkdir ../deploy/js
+cp -R ../www/js/lib ../deploy/js
 echo "    copied libraries"
 
 cp ../www/index.html ../deploy
-sed -i '' 's/js\/lib\///g' ../deploy/index.html
 sed -i '' 's/<script type="text\/javascript" src="js\/anima.js"><\/script>//g' ../deploy/index.html
+sed -i '' 's/<script type="text\/javascript" src="js\/sound.js"><\/script>//g' ../deploy/index.html
 sed -i '' 's/<script type="text\/javascript" src="js\/renderer.js"><\/script>//g' ../deploy/index.html
 sed -i '' 's/<script type="text\/javascript" src="js\/node.js"><\/script>//g' ../deploy/index.html
 sed -i '' 's/<script type="text\/javascript" src="js\/layer.js"><\/script>//g' ../deploy/index.html
@@ -33,6 +34,8 @@ sed -i '' 's/<script type="text\/javascript" src="js\/scene.js"><\/script>//g' .
 sed -i '' 's/<script type="text\/javascript" src="js\/easing.js"><\/script>//g' ../deploy/index.html
 sed -i '' 's/<script type="text\/javascript" src="js\/animator.js"><\/script>//g' ../deploy/index.html
 sed -i '' 's/<script type="text\/javascript" src="js\/canvas.js"><\/script>//g' ../deploy/index.html
+sed -i '' 's/<script type="text\/javascript" src="js\/level.js"><\/script>//g' ../deploy/index.html
+sed -i '' 's/<script type="text\/javascript" src="js\/body.js"><\/script>//g' ../deploy/index.html
 sed -i '' 's/<script type="text\/javascript" src="js\/main.js"><\/script>/<script type="text\/javascript" src="app.min.js"><\/script>/g' ../deploy/index.html
 echo "    updated index.html"
 echo "    OK!"

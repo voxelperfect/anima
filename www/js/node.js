@@ -11,6 +11,8 @@ anima.Node = new Class({
     _origin:null,
     _angle:0,
 
+    _font:null,
+
     _background:null,
 
     _data:null,
@@ -45,6 +47,12 @@ anima.Node = new Class({
             y:0.0
         };
         this._angle = 0;
+
+        this._font = {
+            size:'12px',
+            family:'Arial, sans-serif',
+            weight:'normal'
+        };
 
         this._background = {
             color:null,
@@ -181,6 +189,17 @@ anima.Node = new Class({
         this._renderer.updateTransform(this);
     },
 
+    setFont:function (font) {
+
+        this._font = $.extend(this._font, font);
+        this._renderer.setFont(this);
+    },
+
+    getFont:function () {
+
+        return anima.clone(this._font);
+    },
+
     on:function (eventType, handler) {
 
         if (eventType == 'vdrag') {
@@ -241,7 +260,7 @@ anima.Node = new Class({
     }
 });
 
-anima._dragHandler = function(event) {
+anima._dragHandler = function (event) {
 
     event.stopPropagation();
     anima.preventDefault(event);

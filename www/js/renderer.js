@@ -90,6 +90,16 @@ anima.RendererCSS3 = new Class({
         node._element$.css(css);
     },
 
+    setFont:function (node) {
+
+        node._element$.css({
+            'font-family':node._font.family,
+            'font-size':node._font.size,
+            'font-weight':node._font.weight,
+            'color':node._font.color
+        });
+    },
+
     getElement:function (node) {
 
         while (node != null && !node._element$) {
