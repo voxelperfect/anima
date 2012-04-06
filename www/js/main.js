@@ -154,8 +154,7 @@ function createCharacter(layer) {
     bodyDef.position.x = characterPosX;
     bodyDef.position.y = characterPosY;
     bodyDef.fixedRotation = false;
-    bodyDef.bullet = true;
-
+    
     var fixDef = new b2FixtureDef;
     fixDef.mass = CHARACTER_MASS;
     fixDef.friction = 0.5;
@@ -225,7 +224,7 @@ function createArrow(layer) {
             arrow.setCurrentSprite(power * totalSprites);
             arrow.set('power', power * CHARACTER_IMPULSE);
 
-            /**/
+            /*
             debug(layer, ''
                 + ' | scale:' + WORLD_SCALE.toFixed(1)
                 + ' | mass:' + CHARACTER_MASS.toFixed(1)
@@ -234,7 +233,7 @@ function createArrow(layer) {
                 + ' | gravity:' + GRAVITY.toFixed(2)
                 + ' | damping:' + LINEAR_DAMPING.toFixed(2)
                 + ' |');
-            /**/
+            */
         } else if (vtype == 'dragend') {
             if (!character.getPhysicalBody().IsAwake()) {
                 var animator = character.getAnimator();
@@ -250,6 +249,11 @@ function createArrow(layer) {
             }
         }
     });
+}
+
+function createSkorosPouf(layer, id, posX, posY) {
+
+
 }
 
 function createSkoros(layer, id, posX, posY) {
