@@ -14,6 +14,7 @@ anima.Node = new Class({
     _font:null,
 
     _background:null,
+    _spriteGrid:null,
 
     _data:null,
 
@@ -123,6 +124,21 @@ anima.Node = new Class({
         if (!postponeTransform) {
             this._renderer.updateAll(this);
         }
+    },
+
+    setSpriteGrid:function (spriteGrid) {
+
+        this._spriteGrid = anima.clone(spriteGrid);
+    },
+
+    getSpriteGrid:function () {
+
+        return anima.clone(this._spriteGrid);
+    },
+
+    setCurrentSprite:function (index) {
+
+        this._renderer.setCurrentSprite(this, index);
     },
 
     setOrigin:function (origin) {

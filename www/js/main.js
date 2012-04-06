@@ -99,7 +99,12 @@ function createCharacter(layer) {
     var body = new anima.Body('character');
     layer.addNode(body);
 
-    body.setBackground(null, getImageUrl(level, 'character'), 150, 148);
+    body.setBackground(null, getImageUrl(level, 'character'), 150, 150);
+    body.setSpriteGrid({
+        row:7,
+        columns:8,
+        totalSprites:52
+    });
     var physicalSize = body.getPhysicalSize();
 
     var bodyDef = new b2BodyDef;
@@ -151,8 +156,14 @@ function createArrow(layer) {
     layer.addNode(node);
 
     var arrowWidth = 160;
-    var arrowHeight = 76;
+    var arrowHeight = 77;
     node.setBackground(null, getImageUrl(layer.getScene(), 'arrow'), arrowWidth, arrowHeight);
+    var spriteGrid = {
+        rows:5,
+        columns:6,
+        totalSprites:30
+    };
+    node.setSpriteGrid(spriteGrid);
     node.setPosition({
         x:arrowX,
         y:arrowY
@@ -164,23 +175,35 @@ function createArrow(layer) {
     node.setAngle(anima.toRadians(40));
 
     var arrow = node;
+    var totalSprites = spriteGrid.totalSprites;
     node.getCanvas().on('vdrag', function (event, vtype) {
 
         if (vtype == 'dragmove') {
-            var dx = event.clientX - (arrowX + arrowWidth / 2);
-            var dy = event.clientY - (arrowY + arrowHeight / 2);
+            anima.normalizeEvent(event);
+            var dx = event.offsetX - (arrowX + arrowWidth / 2);
+            var dy = event.offsetY - (arrowY + arrowHeight / 2);
             var theta = Math.atan2(dx, dy);
             node.setAngle(theta - Math.PI / 2);
 
             var power = Math.min(1.0, Math.sqrt(dx * dx + dy * dy) / arrowWidth);
+            arrow.setCurrentSprite(power * totalSprites);
             arrow.set('power', power * 10 * WORLD_SCALE / 2);
 
             /**/
-            debug(layer, anima.round(anima.toDegrees(theta - Math.PI / 2)) + ' @ ' + power.toFixed(2));
+            debug(layer,
+                '(' + event.offsetX + ',' + event.offsetY + ') '
+                    + anima.round(anima.toDegrees(theta - Math.PI / 2))
+                    + ' @ ' + power.toFixed(2));
             /**/
         } else if (vtype == 'dragend') {
             if (!character.getPhysicalBody().IsAwake()) {
-                character.getAnimator().addTask(function (loopTime) {
+                var animator = character.getAnimator();
+                animator.addAnimation(function (animator, t) {
+                    var characterSprites = character.getSpriteGrid().totalSprites;
+                    var index = t * characterSprites / 2000;
+                    character.setCurrentSprite(index);
+                }, 0, 2000);
+                animator.addTask(function (loopTime) {
                     character.applyImpulse(arrow.getAngle(), arrow.get('power'));
                 });
             }

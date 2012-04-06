@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.5.4 build 1';
+anima.version = '0.6.0 build 1';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -146,6 +146,15 @@ anima.getScript = function (url, options) {
     });
 
     return $.ajax(options);
+};
+
+anima.normalizeEvent = function (event) {
+
+    if (!event.offsetX) {
+        event.offsetX = (event.pageX - $(event.target).offset().left);
+        event.offsetY = (event.pageY - $(event.target).offset().top);
+    }
+    return event;
 };
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,

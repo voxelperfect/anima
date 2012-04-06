@@ -90,6 +90,25 @@ anima.RendererCSS3 = new Class({
         node._element$.css(css);
     },
 
+    setCurrentSprite:function (node, index) {
+
+        if (node._background.url && node._spriteGrid) {
+            index = anima.round(index);
+            if (index >= 0 && index < node._spriteGrid.totalSprites) {
+                var rows = node._spriteGrid.rows;
+                var columns = node._spriteGrid.columns;
+
+                var row = Math.floor(index / columns);
+                var column = index - (row * columns);
+
+                var position = (-column * node._size.width) + 'px '
+                    + (-row * node._size.height) + 'px';
+
+                node._element$.css('background-position', position);
+            }
+        }
+    },
+
     setFont:function (node) {
 
         node._element$.css({
