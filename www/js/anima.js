@@ -148,15 +148,6 @@ anima.getScript = function (url, options) {
     return $.ajax(options);
 };
 
-anima.normalizeEvent = function (event) {
-
-    if (!event.offsetX) {
-        event.offsetX = (event.pageX - $(event.target).offset().left);
-        event.offsetY = (event.pageY - $(event.target).offset().top);
-    }
-    return event;
-};
-
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2BodyDef = Box2D.Dynamics.b2BodyDef,
     b2Body = Box2D.Dynamics.b2Body,

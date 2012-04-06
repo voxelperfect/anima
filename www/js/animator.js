@@ -22,14 +22,16 @@ anima.Animator = new Class({
 
     addAnimation:function (interpolateValuesFn, startTime, duration, easing, onAnimationEndedFn) {
 
+        var animationId = this._lastAnimationID++;
         this._animationQueue.push({
-            id:this._lastAnimationID++,
+            id:animationId,
             interpolateValuesFn:interpolateValuesFn,
             startTime:startTime,
             duration:duration,
             easing:easing,
             onAnimationEndedFn:onAnimationEndedFn
         });
+        return animationId;
     },
 
     clearAnimations:function () {
@@ -120,6 +122,15 @@ anima.Animator = new Class({
                 z:v0.z ? (v0.z + (v1.z - v0.z) * t) : 0
             }
         }
+    },
+
+    endAnimation: function(id) {
+
+        var me = this;
+        this.addTask(function (loopTime) {
+
+            me._endAnimation(id);
+        });
     },
 
     /* internal methods */

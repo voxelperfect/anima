@@ -21,7 +21,7 @@ function createDebugBox(layer) {
     var node = new anima.Node('debugBox');
     layer.addNode(node);
 
-    node.setBackground(null, null, 400, 30);
+    node.setBackground(null, null, 800, 30);
     node.setPosition({
         x:0,
         y:0
@@ -137,6 +137,9 @@ function createCharacter(layer) {
         var physicalBody = body.getPhysicalBody();
         var center = physicalBody.GetWorldCenter();
         if (center.y > level.getPhysicalSize().height) {
+            var animator = body.getAnimator();
+            animator.endAnimation(body.get('animationId'));
+
             physicalBody.SetPositionAndAngle(new b2Vec2(characterPosX, characterPosY), 0);
             physicalBody.SetLinearVelocity(new b2Vec2(0, 0));
             physicalBody.SetAngularVelocity(0);
@@ -179,9 +182,9 @@ function createArrow(layer) {
     node.getCanvas().on('vdrag', function (event, vtype) {
 
         if (vtype == 'dragmove') {
-            anima.normalizeEvent(event);
-            var dx = event.offsetX - (arrowX + arrowWidth / 2);
-            var dy = event.offsetY - (arrowY + arrowHeight / 2);
+            var pos = arrow.canvasPosition(event);
+            var dx = pos.x - arrowX;
+            var dy = pos.y - arrowY;
             var theta = Math.atan2(dx, dy);
             node.setAngle(theta - Math.PI / 2);
 
@@ -190,19 +193,18 @@ function createArrow(layer) {
             arrow.set('power', power * 10 * WORLD_SCALE / 2);
 
             /**/
-            debug(layer,
-                '(' + event.offsetX + ',' + event.offsetY + ') '
-                    + anima.round(anima.toDegrees(theta - Math.PI / 2))
-                    + ' @ ' + power.toFixed(2));
+            debug(layer, 'a:' + anima.round(anima.toDegrees(theta - Math.PI / 2))
+                + ' p:' + power.toFixed(2));
             /**/
         } else if (vtype == 'dragend') {
             if (!character.getPhysicalBody().IsAwake()) {
                 var animator = character.getAnimator();
-                animator.addAnimation(function (animator, t) {
+                var animationId = animator.addAnimation(function (animator, t) {
                     var characterSprites = character.getSpriteGrid().totalSprites;
                     var index = t * characterSprites / 2000;
                     character.setCurrentSprite(index);
                 }, 0, 2000);
+                character.set('animationId', animationId);
                 animator.addTask(function (loopTime) {
                     character.applyImpulse(arrow.getAngle(), arrow.get('power'));
                 });

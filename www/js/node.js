@@ -240,6 +240,15 @@ anima.Node = new Class({
         }
     },
 
+    canvasPosition:function (event) {
+
+        var canvas = this._canvas;
+        return {
+            'x':(event.pageX - canvas._position.x) / canvas._scale.x,
+            'y':(event.pageY - canvas._position.y) / canvas._scale.y
+        }
+    },
+
     getAnimator:function () {
 
         return this._animator;
