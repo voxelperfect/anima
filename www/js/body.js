@@ -6,7 +6,7 @@ anima.Body = new Class({
 
     _centroidOffset:null,
 
-    _logicFn: null,
+    _logicFn:null,
 
     initialize:function (id) {
 
@@ -34,12 +34,16 @@ anima.Body = new Class({
             node:this
         });
 
-        if (fixDef.svgPoints) {
+        if (fixDef.svgPoints) { // from a tracing tool (e.g. Adobe Illustrator)
             fixDef.shape = this._svgToShape(fixDef.svgPoints);
-            fixDef.svgPoints = null;
-        }
 
-        this._body.CreateFixture(fixDef);
+            fixDef.svgPoints = null;
+            this._body.CreateFixture(fixDef);
+        } else if (fixDef.polyPoints) { // from Physics Editor
+            this._createPolygonShapes(fixDef);
+        } else {
+            this._body.CreateFixture(fixDef);
+        }
 
         var level = this._layer._scene;
         this._position = {
@@ -52,22 +56,22 @@ anima.Body = new Class({
         this._renderer.updateAll(this);
     },
 
-    getLevel: function() {
+    getLevel:function () {
 
         return this._layer._scene;
     },
 
-    setLogic: function(logicFn) {
+    setLogic:function (logicFn) {
 
         this._logicFn = logicFn;
     },
 
-    getLogic: function() {
+    getLogic:function () {
 
         return this._logicFn;
     },
 
-    getPhysicalBody: function() {
+    getPhysicalBody:function () {
 
         return this._body;
     },
@@ -85,6 +89,26 @@ anima.Body = new Class({
     },
 
     /* internal methods */
+
+    _createPolygonShapes:function (fixDef) {
+
+        var level = this._layer._scene;
+
+        var s, p, polygons, polygonShape;
+
+        var polygonSets = fixDef.polyPoints;
+        for (s = 0; s < polygonSets.length; s++) {
+            polygons = polygonSets[s];
+            for (p = 0; p < polygons.length; p++) {
+                polygonShape = new b2PolygonShape();
+                polygonShape.SetAsArray(polygons[p], polygons[p].length);
+                fixDef.shape = polygonShape;
+
+                this._body.CreateFixture(fixDef);
+            }
+        }
+        fixDef.polyPoints = null;
+    },
 
     _calculateShapeSize:function (shapePoints) {
 

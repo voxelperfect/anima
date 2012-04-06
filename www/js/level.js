@@ -82,8 +82,8 @@ anima.Level = new Class({
     _updateBody:function (node) {
 
         var center = node._body.GetWorldCenter();
-        node._position.x = (center.x + node._centroidOffset.x) * this._physicsScale;
-        node._position.y = (center.y + node._centroidOffset.y) * this._physicsScale;
+        node._position.x = (center.x /* + node._centroidOffset.x */) * this._physicsScale;
+        node._position.y = (center.y /* + node._centroidOffset.y */) * this._physicsScale;
 
         node._angle = node._body.GetAngle();
 

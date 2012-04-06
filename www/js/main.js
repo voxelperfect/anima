@@ -1,6 +1,11 @@
 var canvas = null;
 
-var WORLD_SCALE = 10.0;
+// http://www.hobistic.com/anima/deploy/index.html?scale=18.0&mass=2&impulse=50.0&gravity=9.81&damp=1.0
+var WORLD_SCALE = parseFloat(anima.getRequestParameter('scale', '18.0'));
+var CHARACTER_MASS = parseFloat(anima.getRequestParameter('mass', '2.0'));
+var CHARACTER_IMPULSE = parseFloat(anima.getRequestParameter('impulse', '50.0'));
+var GRAVITY = parseFloat(anima.getRequestParameter('gravity', '9.81'));
+var LINEAR_DAMPING = parseFloat(anima.getRequestParameter('damp', '1.0'));
 
 function getImageUrl(level, imageName, extension) {
 
@@ -21,7 +26,7 @@ function createDebugBox(layer) {
     var node = new anima.Node('debugBox');
     layer.addNode(node);
 
-    node.setBackground(null, null, 800, 30);
+    node.setBackground(null, null, 1200, 30);
     node.setPosition({
         x:0,
         y:0
@@ -73,11 +78,12 @@ function createPlatform(layer) {
 
     body.setBackground(null, getImageUrl(level, 'platform'), 197, 22);
     var physicalSize = body.getPhysicalSize();
+    body._physicalSize.height /= 2;
 
     var bodyDef = new b2BodyDef;
     bodyDef.type = b2Body.b2_staticBody;
     bodyDef.position.x = 0.53 * WORLD_SCALE;
-    bodyDef.position.y = levelHeight - 0.32 * WORLD_SCALE;
+    bodyDef.position.y = levelHeight - 0.305 * WORLD_SCALE;
 
     var fixDef = new b2FixtureDef;
     fixDef.shape = new b2PolygonShape;
@@ -86,6 +92,40 @@ function createPlatform(layer) {
     fixDef.shape.SetAsBox(physicalSize.width / 2, physicalSize.height / 2);
 
     body.define(bodyDef, fixDef);
+}
+
+function setCharacterPointsSvg(fixDef) {
+
+    fixDef.svgPoints = [
+        {x:614.991, y:417.988},
+        {x:603.991, y:400.5},
+        {x:588.991, y:365.5},
+        {x:600.491, y:328},
+        {x:633.784, y:320.479},
+        {x:688.988, y:396},
+        {x:685.979, y:417.5}
+    ];
+}
+
+function setCharacterPointsPolys(level, fixDef) {
+
+    var ptm_ratio = level._physicsScale;
+    fixDef.polyPoints = [
+        [
+            [   new b2Vec2(99 / ptm_ratio, 46 / ptm_ratio)  , new b2Vec2(96 / ptm_ratio, 74 / ptm_ratio)  , new b2Vec2(14 / ptm_ratio, 50 / ptm_ratio)  , new b2Vec2(30 / ptm_ratio, 23 / ptm_ratio)  , new b2Vec2(70 / ptm_ratio, 7 / ptm_ratio)  ] ,
+            [   new b2Vec2(142 / ptm_ratio, 136 / ptm_ratio)  , new b2Vec2(101 / ptm_ratio, 125 / ptm_ratio)  , new b2Vec2(40 / ptm_ratio, 95 / ptm_ratio)  , new b2Vec2(112 / ptm_ratio, 102 / ptm_ratio)  , new b2Vec2(133 / ptm_ratio, 106 / ptm_ratio)  ] ,
+            [   new b2Vec2(101 / ptm_ratio, 125 / ptm_ratio)  , new b2Vec2(142 / ptm_ratio, 136 / ptm_ratio)  , new b2Vec2(137 / ptm_ratio, 143 / ptm_ratio)  , new b2Vec2(117 / ptm_ratio, 147 / ptm_ratio)  , new b2Vec2(100 / ptm_ratio, 137 / ptm_ratio)  ] ,
+            [   new b2Vec2(40 / ptm_ratio, 95 / ptm_ratio)  , new b2Vec2(101 / ptm_ratio, 125 / ptm_ratio)  , new b2Vec2(89 / ptm_ratio, 138 / ptm_ratio)  , new b2Vec2(40 / ptm_ratio, 141 / ptm_ratio)  , new b2Vec2(31 / ptm_ratio, 132 / ptm_ratio)  , new b2Vec2(29 / ptm_ratio, 110 / ptm_ratio)  ] ,
+            [   new b2Vec2(112 / ptm_ratio, 102 / ptm_ratio)  , new b2Vec2(40 / ptm_ratio, 95 / ptm_ratio)  , new b2Vec2(23 / ptm_ratio, 83 / ptm_ratio)  , new b2Vec2(14 / ptm_ratio, 63 / ptm_ratio)  , new b2Vec2(14 / ptm_ratio, 50 / ptm_ratio)  , new b2Vec2(96 / ptm_ratio, 74 / ptm_ratio)  , new b2Vec2(111 / ptm_ratio, 89 / ptm_ratio)  ]
+        ],
+        [
+            [   new b2Vec2(99 / ptm_ratio, 46 / ptm_ratio)  , new b2Vec2(96 / ptm_ratio, 74 / ptm_ratio)  , new b2Vec2(14 / ptm_ratio, 50 / ptm_ratio)  , new b2Vec2(30 / ptm_ratio, 23 / ptm_ratio)  , new b2Vec2(70 / ptm_ratio, 7 / ptm_ratio)  ] ,
+            [   new b2Vec2(142 / ptm_ratio, 136 / ptm_ratio)  , new b2Vec2(101 / ptm_ratio, 125 / ptm_ratio)  , new b2Vec2(40 / ptm_ratio, 95 / ptm_ratio)  , new b2Vec2(112 / ptm_ratio, 102 / ptm_ratio)  , new b2Vec2(133 / ptm_ratio, 106 / ptm_ratio)  ] ,
+            [   new b2Vec2(101 / ptm_ratio, 125 / ptm_ratio)  , new b2Vec2(142 / ptm_ratio, 136 / ptm_ratio)  , new b2Vec2(137 / ptm_ratio, 143 / ptm_ratio)  , new b2Vec2(117 / ptm_ratio, 147 / ptm_ratio)  , new b2Vec2(100 / ptm_ratio, 137 / ptm_ratio)  ] ,
+            [   new b2Vec2(40 / ptm_ratio, 95 / ptm_ratio)  , new b2Vec2(101 / ptm_ratio, 125 / ptm_ratio)  , new b2Vec2(89 / ptm_ratio, 138 / ptm_ratio)  , new b2Vec2(40 / ptm_ratio, 141 / ptm_ratio)  , new b2Vec2(31 / ptm_ratio, 132 / ptm_ratio)  , new b2Vec2(29 / ptm_ratio, 110 / ptm_ratio)  ] ,
+            [   new b2Vec2(112 / ptm_ratio, 102 / ptm_ratio)  , new b2Vec2(40 / ptm_ratio, 95 / ptm_ratio)  , new b2Vec2(23 / ptm_ratio, 83 / ptm_ratio)  , new b2Vec2(14 / ptm_ratio, 63 / ptm_ratio)  , new b2Vec2(14 / ptm_ratio, 50 / ptm_ratio)  , new b2Vec2(96 / ptm_ratio, 74 / ptm_ratio)  , new b2Vec2(111 / ptm_ratio, 89 / ptm_ratio)  ]
+        ]
+    ];
 }
 
 function createCharacter(layer) {
@@ -110,25 +150,18 @@ function createCharacter(layer) {
     var bodyDef = new b2BodyDef;
     bodyDef.type = b2Body.b2_dynamicBody;
     bodyDef.allowSleep = true;
+    bodyDef.linearDamping = LINEAR_DAMPING;
     bodyDef.position.x = characterPosX;
     bodyDef.position.y = characterPosY;
     bodyDef.fixedRotation = false;
     bodyDef.bullet = true;
 
     var fixDef = new b2FixtureDef;
-    fixDef.mass = 5.0;
+    fixDef.mass = CHARACTER_MASS;
     fixDef.friction = 0.5;
     fixDef.restitution = 0.2;
-    fixDef.svgPoints = [
-        {x:614.991, y:417.988},
-        {x:603.991, y:400.5},
-        {x:588.991, y:365.5},
-        {x:600.491, y:328},
-        {x:633.784, y:320.479},
-        {x:688.988, y:396},
-        {x:685.979, y:417.5}
-    ];
-
+    //setCharacterPointsPolys(level, fixDef);
+    setCharacterPointsSvg(fixDef);
     body.define(bodyDef, fixDef);
 
     body.setLogic(function (body) {
@@ -188,13 +221,19 @@ function createArrow(layer) {
             var theta = Math.atan2(dx, dy);
             node.setAngle(theta - Math.PI / 2);
 
-            var power = Math.min(1.0, Math.sqrt(dx * dx + dy * dy) / arrowWidth);
+            var power = Math.max(0.0, Math.min(1.0, (Math.sqrt(dx * dx + dy * dy) - arrowWidth/2) / arrowWidth));
             arrow.setCurrentSprite(power * totalSprites);
-            arrow.set('power', power * 10 * WORLD_SCALE / 2);
+            arrow.set('power', power * CHARACTER_IMPULSE);
 
             /**/
-            debug(layer, 'a:' + anima.round(anima.toDegrees(theta - Math.PI / 2))
-                + ' p:' + power.toFixed(2));
+            debug(layer, ''
+                + ' | scale:' + WORLD_SCALE.toFixed(1)
+                + ' | mass:' + CHARACTER_MASS.toFixed(1)
+                + ' | angle:' + anima.round(anima.toDegrees(theta - Math.PI / 2))
+                + ' | impulse: ' + (power * CHARACTER_IMPULSE).toFixed(2) + ' (' + power.toFixed(2) + ')'
+                + ' | gravity:' + GRAVITY.toFixed(2)
+                + ' | damping:' + LINEAR_DAMPING.toFixed(2)
+                + ' |');
             /**/
         } else if (vtype == 'dragend') {
             if (!character.getPhysicalBody().IsAwake()) {
@@ -215,7 +254,7 @@ function createArrow(layer) {
 
 function createLevel0() {
 
-    var level = new anima.Level('level0', 2.0 * WORLD_SCALE, new b2Vec2(0, 9.81)); // 2m wide, gravity = 9.81 m/sec2
+    var level = new anima.Level('level0', 2.0 * WORLD_SCALE, new b2Vec2(0, GRAVITY)); // 2m wide, gravity = 9.81 m/sec2
     canvas.addScene(level);
     level.setBackground('black', getImageUrl(level, 'background', 'jpg'));
 
