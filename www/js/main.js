@@ -175,6 +175,11 @@ function createCharacter(layer) {
             physicalBody.SetPositionAndAngle(new b2Vec2(characterPosX, characterPosY), 0);
             physicalBody.SetLinearVelocity(new b2Vec2(0, 0));
             physicalBody.SetAngularVelocity(0);
+
+            var arrow = level.getLayer('gizmos').getNode('arrow');
+            arrow.setAngle(anima.toRadians(40));
+            arrow.set('power', 0);
+            arrow.fadeIn();
         }
     });
 }
@@ -236,6 +241,8 @@ function createArrow(layer) {
              */
         } else if (vtype == 'dragend') {
             if (!character.getPhysicalBody().IsAwake()) {
+                arrow.fadeOut();
+
                 var animator = character.getAnimator();
                 var animationId = animator.addAnimation(function (animator, t) {
                     var characterSprites = character.getSpriteGrid().totalSprites;
@@ -279,7 +286,7 @@ function createSkorosPouf(layer, id, skorosX, skorosY) {
         y:0.5
     });
 
-    node.getElement().hide();
+    node.hide();
 }
 
 function createSkoros(layer, id, posX, posY) {
@@ -370,15 +377,16 @@ function createLevel0() {
                     defeatedBody.set('hits', 2);
 
                     var pouf = defeatedBody.getLayer().getNode('pouf_' + defeatedBody.getId());
-                    pouf.getElement().fadeIn(300);
-                    defeatedBody.getElement().fadeOut(1500);
+                    pouf.fadeIn(300);
+                    animator.endAnimation(defeatedBody.get('pulseId'));
+                    defeatedBody.fadeOut(1500);
 
                     animator.addAnimation(function (animator, t) {
                         var characterSprites = pouf.getSpriteGrid().totalSprites;
                         var index = t * characterSprites / 2000;
                         pouf.setCurrentSprite(index);
                     }, 0, 2000, null, function (animation) {
-                        pouf.getElement().hide();
+                        pouf.hide();
                         var physicalBody = defeatedBody.getPhysicalBody();
                         physicalBody.SetActive(false);
                         level.getWorld().DestroyBody(physicalBody);
@@ -386,10 +394,12 @@ function createLevel0() {
                 }
             } else {
                 defeatedBody.set('hits', 1);
-                animator.addAnimation(function (animator, t) {
-                    var opacity = animator.interpolate(0.5, 1.0, t);
+                var pulseAnimationId = animator.addAnimation(function (animator, t) {
+                    var value = animator.interpolate(0.0, 1.0, t);
+                    var opacity = (value < 0.5) ? 1.0 - 2 * value : 2 * value - 1;
                     defeatedBody.getElement().css('opacity', opacity);
-                }, 0, 1000, anima.Easing.easeInOutBounce, null, true);
+                }, 0, 1000, anima.Easing.easeInOutSine, null, true);
+                defeatedBody.set('pulseId', pulseAnimationId);
             }
         }
     });

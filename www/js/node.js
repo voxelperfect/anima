@@ -109,6 +109,50 @@ anima.Node = new Class({
         }
     },
 
+    hide:function () {
+
+        this.getElement().hide();
+    },
+
+    show:function () {
+
+        this.getElement().show();
+    },
+
+    fadeIn:function (duration, callbackFn) {
+
+        if (!duration) {
+            duration = 400;
+        }
+
+        this.getElement().css('opacity', 0.0);
+        this.show();
+
+        var me = this;
+        this._animator.addAnimation(function (animator, t) {
+            var opacity = animator.interpolate(0.0, 1.0, t);
+            me.getElement().css('opacity', opacity);
+        }, 0, duration, anima.Easing.easeInOutSine, callbackFn);
+    },
+
+    fadeOut:function (duration, callbackFn) {
+
+        if (!duration) {
+            duration = 400;
+        }
+
+        var me = this;
+        this._animator.addAnimation(function (animator, t) {
+            var opacity = animator.interpolate(1.0, 0.0, t);
+            me.getElement().css('opacity', opacity);
+        }, 0, duration, anima.Easing.easeInOutSine, function (animation) {
+            me.hide();
+            if (callbackFn) {
+                callbackFn();
+            }
+        });
+    },
+
     setBackground:function (color, url, width, height, postponeTransform) {
 
         this._background.color = color;

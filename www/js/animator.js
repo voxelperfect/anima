@@ -20,6 +20,13 @@ anima.Animator = new Class({
         });
     },
 
+    endAnimation:function (id) {
+
+        this._animationQueue.push({
+            endId:id
+        });
+    },
+
     addAnimation:function (interpolateValuesFn, startTime, duration, easing, onAnimationEndedFn, loop) {
 
         var animationId = this._lastAnimationID++;
@@ -63,12 +70,16 @@ anima.Animator = new Class({
 
         for (i = 0; i < count; i++) {
             animation = animationQueue[i];
+
             if (animation.taskFn) {
                 animation.taskFn(loopTime);
                 if (this._animationQueue.length == 0) {
                     return;
                 }
                 endedAnimations.push('@' + i);
+                continue;
+            } else if (animation.endId) {
+                endedAnimations.push(animation.endId);
                 continue;
             }
 
@@ -127,15 +138,6 @@ anima.Animator = new Class({
                 z:v0.z ? (v0.z + (v1.z - v0.z) * t) : 0
             }
         }
-    },
-
-    endAnimation:function (id) {
-
-        var me = this;
-        this.addTask(function (loopTime) {
-
-            me._endAnimation(id);
-        });
     },
 
     /* internal methods */
