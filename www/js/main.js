@@ -154,7 +154,7 @@ function createCharacter(layer) {
     bodyDef.position.x = characterPosX;
     bodyDef.position.y = characterPosY;
     bodyDef.fixedRotation = false;
-    
+
     var fixDef = new b2FixtureDef;
     fixDef.mass = CHARACTER_MASS;
     fixDef.friction = 0.5;
@@ -225,15 +225,15 @@ function createArrow(layer) {
             arrow.set('power', power * CHARACTER_IMPULSE);
 
             /*
-            debug(layer, ''
-                + ' | scale:' + WORLD_SCALE.toFixed(1)
-                + ' | mass:' + CHARACTER_MASS.toFixed(1)
-                + ' | angle:' + anima.round(anima.toDegrees(theta - Math.PI / 2))
-                + ' | impulse: ' + (power * CHARACTER_IMPULSE).toFixed(2) + ' (' + power.toFixed(2) + ')'
-                + ' | gravity:' + GRAVITY.toFixed(2)
-                + ' | damping:' + LINEAR_DAMPING.toFixed(2)
-                + ' |');
-            */
+             debug(layer, ''
+             + ' | scale:' + WORLD_SCALE.toFixed(1)
+             + ' | mass:' + CHARACTER_MASS.toFixed(1)
+             + ' | angle:' + anima.round(anima.toDegrees(theta - Math.PI / 2))
+             + ' | impulse: ' + (power * CHARACTER_IMPULSE).toFixed(2) + ' (' + power.toFixed(2) + ')'
+             + ' | gravity:' + GRAVITY.toFixed(2)
+             + ' | damping:' + LINEAR_DAMPING.toFixed(2)
+             + ' |');
+             */
         } else if (vtype == 'dragend') {
             if (!character.getPhysicalBody().IsAwake()) {
                 var animator = character.getAnimator();
@@ -251,9 +251,35 @@ function createArrow(layer) {
     });
 }
 
-function createSkorosPouf(layer, id, posX, posY) {
+function createSkorosPouf(layer, id, skorosX, skorosY) {
 
+    var level = layer.getScene();
 
+    var poufX = skorosX * level.getPhysicsScale();
+    var poufY = skorosY * level.getPhysicsScale();
+
+    var node = new anima.Node('pouf_' + id);
+    layer.addNode(node);
+
+    var poufidth = 100;
+    var poufHeight = 100;
+    node.setBackground(null, getImageUrl(layer.getScene(), 'pouf'), poufidth, poufHeight);
+    var spriteGrid = {
+        rows:3,
+        columns:5,
+        totalSprites:14
+    };
+    node.setSpriteGrid(spriteGrid);
+    node.setPosition({
+        x:poufX,
+        y:poufY
+    });
+    node.setOrigin({
+        x:0.5,
+        y:0.5
+    });
+
+    node.getElement().hide();
 }
 
 function createSkoros(layer, id, posX, posY) {
@@ -300,6 +326,8 @@ function createSkoros(layer, id, posX, posY) {
         var index = t * characterSprites / 2000;
         body.setCurrentSprite(index);
     }, 0, 2000, null, null, true);
+
+    createSkorosPouf(layer, id, posX - physicalSize.width / 2, posY - 3 * physicalSize.height / 4);
 }
 
 function createLevel0() {
@@ -319,6 +347,8 @@ function createLevel0() {
     level.addLayer(layer);
     createCharacter(layer);
     createSkoros(layer, 'skoros-1', 1.5 * WORLD_SCALE, 0.5 * WORLD_SCALE);
+    createSkoros(layer, 'skoros-2', 1.8 * WORLD_SCALE, 0.6 * WORLD_SCALE);
+    createSkoros(layer, 'skoros-3', 1.4 * WORLD_SCALE, 0.8 * WORLD_SCALE);
 
     layer = new anima.Layer('gizmos');
     level.addLayer(layer);
@@ -335,10 +365,27 @@ function createLevel0() {
         }
         if (defeatedBody) {
             var animator = defeatedBody.getAnimator();
-            if (defeatedBody.get('hit')) {
+            if (defeatedBody.get('hits')) {
+                if (defeatedBody.get('hits') == 1) {
+                    defeatedBody.set('hits', 2);
 
+                    var pouf = defeatedBody.getLayer().getNode('pouf_' + defeatedBody.getId());
+                    pouf.getElement().fadeIn(300);
+                    defeatedBody.getElement().fadeOut(1500);
+
+                    animator.addAnimation(function (animator, t) {
+                        var characterSprites = pouf.getSpriteGrid().totalSprites;
+                        var index = t * characterSprites / 2000;
+                        pouf.setCurrentSprite(index);
+                    }, 0, 2000, null, function (animation) {
+                        pouf.getElement().hide();
+                        var physicalBody = defeatedBody.getPhysicalBody();
+                        physicalBody.SetActive(false);
+                        level.getWorld().DestroyBody(physicalBody);
+                    });
+                }
             } else {
-                defeatedBody.set('true');
+                defeatedBody.set('hits', 1);
                 animator.addAnimation(function (animator, t) {
                     var opacity = animator.interpolate(0.5, 1.0, t);
                     defeatedBody.getElement().css('opacity', opacity);
