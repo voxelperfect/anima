@@ -81,6 +81,11 @@ anima.Body = new Class({
         return anima.clone(this._physicalSize);
     },
 
+    setPhysicalSize:function (physicalSize) {
+
+        this._physicalSize = anima.clone(physicalSize);
+    },
+
     applyImpulse:function (angle, power) {
 
         this._body.ApplyImpulse(

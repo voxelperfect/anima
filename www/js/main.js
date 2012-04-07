@@ -310,6 +310,11 @@ function createSkoros(layer, id, posX, posY) {
     layer.addNode(body);
 
     body.setBackground(null, getImageUrl(level, 'skoros'), 100, 100);
+    var physicalSize = body.getPhysicalSize();
+    body.setPhysicalSize({
+        width:physicalSize.width / 3,
+        height:physicalSize.height
+    });
     body.setSpriteGrid({
         row:7,
         columns:8,
