@@ -182,6 +182,11 @@ function createCharacter(layer) {
             arrow.fadeIn();
         }
     });
+
+    var gaziaSound = new anima.Sound('gazia', 'resources/sounds/gazia.mp3');
+    body.set('gazia', gaziaSound);
+    var papakiaSound = new anima.Sound('sta_papakia', 'resources/sounds/sta_papakia_mas_re.mp3');
+    body.set('sta_papakia', papakiaSound);
 }
 
 function createArrow(layer) {
@@ -219,6 +224,8 @@ function createArrow(layer) {
     node.getCanvas().on('vdrag', function (event, vtype) {
 
         if (vtype == 'dragmove') {
+            arrow.set('dragmove', true);
+
             var pos = arrow.canvasPosition(event);
             var dx = pos.x - arrowX;
             var dy = pos.y - arrowY;
@@ -240,19 +247,24 @@ function createArrow(layer) {
              + ' |');
              */
         } else if (vtype == 'dragend') {
-            if (!character.getPhysicalBody().IsAwake()) {
-                arrow.fadeOut();
+            if (arrow.get('dragmove')) {
+                arrow.set('dragmove', false);
 
-                var animator = character.getAnimator();
-                var animationId = animator.addAnimation(function (animator, t) {
-                    var characterSprites = character.getSpriteGrid().totalSprites;
-                    var index = t * characterSprites / 2000;
-                    character.setCurrentSprite(index);
-                }, 0, 2000);
-                character.set('animationId', animationId);
-                animator.addTask(function (loopTime) {
-                    character.applyImpulse(arrow.getAngle(), arrow.get('power'));
-                });
+                if (!character.getPhysicalBody().IsAwake()) {
+                    arrow.fadeOut();
+
+                    var animator = character.getAnimator();
+                    var animationId = animator.addAnimation(function (animator, t) {
+                        var characterSprites = character.getSpriteGrid().totalSprites;
+                        var index = t * characterSprites / 2000;
+                        character.setCurrentSprite(index);
+                    }, 0, 2000);
+                    character.set('animationId', animationId);
+                    animator.addTask(function (loopTime) {
+                        character.get('sta_papakia').play();
+                        character.applyImpulse(arrow.getAngle(), arrow.get('power'));
+                    });
+                }
             }
         }
     });
@@ -364,6 +376,11 @@ function createLevel0() {
 
     level.setContactListener(function (bodyA, bodyB) {
 
+        if (bodyA.getId() == 'character' && bodyB.getId() == 'platform') {
+            bodyA.get('gazia').play();
+            return;
+        }
+
         var defeatedBody = null;
         if (bodyA.getId() == 'character' && bodyB.getId().startsWith('skoros')) {
             defeatedBody = bodyB;
@@ -377,15 +394,15 @@ function createLevel0() {
                     defeatedBody.set('hits', 2);
 
                     var pouf = defeatedBody.getLayer().getNode('pouf_' + defeatedBody.getId());
-                    pouf.fadeIn(300);
+                    pouf.show();
                     animator.endAnimation(defeatedBody.get('pulseId'));
-                    defeatedBody.fadeOut(1500);
+                    defeatedBody.fadeOut(1000);
 
                     animator.addAnimation(function (animator, t) {
                         var characterSprites = pouf.getSpriteGrid().totalSprites;
-                        var index = t * characterSprites / 2000;
+                        var index = t * characterSprites / 1000;
                         pouf.setCurrentSprite(index);
-                    }, 0, 2000, null, function (animation) {
+                    }, 0, 1000, null, function (animation) {
                         pouf.hide();
                         var physicalBody = defeatedBody.getPhysicalBody();
                         physicalBody.SetActive(false);

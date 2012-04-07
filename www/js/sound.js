@@ -1,22 +1,20 @@
 anima.Sound = new Class({
 
-    _sound:null,
+    _id:null,
+    _url:null,
     _loop:false,
+
+    _sound:null,
 
     initialize:function (id, url, loop) {
 
-        if (window.soundManager != undefined) {
-            this._sound = soundManager.createSound({
-                id:'music',
-                url:'resources/sounds/music.mp3',
-                autoload:true
-            });
-
-            this._loop = loop;
-        }
+        this._id = id;
+        this._url = url;
+        this._loop = loop;
     },
 
     toggle:function () {
+
         if (this.isPlaying()) {
             this.stop();
             return false;
@@ -28,10 +26,18 @@ anima.Sound = new Class({
 
     isPlaying:function () {
 
+        if (!this._sound) {
+            this._load();
+        }
+
         return this._sound ? this._sound.playState : false;
     },
 
     stop:function () {
+
+        if (!this._sound) {
+            this._load();
+        }
 
         if (this._sound) {
             this._sound.stop();
@@ -39,6 +45,10 @@ anima.Sound = new Class({
     },
 
     play:function () {
+
+        if (!this._sound) {
+            this._load();
+        }
 
         if (this._sound) {
             var options = {};
@@ -54,8 +64,25 @@ anima.Sound = new Class({
 
     pause:function () {
 
+        if (!this._sound) {
+            this._load();
+        }
+
         if (this._sound) {
             this._sound.pause();
+        }
+    },
+
+    /* internal methods */
+
+    _load:function () {
+
+        if (window.soundManager != undefined) {
+            this._sound = soundManager.createSound({
+                id:this._id,
+                url:this._url,
+                autoload:true
+            });
         }
     }
 });
