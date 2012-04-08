@@ -180,7 +180,7 @@ function createCharacter(layer) {
             arrow.setAngle(anima.toRadians(40));
             var power = 0.0;
             arrow.set('power', power * CHARACTER_IMPULSE);
-            arrow.setCurrentSprite(power * arrow.getSpriteGrid().totalSprites);
+            arrow.setCurrentSprite(power * arrow.getTotalSprites());
             arrow.fadeIn();
         }
     });
@@ -201,7 +201,7 @@ function animateCharacter(character) {
     }
 
     animationId = animator.addAnimation(function (animator, t) {
-        var characterSprites = character.getSpriteGrid().totalSprites;
+        var characterSprites = character.getTotalSprites();
         var index = t * characterSprites / 2000;
         character.setCurrentSprite(index);
     }, 0, 2000);
@@ -354,7 +354,7 @@ function createSkoros(layer, id, posX, posY) {
 
     var animator = body.getAnimator();
     animator.addAnimation(function (animator, t) {
-        var characterSprites = body.getSpriteGrid().totalSprites;
+        var characterSprites = body.getTotalSprites();
         var index = t * characterSprites / 2000;
         body.setCurrentSprite(index);
     }, 0, 2000, null, null, true);
@@ -413,7 +413,7 @@ function createLevel0() {
                     defeatedBody.fadeOut(1000);
 
                     animator.addAnimation(function (animator, t) {
-                        var characterSprites = pouf.getSpriteGrid().totalSprites;
+                        var characterSprites = pouf.getTotalSprites();
                         var index = t * characterSprites / 1000;
                         pouf.setCurrentSprite(index);
                     }, 0, 1000, null, function (animation) {
