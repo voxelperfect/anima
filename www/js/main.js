@@ -178,7 +178,9 @@ function createCharacter(layer) {
 
             var arrow = level.getLayer('gizmos').getNode('arrow');
             arrow.setAngle(anima.toRadians(40));
-            arrow.set('power', 0);
+            var power = 0.0;
+            arrow.set('power', power * CHARACTER_IMPULSE);
+            arrow.setCurrentSprite(power * arrow.getSpriteGrid().totalSprites);
             arrow.fadeIn();
         }
     });
@@ -187,6 +189,23 @@ function createCharacter(layer) {
     body.set('gazia', gaziaSound);
     var papakiaSound = new anima.Sound('sta_papakia', 'resources/sounds/sta_papakia_mas_re.mp3');
     body.set('sta_papakia', papakiaSound);
+}
+
+function animateCharacter(character) {
+
+    var animator = character.getAnimator();
+
+    var animationId = character.get('animationId');
+    if (animationId) {
+        animator.endAnimation(animationId);
+    }
+
+    animationId = animator.addAnimation(function (animator, t) {
+        var characterSprites = character.getSpriteGrid().totalSprites;
+        var index = t * characterSprites / 2000;
+        character.setCurrentSprite(index);
+    }, 0, 2000);
+    character.set('animationId', animationId);
 }
 
 function createArrow(layer) {
@@ -224,8 +243,6 @@ function createArrow(layer) {
     node.getCanvas().on('vdrag', function (event, vtype) {
 
         if (vtype == 'dragmove') {
-            arrow.set('dragmove', true);
-
             var pos = arrow.canvasPosition(event);
             var dx = pos.x - arrowX;
             var dy = pos.y - arrowY;
@@ -247,24 +264,15 @@ function createArrow(layer) {
              + ' |');
              */
         } else if (vtype == 'dragend') {
-            if (arrow.get('dragmove')) {
-                arrow.set('dragmove', false);
+            if (!character.getPhysicalBody().IsAwake()) {
+                arrow.fadeOut();
 
-                if (!character.getPhysicalBody().IsAwake()) {
-                    arrow.fadeOut();
-
-                    var animator = character.getAnimator();
-                    var animationId = animator.addAnimation(function (animator, t) {
-                        var characterSprites = character.getSpriteGrid().totalSprites;
-                        var index = t * characterSprites / 2000;
-                        character.setCurrentSprite(index);
-                    }, 0, 2000);
-                    character.set('animationId', animationId);
-                    animator.addTask(function (loopTime) {
-                        character.get('sta_papakia').play();
-                        character.applyImpulse(arrow.getAngle(), arrow.get('power'));
-                    });
-                }
+                var animator = character.getAnimator();
+                animateCharacter(character);
+                animator.addTask(function (loopTime) {
+                    character.get('sta_papakia').play();
+                    character.applyImpulse(arrow.getAngle(), arrow.get('power'));
+                });
             }
         }
     });
@@ -351,7 +359,7 @@ function createSkoros(layer, id, posX, posY) {
         body.setCurrentSprite(index);
     }, 0, 2000, null, null, true);
 
-    createSkorosPouf(layer, id, posX - physicalSize.width / 2, posY - 3 * physicalSize.height / 4);
+    createSkorosPouf(layer, id, posX - 1.5 * physicalSize.width, posY - 0.2 * physicalSize.height);
 }
 
 function createLevel0() {
@@ -382,6 +390,7 @@ function createLevel0() {
     level.setContactListener(function (bodyA, bodyB) {
 
         if (bodyA.getId() == 'character' && bodyB.getId() == 'platform') {
+            animateCharacter(bodyA);
             bodyA.get('gazia').play();
             return;
         }
@@ -434,6 +443,7 @@ $('#mainPage').live('pageshow', function (event, ui) {
     $('#mainPage').trigger('updatelayout');
     anima.onResize();
 
+    $.mobile.hidePageLoadingMsg();
     canvas.setCurrentScene('level0');
 });
 
@@ -456,7 +466,7 @@ $(function () {
             loadIcon$.html('' + percent);
         },
         function () {
-
+            $.mobile.showPageLoadingMsg();
             $.mobile.changePage($('#mainPage'), {
                 transition:'fade',
                 dataUrl:'#mainPage',

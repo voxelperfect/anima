@@ -23,6 +23,7 @@ anima.Node = new Class({
     _renderer:null,
 
     _dragging:false,
+    _dragged:false,
     _draggingHandler:null,
 
     initialize:function (id) {
@@ -345,19 +346,26 @@ anima._dragHandler = function (event) {
     switch (type) {
         case 'vmousedown':
             node._dragging = true;
+            node._dragged = false;
             if (node._draggingHandler) {
                 node._draggingHandler(event, 'dragstart');
             }
             break;
         case 'vmousemove':
-            if (node._dragging && node._draggingHandler) {
-                node._draggingHandler(event, 'dragmove');
+            if (node._dragging) {
+                node._dragged = true;
+                if (node._dragging && node._draggingHandler) {
+                    node._draggingHandler(event, 'dragmove');
+                }
             }
             break;
         case 'vmouseup':
-            node._dragging = false;
-            if (node._draggingHandler) {
-                node._draggingHandler(event, 'dragend');
+            if (node._dragging && node._dragged) {
+                node._dragging = false;
+                node._dragged = false;
+                if (node._draggingHandler) {
+                    node._draggingHandler(event, 'dragend');
+                }
             }
             break;
     }

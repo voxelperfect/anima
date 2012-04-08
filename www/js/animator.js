@@ -15,16 +15,22 @@ anima.Animator = new Class({
 
     addTask:function (taskFn) {
 
+        var animationId = this._lastAnimationID++;
         this._animationQueue.push({
+            id:animationId,
             taskFn:taskFn
         });
+        return animationId;
     },
 
     endAnimation:function (id) {
 
+        var animationId = this._lastAnimationID++;
         this._animationQueue.push({
+            id:animationId,
             endId:id
         });
+        return animationId;
     },
 
     addAnimation:function (interpolateValuesFn, startTime, duration, easing, onAnimationEndedFn, loop) {
@@ -73,10 +79,7 @@ anima.Animator = new Class({
 
             if (animation.taskFn) {
                 animation.taskFn(loopTime);
-                if (this._animationQueue.length == 0) {
-                    return;
-                }
-                endedAnimations.push('@' + i);
+                endedAnimations.push(animation.id);
                 continue;
             } else if (animation.endId) {
                 endedAnimations.push(animation.endId);
@@ -147,16 +150,6 @@ anima.Animator = new Class({
         var animationQueue = this._animationQueue;
 
         var i, animation;
-
-        if (anima.isString(id) && id.charAt(0) == '@') {
-            i = parseInt(id.substring(1));
-            animation = animationQueue[i];
-            animationQueue.splice(i, 1);
-            if (animation && animation.onAnimationEndedFn) {
-                animation.onAnimationEndedFn(animation);
-            }
-            return;
-        }
         var count = animationQueue.length;
         for (i = 0; i < count; i++) {
             animation = animationQueue[i];
