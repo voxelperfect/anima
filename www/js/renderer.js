@@ -23,12 +23,21 @@ anima.RendererCSS3 = Class.extend({
     getElementIdContext:function (parent) {
 
         var id = '';
+        if (!parent) {
+            return id;
+        }
+
         do {
             id = parent._id + '_' + id;
             parent = parent.getParent();
         } while (parent != null);
 
         return id;
+    },
+
+    getElementId:function (node) {
+
+        return this.getElementIdContext(node.getParent()) + node._id;
     },
 
     createElement:function (parent, node) {

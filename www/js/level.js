@@ -79,25 +79,20 @@ anima.Level = anima.Scene.extend({
 
     _addNodeWithLogic: function(node) {
 
-
+        this._nodesWithLogic[this._renderer.getElementId(node)] = node;
     },
 
     _removeNodeWithLogic: function(node) {
 
+        delete this._nodesWithLogic[this._renderer.getElementId(node)];
     },
 
     _logic:function () {
 
-        var layer, node;
-        var count = this._layers.length;
-        for (var i = 0; i < count; i++) {
-            layer = this._layers[i];
-            for (var j = 0; j < layer._nodes.length; j++) {
-                node = layer._nodes[j];
-                if (node._logicFn) {
-                    node._logicFn(node);
-                }
-            }
+        var node;
+        for (var id in this._nodesWithLogic) {
+            node = this._nodesWithLogic[id];
+            node._logicFn(node);
         }
     },
 

@@ -1,6 +1,7 @@
 var canvas = null;
 
-// http://www.hobistic.com/anima/deploy/index.html?scale=18.0&mass=2&impulse=14&gravity=7&damp=0.2
+// http://www.hobistic.com/anima/deploy/index.html?scale=18.0&mass=2&impulse=14&gravity=7&damp=0.2&debug=true
+var DEBUG = anima.getRequestParameter('debug');
 var WORLD_SCALE = parseFloat(anima.getRequestParameter('scale', '18.0'));
 var CHARACTER_MASS = parseFloat(anima.getRequestParameter('mass', '2.0'));
 var CHARACTER_IMPULSE = parseFloat(anima.getRequestParameter('impulse', '14.0'));
@@ -253,16 +254,16 @@ function createArrow(layer) {
             arrow.setCurrentSprite(power * totalSprites);
             arrow.set('power', power * CHARACTER_IMPULSE);
 
-            /*
-             debug(layer, ''
-             + ' | scale:' + WORLD_SCALE.toFixed(1)
-             + ' | mass:' + CHARACTER_MASS.toFixed(1)
-             + ' | angle:' + anima.round(anima.toDegrees(theta - Math.PI / 2))
-             + ' | impulse: ' + (power * CHARACTER_IMPULSE).toFixed(2) + ' (' + power.toFixed(2) + ')'
-             + ' | gravity:' + GRAVITY.toFixed(2)
-             + ' | damping:' + LINEAR_DAMPING.toFixed(2)
-             + ' |');
-             */
+            if (DEBUG) {
+                debug(layer, ''
+                    + ' | scale:' + WORLD_SCALE.toFixed(1)
+                    + ' | mass:' + CHARACTER_MASS.toFixed(1)
+                    + ' | angle:' + anima.round(anima.toDegrees(theta - Math.PI / 2))
+                    + ' | impulse: ' + (power * CHARACTER_IMPULSE).toFixed(2) + ' (' + power.toFixed(2) + ')'
+                    + ' | gravity:' + GRAVITY.toFixed(2)
+                    + ' | damping:' + LINEAR_DAMPING.toFixed(2)
+                    + ' |');
+            }
         } else if (vtype == 'dragend') {
             if (!character.getPhysicalBody().IsAwake()) {
                 arrow.fadeOut();

@@ -1,5 +1,5 @@
 anima.Body = anima.Node.extend({
-    
+
     _physicalSize:null,
     _body:null,
 
@@ -63,6 +63,11 @@ anima.Body = anima.Node.extend({
     setLogic:function (logicFn) {
 
         this._logicFn = logicFn;
+        if (logicFn) {
+            this.getLevel()._addNodeWithLogic(this);
+        } else {
+            this.getLevel()._removeNodeWithLogic(this);
+        }
     },
 
     getLogic:function () {
@@ -209,5 +214,11 @@ anima.Body = anima.Node.extend({
             x:(center.x - aabb.lowerBound.x) / this._physicalSize.width,
             y:(center.y - aabb.lowerBound.y) / this._physicalSize.height
         }
+    },
+
+    _removeElement:function () {
+
+        this.getLevel()._removeNodeWithLogic(this);
+        this._super();
     }
 });
