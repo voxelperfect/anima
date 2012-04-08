@@ -200,21 +200,23 @@ function createCharacter(layer) {
 
         var level = body.getLevel();
         var physicalBody = body.getPhysicalBody();
-        var center = physicalBody.GetWorldCenter();
-        if (center.y > level.getPhysicalSize().height) {
-            var animator = body.getAnimator();
-            animator.endAnimation(body.get('animationId'));
+        if (physicalBody.IsAwake()) {
+            var center = physicalBody.GetWorldCenter();
+            if (center.y < 0 || center.y > level.getPhysicalSize().height) {
+                var animator = body.getAnimator();
+                animator.endAnimation(body.get('animationId'));
 
-            physicalBody.SetPositionAndAngle(new b2Vec2(characterPosX, characterPosY), 0);
-            physicalBody.SetLinearVelocity(new b2Vec2(0, 0));
-            physicalBody.SetAngularVelocity(0);
+                physicalBody.SetPositionAndAngle(new b2Vec2(characterPosX, characterPosY), 0);
+                physicalBody.SetLinearVelocity(new b2Vec2(0, 0));
+                physicalBody.SetAngularVelocity(0);
 
-            var arrow = level.getLayer('gizmos').getNode('arrow');
-            arrow.setAngle(anima.toRadians(40));
-            var power = 0.0;
-            arrow.set('power', power * CHARACTER_IMPULSE);
-            arrow.setCurrentSprite(power * arrow.getTotalSprites());
-            arrow.fadeIn();
+                var arrow = level.getLayer('gizmos').getNode('arrow');
+                arrow.setAngle(anima.toRadians(40));
+                var power = 0.0;
+                arrow.set('power', power * CHARACTER_IMPULSE);
+                arrow.setCurrentSprite(power * arrow.getTotalSprites());
+                arrow.fadeIn();
+            }
         }
     });
 
@@ -348,7 +350,7 @@ function createSkorosPouf(layer, id, skorosX, skorosY) {
     node.hide();
 }
 
-function createSkoros(layer, id, posX, posY) {
+function createSkoros(layer, id, posX, posY, animationOffset) {
 
     var level = layer.getScene();
     var levelHeight = level.getPhysicalSize().height;
@@ -396,7 +398,7 @@ function createSkoros(layer, id, posX, posY) {
         var characterSprites = body.getTotalSprites();
         var index = t * characterSprites / 2000;
         body.setCurrentSprite(index);
-    }, 0, 2000, null, null, true);
+    }, animationOffset, 2000, null, null, true);
 
     createSkorosPouf(layer, id, posX - 1.5 * physicalSize.width, posY - 0.2 * physicalSize.height);
 }
@@ -417,9 +419,9 @@ function createLevel0() {
     layer = new anima.Layer('characters');
     level.addLayer(layer);
     createCharacter(layer);
-    createSkoros(layer, 'skoros-1', 1.5 * WORLD_SCALE, 0.5 * WORLD_SCALE);
-    createSkoros(layer, 'skoros-2', 1.8 * WORLD_SCALE, 0.6 * WORLD_SCALE);
-    createSkoros(layer, 'skoros-3', 1.4 * WORLD_SCALE, 0.8 * WORLD_SCALE);
+    createSkoros(layer, 'skoros-1', 1.5 * WORLD_SCALE, 0.5 * WORLD_SCALE, 0);
+    createSkoros(layer, 'skoros-2', 1.8 * WORLD_SCALE, 0.6 * WORLD_SCALE, 600);
+    createSkoros(layer, 'skoros-3', 1.4 * WORLD_SCALE, 0.8 * WORLD_SCALE, 300);
 
     layer = new anima.Layer('gizmos');
     level.addLayer(layer);

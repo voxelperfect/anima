@@ -133,13 +133,13 @@ anima.Canvas = anima.Node.extend({
         var level = this._currentScene;
         var hasLevel = (level && level._world) ? true : false;
 
-        if (hasLevel) {
+        if (hasLevel && level.isAwake()) {
             this._step(level);
         }
 
         var loopTime = this._animator.animate();
 
-        if (hasLevel) {
+        if (hasLevel && level.isAwake()) {
             level._update();
         }
     },

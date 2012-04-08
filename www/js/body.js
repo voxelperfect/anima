@@ -53,6 +53,8 @@ anima.Body = anima.Node.extend({
         this._calculateCentroidOffset();
 
         this._renderer.updateAll(this);
+
+        this.getLevel()._addDynamicBody(this);
     },
 
     getLevel:function () {
@@ -219,6 +221,7 @@ anima.Body = anima.Node.extend({
     _removeElement:function () {
 
         this.getLevel()._removeNodeWithLogic(this);
+        this.getLevel()._removeDynamicBody(this);
         this._super();
     }
 });

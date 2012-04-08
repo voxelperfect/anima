@@ -6,6 +6,7 @@ anima.Level = anima.Scene.extend({
     _world:null,
 
     _nodesWithLogic:null,
+    _dynamicBodies:null,
 
     init:function (id, physicalWidth, gravity) {
 
@@ -22,6 +23,7 @@ anima.Level = anima.Scene.extend({
         );
 
         this._nodesWithLogic = [];
+        this._dynamicBodies = [];
     },
 
     setBackground:function (color, url, postponeTransform) {
@@ -75,14 +77,29 @@ anima.Level = anima.Scene.extend({
         this._world.SetContactListener(listener);
     },
 
-    /* internal methods */
+    isAwake:function () {
 
-    _addNodeWithLogic: function(node) {
+        var node;
+        for (var id in this._dynamicBodies) {
+            node = this._dynamicBodies[id];
+            if (node._body.IsAwake()) {
+                return true;
+            }
+        }
 
-        this._nodesWithLogic[this._renderer.getElementId(node)] = node;
+        return false;
     },
 
-    _removeNodeWithLogic: function(node) {
+    /* internal methods */
+
+    _addNodeWithLogic:function (node) {
+
+        if (node._logicFn) {
+            this._nodesWithLogic[this._renderer.getElementId(node)] = node;
+        }
+    },
+
+    _removeNodeWithLogic:function (node) {
 
         delete this._nodesWithLogic[this._renderer.getElementId(node)];
     },
@@ -96,20 +113,25 @@ anima.Level = anima.Scene.extend({
         }
     },
 
+    _addDynamicBody:function (node) {
+
+        if (node._body && node._body.GetType() == b2Body.b2_dynamicBody) {
+            this._dynamicBodies[this._renderer.getElementId(node)] = node;
+        }
+    },
+
+    _removeDynamicBody:function (node) {
+
+        delete this._dynamicBodies[this._renderer.getElementId(node)];
+    },
+
     _update:function () {
 
-        var layer, node;
-        var count = this._layers.length;
-        for (var i = 0; i < count; i++) {
-            layer = this._layers[i];
-            for (var j = 0; j < layer._nodes.length; j++) {
-                node = layer._nodes[j];
-                if (node._body
-                    && node._body.IsAwake()
-                    && node._body.GetType() == b2Body.b2_dynamicBody) {
-
-                    this._updateBody(node);
-                }
+        var node;
+        for (var id in this._dynamicBodies) {
+            node = this._dynamicBodies[id];
+            if (node._body.IsAwake()) {
+                this._updateBody(node);
             }
         }
     },
@@ -124,5 +146,4 @@ anima.Level = anima.Scene.extend({
 
         this._renderer.updateAll(node);
     }
-
 });
