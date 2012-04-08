@@ -25,6 +25,10 @@ anima.Animator = Class.extend({
 
     endAnimation:function (id) {
 
+        if (!id) {
+            return;
+        }
+
         var animationId = this._lastAnimationID++;
         this._animationQueue.push({
             id:animationId,
@@ -83,6 +87,7 @@ anima.Animator = Class.extend({
                 continue;
             } else if (animation.endId) {
                 endedAnimations.push(animation.endId);
+                endedAnimations.push(animation.id);
                 continue;
             }
 

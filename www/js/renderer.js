@@ -20,6 +20,28 @@ anima.RendererCSS3 = Class.extend({
         });
     },
 
+    addHtml5Canvas:function (canvas) {
+
+        if (!canvas._type == 'canvas') {
+            return;
+        }
+
+        var html5Canvas = document.createElement("canvas");
+        html5Canvas.id = canvas._id + '_html5Canvas';
+        canvas._element$.append(html5Canvas);
+        canvas._html5canvas$ = $('#' + html5Canvas.id);
+
+        canvas._html5canvas$.css({
+            'padding':'0px !important',
+            'margin':'0px !important',
+            'width':'100% !important',
+            'height':'100% !important',
+            'min-height':'100% !important',
+            'max-height':'100% !important',
+            'overflow':'hidden !important',
+        });
+    },
+
     getElementIdContext:function (parent) {
 
         var id = '';

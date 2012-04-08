@@ -8,6 +8,7 @@ anima.Canvas = anima.Node.extend({
     _sceneMap:[],
     _currentScene:null,
 
+
     init:function (id, adaptive) {
 
         this._super(id);
@@ -19,6 +20,11 @@ anima.Canvas = anima.Node.extend({
         this._animator = new anima.Animator(adaptive);
 
         anima._canvases.push(this);
+    },
+
+    addHtml5Canvas: function() {
+
+        this._renderer.addHtml5Canvas();
     },
 
     getParent:function () {

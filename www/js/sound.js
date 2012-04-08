@@ -44,17 +44,17 @@ anima.Sound = Class.extend({
         }
     },
 
-    play:function () {
+    play:function (options) {
 
         if (!this._sound) {
             this._load();
         }
 
         if (this._sound) {
-            var options = {};
+            var options = $.extend({}, options);
             if (this._loop) {
                 options.onfinish = function () {
-                    this.play();
+                    this.play(options);
                 }
             }
 

@@ -94,6 +94,9 @@ function createPlatformImage(layer, id, platformX, platformY) {
         x:0.5,
         y:0.5
     });
+
+    var bounceSound = new anima.Sound('bounce', 'resources/sounds/bounce.mp3');
+    node.set('bounce', bounceSound);
 }
 
 function createPlatform(layer) {
@@ -310,6 +313,9 @@ function createArrow(layer) {
                 });
                 var platformImage = level.getLayer('environment').getNode('image_platform');
                 animator.addAnimation(function (animator, t) {
+                    if (t == 0) {
+                        platformImage.get('bounce').play();
+                    }
                     var platformSprites = platformImage.getTotalSprites();
                     var index = t * platformSprites / 1000;
                     platformImage.setCurrentSprite(index);
@@ -394,13 +400,50 @@ function createSkoros(layer, id, posX, posY, animationOffset) {
     body.define(bodyDef, fixDef);
 
     var animator = body.getAnimator();
-    animator.addAnimation(function (animator, t) {
+    var moveId = animator.addAnimation(function (animator, t) {
+//        if (t == 0) {
+//            body.get('laugh').play();
+//        }
         var characterSprites = body.getTotalSprites();
         var index = t * characterSprites / 2000;
         body.setCurrentSprite(index);
     }, animationOffset, 2000, null, null, true);
+    body.set('moveId', moveId);
 
     createSkorosPouf(layer, id, posX - 1.5 * physicalSize.width, posY - 0.2 * physicalSize.height);
+
+    var boomSound = new anima.Sound(id + 'boom', 'resources/sounds/boom.mp3');
+    body.set('boom', boomSound);
+    var laughSound = new anima.Sound(id + '_laugh', 'resources/sounds/laugh.mp3');
+    body.set('laugh', laughSound);
+}
+
+function createObstacle(layer, id, imageFile, points, size, posX, posY) {
+
+    var level = layer.getScene();
+    var levelHeight = level.getPhysicalSize().height;
+
+    var body = new anima.Body(id);
+    layer.addNode(body);
+
+    body.setBackground(null, getImageUrl(level, imageFile), size.width, size.height);
+    var physicalSize = body.getPhysicalSize();
+
+    var bodyDef = new b2BodyDef;
+    bodyDef.type = b2Body.b2_staticBody;
+    bodyDef.allowSleep = true;
+    bodyDef.position.x = posX;
+    bodyDef.position.y = posY;
+
+    var fixDef = new b2FixtureDef;
+    fixDef.mass = CHARACTER_MASS;
+    fixDef.friction = 0.5;
+    fixDef.restitution = 0.2;
+    fixDef.svgPoints = points
+    body.define(bodyDef, fixDef);
+
+    var boomSound = new anima.Sound(id + '_boom', 'resources/sounds/boom.mp3');
+    body.set('boom', boomSound);
 }
 
 function createLevel0() {
@@ -420,8 +463,42 @@ function createLevel0() {
     level.addLayer(layer);
     createCharacter(layer);
     createSkoros(layer, 'skoros-1', 1.5 * WORLD_SCALE, 0.5 * WORLD_SCALE, 0);
-    createSkoros(layer, 'skoros-2', 1.8 * WORLD_SCALE, 0.6 * WORLD_SCALE, 600);
-    createSkoros(layer, 'skoros-3', 1.4 * WORLD_SCALE, 0.8 * WORLD_SCALE, 300);
+    createSkoros(layer, 'skoros-2', 1.8 * WORLD_SCALE, 0.6 * WORLD_SCALE, 1200);
+    createSkoros(layer, 'skoros-3', 1.4 * WORLD_SCALE, 0.8 * WORLD_SCALE, 600);
+    createObstacle(layer, 'sock', 'sock', [
+        {x:679.75, y:392.162},
+        {x:619.111, y:451.844},
+        {x:592.373, y:429.88},
+        {x:623.887, y:379.746},
+        {x:620.066, y:280.453},
+        {x:675.444, y:279}
+    ], {
+        width:78,
+        height:169
+    }, 1.0 * WORLD_SCALE, 0.2 * WORLD_SCALE);
+    createObstacle(layer, 'tie', 'tie', [
+        {x:645, y:442.979},
+        {x:594, y:391},
+        {x:628, y:316},
+        {x:600, y:279},
+        {x:696, y:278},
+        {x:663, y:315},
+        {x:680.99, y:412}
+    ], {
+        width:81,
+        height:165
+    }, 1.0 * WORLD_SCALE, 0.55 * WORLD_SCALE);
+    createObstacle(layer, 'slip', 'slip', [
+        {x:227, y:453.379},
+        {x:227, y:382.89},
+        {x:368, y:382.89},
+        {x:368, y:449.171},
+        {x:329, y:483.89},
+        {x:266, y:483.89}
+    ], {
+        width:146,
+        height:108
+    }, 1.0 * WORLD_SCALE, 0.85 * WORLD_SCALE);
 
     layer = new anima.Layer('gizmos');
     level.addLayer(layer);
@@ -430,28 +507,38 @@ function createLevel0() {
 
     level.setContactListener(function (bodyA, bodyB) {
 
-        if (bodyA.getId() == 'character' && bodyB.getId() == 'platform') {
+        var idA = bodyA.getId();
+        var idB = bodyB.getId();
+
+        if (idA == 'character' && idB == 'platform') {
             animateCharacter(bodyA);
             bodyA.get('gazia').play();
             return;
         }
 
-        var defeatedBody = null;
-        if (bodyA.getId() == 'character' && bodyB.getId().startsWith('skoros')) {
-            defeatedBody = bodyB;
-        } else if (bodyB.getId() == 'character' && bodyA.getId().startsWith('skoros')) {
-            defeatedBody = bodyA;
+        if (idA == 'character' && (idB == 'sock' || idB == 'tie' || idB == 'slip')) {
+            bodyB.get('boom').play();
+            bodyB.fadeOut(400, function () {
+                bodyB.hide();
+                var physicalBody = bodyB.getPhysicalBody();
+                physicalBody.SetActive(false);
+                level.getWorld().DestroyBody(physicalBody);
+            });
         }
-        if (defeatedBody) {
-            var animator = defeatedBody.getAnimator();
-            if (defeatedBody.get('hits')) {
-                if (defeatedBody.get('hits') == 1) {
-                    defeatedBody.set('hits', 2);
 
-                    var pouf = defeatedBody.getLayer().getNode('pouf_' + defeatedBody.getId());
+        if (idA == 'character' && idB.startsWith('skoros')) {
+            var animator = bodyB.getAnimator();
+            if (bodyB.get('hits')) {
+                if (bodyB.get('hits') == 1) {
+                    bodyB.set('hits', 2);
+
+                    bodyB.get('boom').play();
+
+                    var pouf = bodyB.getLayer().getNode('pouf_' + bodyB.getId());
                     pouf.show();
-                    animator.endAnimation(defeatedBody.get('pulseId'));
-                    defeatedBody.fadeOut(1000);
+                    animator.endAnimation(bodyB.get('pulseId'));
+                    animator.endAnimation(bodyB.get('moveId'));
+                    bodyB.fadeOut(1000);
 
                     animator.addAnimation(function (animator, t) {
                         var characterSprites = pouf.getTotalSprites();
@@ -459,19 +546,22 @@ function createLevel0() {
                         pouf.setCurrentSprite(index);
                     }, 0, 1000, null, function (animation) {
                         pouf.hide();
-                        var physicalBody = defeatedBody.getPhysicalBody();
+                        var physicalBody = bodyB.getPhysicalBody();
                         physicalBody.SetActive(false);
                         level.getWorld().DestroyBody(physicalBody);
                     });
                 }
             } else {
-                defeatedBody.set('hits', 1);
+                bodyB.set('hits', 1);
+
+                bodyB.get('boom').play();
+
                 var pulseAnimationId = animator.addAnimation(function (animator, t) {
                     var value = animator.interpolate(0.0, 1.0, t);
                     var opacity = (value < 0.5) ? 1.0 - 2 * value : 2 * value - 1;
-                    defeatedBody.getElement().css('opacity', opacity);
+                    bodyB.getElement().css('opacity', opacity);
                 }, 0, 1000, anima.Easing.easeInOutSine, null, true);
-                defeatedBody.set('pulseId', pulseAnimationId);
+                bodyB.set('pulseId', pulseAnimationId);
             }
         }
     });
