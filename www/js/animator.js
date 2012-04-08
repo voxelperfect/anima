@@ -1,4 +1,4 @@
-anima.Animator = new Class({
+anima.Animator = Class.extend({
 
     _adaptive:false,
 
@@ -8,7 +8,7 @@ anima.Animator = new Class({
     _animationLoopTimerID:null,
     _animationTimeStart:0,
 
-    initialize:function (adaptive) {
+    init:function (adaptive) {
 
         this._adaptive = adaptive;
     },

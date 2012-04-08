@@ -1,4 +1,4 @@
-anima.Node = new Class({
+anima.Node = Class.extend({
 
     _type:null,
 
@@ -27,7 +27,7 @@ anima.Node = new Class({
     _dragged:false,
     _draggingHandler:null,
 
-    initialize:function (id) {
+    init:function (id) {
 
         this._id = id;
 
@@ -183,14 +183,14 @@ anima.Node = new Class({
         this._lastSpriteIndex = -1;
     },
 
-    getTotalSprites: function() {
+    getTotalSprites:function () {
 
         return this._spriteGrid ? this._spriteGrid.totalSprites : (this._background && this._background.url ? 1 : 0);
     },
 
     getSpriteGrid:function () {
 
-        return anima.clone(this._spriteGrid);
+        return this._spriteGrid;
     },
 
     setCurrentSprite:function (index) {
@@ -211,7 +211,7 @@ anima.Node = new Class({
 
     getOrigin:function () {
 
-        return anima.clone(this._origin);
+        return this._origin;
     },
 
     setPosition:function (position) {
@@ -222,7 +222,7 @@ anima.Node = new Class({
 
     getPosition:function () {
 
-        return anima.clone(this._position);
+        return this._position;
     },
 
     move:function (dx, dy) {
@@ -240,7 +240,7 @@ anima.Node = new Class({
 
     getScale:function () {
 
-        return anima.clone(this._scale);
+        return this._scale;
     },
 
     scale:function (dsx, dsy) {
@@ -275,7 +275,7 @@ anima.Node = new Class({
 
     getFont:function () {
 
-        return anima.clone(this._font);
+        return this._font;
     },
 
     on:function (eventType, handler) {
@@ -355,12 +355,15 @@ anima._dragHandler = function (event) {
     var node = event.data;
 
     var type = event.type;
+    var which = event.which;
     switch (type) {
         case 'vmousedown':
-            node._dragging = true;
-            node._dragged = false;
-            if (node._draggingHandler) {
-                node._draggingHandler(event, 'dragstart');
+            if (which == 1) {
+                node._dragging = true;
+                node._dragged = false;
+                if (node._draggingHandler) {
+                    node._draggingHandler(event, 'dragstart');
+                }
             }
             break;
         case 'vmousemove':
@@ -372,11 +375,13 @@ anima._dragHandler = function (event) {
             }
             break;
         case 'vmouseup':
-            if (node._dragging && node._dragged) {
-                node._dragging = false;
-                node._dragged = false;
-                if (node._draggingHandler) {
-                    node._draggingHandler(event, 'dragend');
+            if (which == 1) {
+                if (node._dragging && node._dragged) {
+                    node._dragging = false;
+                    node._dragged = false;
+                    if (node._draggingHandler) {
+                        node._draggingHandler(event, 'dragend');
+                    }
                 }
             }
             break;

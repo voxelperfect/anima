@@ -1,6 +1,5 @@
-anima.Body = new Class({
-    Extends:anima.Node,
-
+anima.Body = anima.Node.extend({
+    
     _physicalSize:null,
     _body:null,
 
@@ -8,14 +7,14 @@ anima.Body = new Class({
 
     _logicFn:null,
 
-    initialize:function (id) {
+    init:function (id) {
 
-        this.parent(id);
+        this._super(id);
     },
 
     setBackground:function (color, url, width, height) {
 
-        this.parent(color, url, width, height, true);
+        this._super(color, url, width, height, true);
 
         var level = this._layer._scene;
         var ps = level.getPhysicsScale();
@@ -78,7 +77,7 @@ anima.Body = new Class({
 
     getPhysicalSize:function () {
 
-        return anima.clone(this._physicalSize);
+        return this._physicalSize;
     },
 
     setPhysicalSize:function (physicalSize) {

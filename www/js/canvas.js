@@ -1,17 +1,16 @@
 anima._canvases = [];
 
-anima.Canvas = new Class({
-    Extends:anima.Node,
-
+anima.Canvas = anima.Node.extend({
+    
     _animator:null,
 
     _scenes:[],
     _sceneMap:[],
     _currentScene:null,
 
-    initialize:function (id, adaptive) {
+    init:function (id, adaptive) {
 
-        this.parent(id);
+        this._super(id);
 
         this._type = 'Canvas';
 
@@ -97,7 +96,7 @@ anima.Canvas = new Class({
 
     setBackground:function (color, url, width, height) {
 
-        this.parent(color, url, width, height, true);
+        this._super(color, url, width, height, true);
         this._resize();
     },
 

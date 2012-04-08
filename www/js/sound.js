@@ -1,4 +1,4 @@
-anima.Sound = new Class({
+anima.Sound = Class.extend({
 
     _id:null,
     _url:null,
@@ -6,7 +6,7 @@ anima.Sound = new Class({
 
     _sound:null,
 
-    initialize:function (id, url, loop) {
+    init:function (id, url, loop) {
 
         this._id = id;
         this._url = url;

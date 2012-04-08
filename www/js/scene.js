@@ -1,5 +1,4 @@
-anima.Scene = new Class({
-    Extends:anima.Node,
+anima.Scene = anima.Node.extend({
 
     _canvas:null,
 
@@ -8,9 +7,9 @@ anima.Scene = new Class({
 
     _viewport:null,
 
-    initialize:function (id) {
+    init:function (id) {
 
-        this.parent(id);
+        this._super(id);
 
         this._type = 'Scene';
 
@@ -62,7 +61,7 @@ anima.Scene = new Class({
 
     setBackground:function (color, url, postponeTransform) {
 
-        this.parent(color, url, this._canvas._size.width, this._canvas._size.height, true);
+        this._super(color, url, this._canvas._size.width, this._canvas._size.height, true);
 
         if (!postponeTransform) {
             this._renderer.updateAll(this);
@@ -200,7 +199,7 @@ anima.Scene = new Class({
         this._layers = [];
         this._layerMap = [];
 
-        this.parent();
+        this._super();
     },
 
     /* unsupported methods */

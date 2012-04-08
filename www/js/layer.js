@@ -1,4 +1,4 @@
-anima.Layer = new Class({
+anima.Layer = Class.extend({
 
     _type:null,
 
@@ -16,7 +16,7 @@ anima.Layer = new Class({
     _nodes:[],
     _nodeMap:[],
 
-    initialize:function (id) {
+    init:function (id) {
 
         this._id = id;
 
@@ -108,7 +108,7 @@ anima.Layer = new Class({
 
     getScale:function () {
 
-        return anima.clone(this._scale);
+        return this._scale;
     },
 
     scale:function (dsx, dsy) {

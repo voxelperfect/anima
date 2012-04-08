@@ -1,14 +1,15 @@
-anima.Level = new Class({
-    Extends:anima.Scene,
+anima.Level = anima.Scene.extend({
 
     _physicalSize:null,
     _physicsScale:1.0,
 
     _world:null,
 
-    initialize:function (id, physicalWidth, gravity) {
+    _nodesWithLogic:null,
 
-        this.parent(id);
+    init:function (id, physicalWidth, gravity) {
+
+        this._super(id);
 
         this._physicalSize = {
             width:physicalWidth,
@@ -19,11 +20,13 @@ anima.Level = new Class({
             gravity, // gravity
             true  // allow sleep
         );
+
+        this._nodesWithLogic = [];
     },
 
     setBackground:function (color, url, postponeTransform) {
 
-        this.parent(color, url, postponeTransform);
+        this._super(color, url, postponeTransform);
 
         this._physicsScale = this._size.width / this._physicalSize.width;
         this._physicalSize.height = this._size.height * this._physicalSize.width / this._size.width;
@@ -41,7 +44,7 @@ anima.Level = new Class({
 
     getPhysicalSize:function () {
 
-        return anima.clone(this._physicalSize);
+        return this._physicalSize;
     },
 
     setContactListener:function (listenerFn) {
@@ -73,6 +76,15 @@ anima.Level = new Class({
     },
 
     /* internal methods */
+
+    _addNodeWithLogic: function(node) {
+
+
+    },
+
+    _removeNodeWithLogic: function(node) {
+
+    },
 
     _logic:function () {
 

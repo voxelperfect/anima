@@ -1,6 +1,6 @@
-anima.RendererCSS3 = new Class({
+anima.RendererCSS3 = Class.extend({
 
-    initialize:function () {
+    init:function () {
 
     },
 
