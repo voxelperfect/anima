@@ -69,22 +69,52 @@ function createCommode(layer) {
     body.define(bodyDef, fixDef);
 }
 
+function createPlatformImage(layer, id, platformX, platformY) {
+
+    var level = layer.getScene();
+
+    var posX = platformX * level.getPhysicsScale();
+    var posY = platformY * level.getPhysicsScale();
+
+    var node = new anima.Node('image_' + id);
+    layer.addNode(node);
+
+    node.setBackground(null, getImageUrl(level, 'platform'), 213, 48);
+    var spriteGrid = {
+        rows:6,
+        columns:6,
+        totalSprites:35
+    };
+    node.setSpriteGrid(spriteGrid);
+    node.setPosition({
+        x:posX - 95,
+        y:posY - 30
+    });
+    node.setOrigin({
+        x:0.5,
+        y:0.5
+    });
+}
+
 function createPlatform(layer) {
 
     var level = layer.getScene();
     var levelHeight = level.getPhysicalSize().height;
 
+    var posX = 0.53 * WORLD_SCALE;
+    var posY = levelHeight - 0.31 * WORLD_SCALE;
+
     var body = new anima.Body('platform');
     layer.addNode(body);
 
-    body.setBackground(null, getImageUrl(level, 'platform'), 197, 22);
+    body.setBackground(null, null, 197, 22);
     var physicalSize = body.getPhysicalSize();
     body._physicalSize.height /= 2;
 
     var bodyDef = new b2BodyDef;
     bodyDef.type = b2Body.b2_staticBody;
-    bodyDef.position.x = 0.53 * WORLD_SCALE;
-    bodyDef.position.y = levelHeight - 0.305 * WORLD_SCALE;
+    bodyDef.position.x = posX
+    bodyDef.position.y = posY;
 
     var fixDef = new b2FixtureDef;
     fixDef.shape = new b2PolygonShape;
@@ -93,6 +123,8 @@ function createPlatform(layer) {
     fixDef.shape.SetAsBox(physicalSize.width / 2, physicalSize.height / 2);
 
     body.define(bodyDef, fixDef);
+
+    createPlatformImage(layer, 'platform', posX, posY);
 }
 
 function setCharacterPointsSvg(fixDef) {
@@ -274,6 +306,12 @@ function createArrow(layer) {
                     character.get('sta_papakia').play();
                     character.applyImpulse(arrow.getAngle(), arrow.get('power'));
                 });
+                var platformImage = level.getLayer('environment').getNode('image_platform');
+                animator.addAnimation(function (animator, t) {
+                    var platformSprites = platformImage.getTotalSprites();
+                    var index = t * platformSprites / 1000;
+                    platformImage.setCurrentSprite(index);
+                }, 0, 1000);
             }
         }
     });
@@ -445,7 +483,20 @@ $('#mainPage').live('pageshow', function (event, ui) {
     anima.onResize();
 
     $.mobile.hidePageLoadingMsg();
-    canvas.setCurrentScene('level0');
+
+    var canvasSize = canvas.getSize();
+    var x0 = 0.20 * canvasSize.width;
+    var y0 = 0.44 * canvasSize.height;
+    var level = canvas.getScene('level0');
+    level.setViewport({
+        x1:x0,
+        y1:y0,
+        x2:x0 + 300,
+        y2:y0 + 300
+    });
+    canvas.setCurrentScene('level0', 500, function () {
+        level.setViewport(null, 2000);
+    });
 });
 
 $(function () {

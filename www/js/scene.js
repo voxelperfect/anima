@@ -81,7 +81,12 @@ anima.Scene = anima.Node.extend({
             reset = true;
         }
 
-        var me = this;
+        if (!duration) {
+            duration = 0;
+        }
+        if (!easing) {
+            easing = anima.Easing.transition['ease-in-out-sine'];
+        }
 
         viewport = this._adjustViewAspectRatio(viewport);
 
@@ -93,48 +98,57 @@ anima.Scene = anima.Node.extend({
         var s1 = this._scale.x;
         var s2 = viewport.scale;
 
-        if (anima.cssTransitionEndEvent && anima.isObject(easing)) {
-            var css = {};
-            css[anima.cssVendorPrefix + 'transition-properties'] = 'transform';
-            css[anima.cssVendorPrefix + 'transition-duration'] = duration + 'ms';
-            css[anima.cssVendorPrefix + 'transition-timing-function'] = easing.css;
-            this._element$.css(css);
-
-            this._element$.bind(anima.cssTransitionEndEvent, function () {
-                me._element$.unbind(anima.cssTransitionEndEvent);
-
-                var css = {};
-                css[anima.cssVendorPrefix + 'transition-property'] = '';
-                css[anima.cssVendorPrefix + 'transition-duration'] = '';
-                css[anima.cssVendorPrefix + 'transition-timing-function'] = '';
-                me._element$.css(css);
-
-                if (callbackFn) {
-                    callbackFn(null, viewport);
-                }
-            });
-
+        if (duration == 0) {
             this._scale.x = this._scale.y = s2;
             this._position.x = x2;
             this._position.y = y2;
-            this._renderer.updateTransform(me);
+            this._renderer.updateTransform(this);
         } else {
-            this._canvas._animator.addAnimation(
-                function (animator, dt) {
+            var me = this;
 
-                    me._scale.x = me._scale.y = animator.interpolate(s1, s2, dt);
-                    me._position.x = animator.interpolate(x1, x2, dt);
-                    me._position.y = animator.interpolate(y1, y2, dt);
+            if (anima.cssTransitionEndEvent && anima.isObject(easing)) {
+                var css = {};
+                css[anima.cssVendorPrefix + 'transition-properties'] = 'transform';
+                css[anima.cssVendorPrefix + 'transition-duration'] = duration + 'ms';
+                css[anima.cssVendorPrefix + 'transition-timing-function'] = easing.css;
+                this._element$.css(css);
 
-                    me._renderer.updateTransform(me);
-                },
-                0, duration,
-                easing,
-                function (animation) {
+                this._element$.bind(anima.cssTransitionEndEvent, function () {
+                    me._element$.unbind(anima.cssTransitionEndEvent);
+
+                    var css = {};
+                    css[anima.cssVendorPrefix + 'transition-property'] = '';
+                    css[anima.cssVendorPrefix + 'transition-duration'] = '';
+                    css[anima.cssVendorPrefix + 'transition-timing-function'] = '';
+                    me._element$.css(css);
+
                     if (callbackFn) {
-                        callbackFn(animation, viewport);
+                        callbackFn(null, viewport);
                     }
                 });
+
+                this._scale.x = this._scale.y = s2;
+                this._position.x = x2;
+                this._position.y = y2;
+                this._renderer.updateTransform(me);
+            } else {
+                this._canvas._animator.addAnimation(
+                    function (animator, dt) {
+
+                        me._scale.x = me._scale.y = animator.interpolate(s1, s2, dt);
+                        me._position.x = animator.interpolate(x1, x2, dt);
+                        me._position.y = animator.interpolate(y1, y2, dt);
+
+                        me._renderer.updateTransform(me);
+                    },
+                    0, duration,
+                    easing,
+                    function (animation) {
+                        if (callbackFn) {
+                            callbackFn(animation, viewport);
+                        }
+                    });
+            }
         }
 
         this._viewport = reset ? null : viewport;

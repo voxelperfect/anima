@@ -49,24 +49,24 @@ anima.Canvas = anima.Node.extend({
         return this._sceneMap[id];
     },
 
-    setCurrentScene:function (id, duration) {
+    setCurrentScene:function (id, duration, callbackFn) {
 
         var me = this;
 
         if (!duration) {
-            duration = 1000;
+            duration = 500;
         }
 
         var newScene = this.getScene(id);
         if (newScene) {
             if (this._currentScene) {
                 this._animator.clearAnimations();
-                this._currentScene._element$.fadeOut(duration, function () {
-                    newScene._element$.fadeIn(duration);
+                this._currentScene.fadeOut(duration, function () {
+                    newScene.fadeIn(duration, callbackFn);
                     me._currentScene = newScene;
                 });
             } else {
-                newScene._element$.fadeIn(duration);
+                newScene.fadeIn(duration, callbackFn);
                 this._currentScene = newScene;
             }
         }

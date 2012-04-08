@@ -203,6 +203,11 @@ anima.Node = Class.extend({
         this._renderer.setCurrentSprite(this, index);
     },
 
+    getSize: function() {
+
+        return this._size;
+    },
+
     setOrigin:function (origin) {
 
         this._origin = anima.clone(origin);
