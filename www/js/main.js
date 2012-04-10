@@ -593,7 +593,7 @@ $('#mainPage').live('pageshow', function (event, ui) {
 
 $(function () {
 
-    canvas = new anima.Canvas('main-canvas');
+    canvas = new anima.Canvas('main-canvas', true);
     canvas.setBackground('black', null, 1575, 787);
 
     createLevel0();

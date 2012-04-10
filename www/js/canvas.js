@@ -1,15 +1,8 @@
 anima._canvases = [];
 
 anima.Canvas = anima.Node.extend({
-    
-    _animator:null,
 
-    _scenes:[],
-    _sceneMap:[],
-    _currentScene:null,
-
-
-    init:function (id, adaptive) {
+    init:function (id, debug, adaptive) {
 
         this._super(id);
 
@@ -19,12 +12,16 @@ anima.Canvas = anima.Node.extend({
 
         this._animator = new anima.Animator(adaptive);
 
+        this._scenes = [];
+        this._sceneMap = [];
+        this._currentScene = null;
+
         anima._canvases.push(this);
-    },
 
-    addHtml5Canvas: function() {
-
-        this._renderer.addHtml5Canvas();
+        this._debug = debug;
+        if (debug) {
+            this._renderer.addHtml5Canvas(this);
+        }
     },
 
     getParent:function () {
@@ -48,6 +45,17 @@ anima.Canvas = anima.Node.extend({
         scene._canvas = this;
         scene._animator = this._animator;
         scene._canvas = this;
+
+        if (this._debug && scene._world) {
+            var debugDraw = new b2DebugDraw();
+            debugDraw.SetSprite(this._renderer.getHtml5CanvasContext(this));
+            debugDraw.SetDrawScale(scene._physicsScale);
+            debugDraw.SetFillAlpha(0.3);
+            debugDraw.SetLineThickness(1.0);
+            debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit); // | b2DebugDraw.e_centerOfMassBit);
+
+            scene._world.SetDebugDraw(debugDraw);
+        }
     },
 
     getScene:function (id) {
@@ -133,6 +141,11 @@ anima.Canvas = anima.Node.extend({
             stepsPerformed++;
         }
         level._logic();
+
+        if (this._debug) {
+            level._world.DrawDebugData(true);
+        }
+
         world.ClearForces();
     },
 
@@ -149,6 +162,15 @@ anima.Canvas = anima.Node.extend({
 
         if (hasLevel && level.isAwake()) {
             level._update();
+
+            if (this._debug) {
+                var ctx = this._renderer.getHtml5CanvasContext(this);
+                ctx.beginPath();
+                ctx.rect(-2, 1, this._size.width + 2, this._size.height - 2);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "green";
+                ctx.stroke();
+            }
         }
     },
 

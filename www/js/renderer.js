@@ -28,18 +28,38 @@ anima.RendererCSS3 = Class.extend({
 
         var html5Canvas = document.createElement("canvas");
         html5Canvas.id = canvas._id + '_html5Canvas';
-        canvas._element$.append(html5Canvas);
+        canvas._element$.parent().append(html5Canvas);
         canvas._html5canvas$ = $('#' + html5Canvas.id);
 
         canvas._html5canvas$.css({
-            'padding':'0px !important',
-            'margin':'0px !important',
-            'width':'100% !important',
-            'height':'100% !important',
-            'min-height':'100% !important',
-            'max-height':'100% !important',
-            'overflow':'hidden !important',
+            'position':'absolute',
+            'left':'0px',
+            'top':'0px',
+            'padding':'0px',
+            'margin':'0px'
         });
+
+        canvas._html5canvas$.css({
+            'width':'100%',
+            'height':'100%',
+            'min-height':'100%',
+            'max-height':'100%'
+        });
+
+        canvas._html5canvas$.css({
+            'overflow':'hidden',
+            'pointer-events':'none',
+            'z-index':10000
+        });
+    },
+
+    getHtml5CanvasContext:function (canvas) {
+
+        if (canvas._html5canvas$) {
+            return canvas._html5canvas$[0].getContext("2d");
+        } else {
+            return null;
+        }
     },
 
     getElementIdContext:function (parent) {
@@ -119,6 +139,12 @@ anima.RendererCSS3 = Class.extend({
         }
 
         node._element$.css(css);
+
+        if (node._html5canvas$) {
+            var canvas = node._html5canvas$[0];
+            canvas.width = node._size.width;
+            canvas.height = node._size.height;
+        }
     },
 
     setCurrentSprite:function (node, index) {
