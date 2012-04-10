@@ -1,13 +1,5 @@
 anima.Level = anima.Scene.extend({
 
-    _physicalSize:null,
-    _physicsScale:1.0,
-
-    _world:null,
-
-    _nodesWithLogic:null,
-    _dynamicBodies:null,
-
     init:function (id, physicalWidth, gravity) {
 
         this._super(id);
@@ -15,7 +7,8 @@ anima.Level = anima.Scene.extend({
         this._physicalSize = {
             width:physicalWidth,
             height:null
-        }
+        };
+        this._physicsScale = 1.0;
 
         this._world = new b2World(
             gravity, // gravity

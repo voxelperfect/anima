@@ -1,21 +1,5 @@
 anima.Layer = Class.extend({
 
-    _type:null,
-
-    _id:null,
-    _scene:null,
-
-    _scale:null,
-
-    _data:null,
-
-    _canvas:null,
-    _animator:null,
-    _renderer:null,
-
-    _nodes:[],
-    _nodeMap:[],
-
     init:function (id) {
 
         this._id = id;
@@ -28,6 +12,9 @@ anima.Layer = Class.extend({
         };
 
         this._data = {};
+
+        this._nodes = [];
+        this._nodeMap = [];
 
         this._renderer = anima.defaultRenderer;
     },

@@ -1,16 +1,12 @@
 anima.Sound = Class.extend({
 
-    _id:null,
-    _url:null,
-    _loop:false,
-
-    _sound:null,
-
     init:function (id, url, loop) {
 
         this._id = id;
         this._url = url;
         this._loop = loop;
+
+        this._sound = null;
     },
 
     toggle:function () {

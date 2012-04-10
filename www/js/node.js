@@ -1,32 +1,5 @@
 anima.Node = Class.extend({
 
-    _type:null,
-
-    _id:null,
-    _layer:null,
-
-    _position:null,
-    _size:null,
-    _scale:null,
-    _origin:null,
-    _angle:0,
-
-    _font:null,
-
-    _background:null,
-    _spriteGrid:null,
-    _lastSpriteIndex:-1,
-
-    _data:null,
-
-    _canvas:null,
-    _animator:null,
-    _renderer:null,
-
-    _dragging:false,
-    _dragged:false,
-    _draggingHandler:null,
-
     init:function (id) {
 
         this._id = id;
@@ -65,6 +38,10 @@ anima.Node = Class.extend({
         this._data = {};
 
         this._renderer = anima.defaultRenderer;
+
+        this._dragging = false;
+        this._dragged = false;
+        this._draggingHandler = null;
     },
 
     getId:function () {
@@ -203,7 +180,7 @@ anima.Node = Class.extend({
         this._renderer.setCurrentSprite(this, index);
     },
 
-    getSize: function() {
+    getSize:function () {
 
         return this._size;
     },

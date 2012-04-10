@@ -40,7 +40,7 @@ anima.Canvas = anima.Node.extend({
     addScene:function (scene) {
 
         this._renderer.createElement(this, scene);
-        scene._element$.hide();
+        scene.hide();
 
         this._scenes.push(scene);
         this._sceneMap[scene._id] = scene;

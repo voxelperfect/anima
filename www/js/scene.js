@@ -1,12 +1,5 @@
 anima.Scene = anima.Node.extend({
 
-    _canvas:null,
-
-    _layers:[],
-    _layerMap:[],
-
-    _viewport:null,
-
     init:function (id) {
 
         this._super(id);
@@ -15,6 +8,11 @@ anima.Scene = anima.Node.extend({
 
         this._origin.x = 0;
         this._origin.y = 0;
+
+        this._layers = [];
+        this._layerMap = [];
+
+        this._viewport = null;
     },
 
     getCanvas:function () {
@@ -98,6 +96,8 @@ anima.Scene = anima.Node.extend({
         var s1 = this._scale.x;
         var s2 = viewport.scale;
 
+        var element$ = this.getElement();
+
         if (duration == 0) {
             this._scale.x = this._scale.y = s2;
             this._position.x = x2;
@@ -111,16 +111,16 @@ anima.Scene = anima.Node.extend({
                 css[anima.cssVendorPrefix + 'transition-properties'] = 'transform';
                 css[anima.cssVendorPrefix + 'transition-duration'] = duration + 'ms';
                 css[anima.cssVendorPrefix + 'transition-timing-function'] = easing.css;
-                this._element$.css(css);
+                element$.css(css);
 
-                this._element$.bind(anima.cssTransitionEndEvent, function () {
-                    me._element$.unbind(anima.cssTransitionEndEvent);
+                element$.bind(anima.cssTransitionEndEvent, function () {
+                    element$.unbind(anima.cssTransitionEndEvent);
 
                     var css = {};
                     css[anima.cssVendorPrefix + 'transition-property'] = '';
                     css[anima.cssVendorPrefix + 'transition-duration'] = '';
                     css[anima.cssVendorPrefix + 'transition-timing-function'] = '';
-                    me._element$.css(css);
+                    element$.css(css);
 
                     if (callbackFn) {
                         callbackFn(null, viewport);

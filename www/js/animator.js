@@ -1,16 +1,14 @@
 anima.Animator = Class.extend({
 
-    _adaptive:false,
-
-    _animationQueue:[],
-    _lastAnimationID:0,
-
-    _animationLoopTimerID:null,
-    _animationTimeStart:0,
-
     init:function (adaptive) {
 
         this._adaptive = adaptive;
+
+        this._animationQueue = [];
+        this._lastAnimationID = 0;
+
+        this._animationLoopTimerID = null;
+        this._animationTimeStart = 0;
     },
 
     addTask:function (taskFn) {

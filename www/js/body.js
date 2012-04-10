@@ -1,15 +1,15 @@
 anima.Body = anima.Node.extend({
 
-    _physicalSize:null,
-    _body:null,
-
-    _centroidOffset:null,
-
-    _logicFn:null,
-
     init:function (id) {
 
         this._super(id);
+
+        this._physicalSize = null;
+        this._body = null;
+
+        this._centroidOffset = null;
+
+        this._logicFn = null;
     },
 
     setBackground:function (color, url, width, height) {
