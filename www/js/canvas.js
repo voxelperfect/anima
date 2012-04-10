@@ -76,6 +76,8 @@ anima.Canvas = anima.Node.extend({
                 this._currentScene = newScene;
             }
         }
+
+        return newScene;
     },
 
     getCurrentScene:function () {
