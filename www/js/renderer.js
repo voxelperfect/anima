@@ -28,7 +28,7 @@ anima.RendererCSS3 = Class.extend({
 
         var html5Canvas = document.createElement("canvas");
         html5Canvas.id = canvas._id + '_html5Canvas';
-        canvas._element$.parent().append(html5Canvas);
+        canvas._element$.append(html5Canvas);
         canvas._html5canvas$ = $('#' + html5Canvas.id);
 
         canvas._html5canvas$.css({
@@ -139,12 +139,6 @@ anima.RendererCSS3 = Class.extend({
         }
 
         node._element$.css(css);
-
-        if (node._html5canvas$) {
-            var canvas = node._html5canvas$[0];
-            canvas.width = node._size.width;
-            canvas.height = node._size.height;
-        }
     },
 
     setCurrentSprite:function (node, index) {
@@ -218,11 +212,22 @@ anima.RendererCSS3 = Class.extend({
         });
     },
 
+    updateHtml5Canvas:function (node) {
+
+        if (node._html5canvas$) {
+            var canvas = node._html5canvas$[0];
+            canvas.width = node._size.width;
+            canvas.height = node._size.height;
+        }
+    },
+
     updateAll:function (node) {
 
         this.updateOrigin(node);
         this.updateSize(node);
         this.updateTransform(node);
+
+        this.updateHtml5Canvas(node);
     },
 
     on:function (node, eventType, handler) {
@@ -253,6 +258,15 @@ anima.RendererIE = new Class({
 
         this.parent(canvas);
         this._addScaledBoxMethod(canvas);
+    },
+
+    addHtml5Canvas:function (canvas) {
+
+    },
+
+    getHtml5CanvasContext:function (canvas) {
+
+        return null;
     },
 
     createElement:function (parent, node) {
@@ -306,6 +320,10 @@ anima.RendererIE = new Class({
     },
 
     updateSize:function (node) {
+
+    },
+
+    updateHtml5Canvas:function (node) {
 
     },
 

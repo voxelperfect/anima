@@ -25,6 +25,17 @@ anima.Level = anima.Scene.extend({
 
         this._physicsScale = this._size.width / this._physicalSize.width;
         this._physicalSize.height = this._size.height * this._physicalSize.width / this._size.width;
+
+        if (this._canvas._debug) {
+            var debugDraw = new b2DebugDraw();
+            debugDraw.SetSprite(this._renderer.getHtml5CanvasContext(this._canvas));
+            debugDraw.SetDrawScale(this._physicsScale);
+            debugDraw.SetFillAlpha(0.5);
+            debugDraw.SetLineThickness(1.0);
+            debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit); // | b2DebugDraw.e_centerOfMassBit);
+
+            this._world.SetDebugDraw(debugDraw);
+        }
     },
 
     getWorld:function () {

@@ -27,7 +27,7 @@ function createDebugBox(layer) {
     var node = new anima.Node('debugBox');
     layer.addNode(node);
 
-    node.setBackground(null, null, 1200, 30);
+    node.setBackground(null, null, layer.getScene().getSize().width, 30);
     node.setPosition({
         x:0,
         y:0
@@ -189,7 +189,7 @@ function createCharacter(layer) {
     bodyDef.linearDamping = LINEAR_DAMPING;
     bodyDef.position.x = characterPosX;
     bodyDef.position.y = characterPosY;
-    bodyDef.fixedRotation = false;
+    //bodyDef.fixedRotation = false;
 
     var fixDef = new b2FixtureDef;
     fixDef.mass = CHARACTER_MASS;
@@ -593,7 +593,7 @@ $('#mainPage').live('pageshow', function (event, ui) {
 
 $(function () {
 
-    canvas = new anima.Canvas('main-canvas', true);
+    canvas = new anima.Canvas('main-canvas', DEBUG);
     canvas.setBackground('black', null, 1575, 787);
 
     createLevel0();
