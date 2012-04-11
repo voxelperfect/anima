@@ -129,12 +129,12 @@ anima.Canvas = anima.Node.extend({
             world.Step(deltaTime, this._VELOCITY_ITERATIONS, this._POSITION_ITERATIONS);
             stepsPerformed++;
         }
+
         level._logic();
 
         if (this._debug) {
             level._world.DrawDebugData(true);
         }
-
         world.ClearForces();
     },
 
@@ -142,16 +142,19 @@ anima.Canvas = anima.Node.extend({
 
         var level = this._currentScene;
         var hasLevel = (level && level._world) ? true : false;
+        var sleeping = hasLevel ? !level.isAwake() : true;
 
-        if (hasLevel && level.isAwake()) {
-            this._step(level);
+        if (hasLevel && !sleeping) {
+            this._step(level, sleeping);
         }
 
         var loopTime = this._animator.animate();
 
-        if (hasLevel && level.isAwake()) {
+        if (!sleeping) {
             level._update();
         }
+
+        this._wasSleeping = sleeping;
     },
 
     _getImageUrls:function (urls) {
@@ -179,7 +182,6 @@ anima.Canvas = anima.Node.extend({
         var offsetX = 0;
         var offsetY = 0;
         var width = targetWidth;
-        var height = targetHeight;
 
         var requiredWidth = sourceWidth * targetHeight / sourceHeight;
         if (requiredWidth < targetWidth) {
@@ -188,7 +190,6 @@ anima.Canvas = anima.Node.extend({
         } else {
             var requiredHeight = sourceHeight * targetWidth / sourceWidth;
             offsetY = (targetHeight - requiredHeight) / 2;
-            height = requiredHeight;
         }
 
         var scale = width / sourceWidth;

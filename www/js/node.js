@@ -49,6 +49,11 @@ anima.Node = Class.extend({
         return this._id;
     },
 
+    isVisible:function () {
+
+        return anima.isVisible(this.getElement());
+    },
+
     getImageUrl:function () {
 
         return this._background.url;
@@ -341,10 +346,18 @@ anima._dragHandler = function (event) {
     switch (type) {
         case 'vmousedown':
             if (which == 1) {
-                node._dragging = true;
-                node._dragged = false;
-                if (node._draggingHandler) {
-                    node._draggingHandler(event, 'dragstart');
+                if (node._dragging && node._dragged) {
+                    node._dragging = false;
+                    node._dragged = false;
+                    if (node._draggingHandler) {
+                        node._draggingHandler(event, 'dragend');
+                    }
+                } else {
+                    node._dragging = true;
+                    node._dragged = false;
+                    if (node._draggingHandler) {
+                        node._draggingHandler(event, 'dragstart');
+                    }
                 }
             }
             break;

@@ -146,7 +146,7 @@ anima.Level = anima.Scene.extend({
         node._position.x = (center.x /* + node._centroidOffset.x */) * this._physicsScale;
         node._position.y = (center.y /* + node._centroidOffset.y */) * this._physicsScale;
 
-        node._angle = node._body.GetAngle();
+        node._angle = -node._body.GetAngle();
 
         this._renderer.updateAll(node);
     }

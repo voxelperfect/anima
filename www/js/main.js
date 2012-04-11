@@ -164,13 +164,30 @@ function setCharacterPointsPolys(level, fixDef) {
     ];
 }
 
+function resetCharacter(body, characterPosX, characterPosY, arrow) {
+
+    var animator = body.getAnimator();
+    animator.endAnimation(body.get('animationId'));
+
+    var physicalBody = body.getPhysicalBody();
+    physicalBody.SetPositionAndAngle(new b2Vec2(characterPosX, characterPosY), 0);
+    physicalBody.SetLinearVelocity(new b2Vec2(0, 0));
+    physicalBody.SetAngularVelocity(0);
+    physicalBody.SetAwake(true);
+
+    arrow.setAngle(anima.toRadians(40));
+    var power = 0.0;
+    arrow.set('power', power * CHARACTER_IMPULSE);
+    arrow.setCurrentSprite(power * arrow.getTotalSprites());
+    arrow.fadeIn();
+}
+
 function createCharacter(layer) {
 
     var characterPosX = 0.5 * WORLD_SCALE;
     var characterPosY = 0.1 * WORLD_SCALE; //0.6;
 
     var level = layer.getScene();
-    var levelHeight = level.getPhysicalSize().height;
 
     var body = new anima.Body('character');
     layer.addNode(body);
@@ -181,7 +198,6 @@ function createCharacter(layer) {
         columns:8,
         totalSprites:52
     });
-    var physicalSize = body.getPhysicalSize();
 
     var bodyDef = new b2BodyDef;
     bodyDef.type = b2Body.b2_dynamicBody;
@@ -193,6 +209,7 @@ function createCharacter(layer) {
 
     var fixDef = new b2FixtureDef;
     fixDef.mass = CHARACTER_MASS;
+    fixDef.density = 1;
     fixDef.friction = 0.5;
     fixDef.restitution = 0.2;
     //setCharacterPointsPolys(level, fixDef);
@@ -203,22 +220,18 @@ function createCharacter(layer) {
 
         var level = body.getLevel();
         var physicalBody = body.getPhysicalBody();
+
+//        if (sleeping) {
+//            if (!arrow.isVisible()) {
+//                resetCharacter(body, characterPosX, characterPosY, arrow);
+//            }
+//        } else
+
         if (physicalBody.IsAwake()) {
             var center = physicalBody.GetWorldCenter();
             if (center.y < 0 || center.y > level.getPhysicalSize().height) {
-                var animator = body.getAnimator();
-                animator.endAnimation(body.get('animationId'));
-
-                physicalBody.SetPositionAndAngle(new b2Vec2(characterPosX, characterPosY), 0);
-                physicalBody.SetLinearVelocity(new b2Vec2(0, 0));
-                physicalBody.SetAngularVelocity(0);
-
                 var arrow = level.getLayer('gizmos').getNode('arrow');
-                arrow.setAngle(anima.toRadians(40));
-                var power = 0.0;
-                arrow.set('power', power * CHARACTER_IMPULSE);
-                arrow.setCurrentSprite(power * arrow.getTotalSprites());
-                arrow.fadeIn();
+                resetCharacter(body, characterPosX, characterPosY, arrow);
             }
         }
     });
@@ -437,6 +450,7 @@ function createObstacle(layer, id, imageFile, points, size, posX, posY) {
 
     var fixDef = new b2FixtureDef;
     fixDef.mass = CHARACTER_MASS;
+    fixDef.density = 1;
     fixDef.friction = 0.5;
     fixDef.restitution = 0.2;
     fixDef.svgPoints = points
