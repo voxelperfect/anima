@@ -1,9 +1,9 @@
 var canvas = null;
 
-// http://www.hobistic.com/anima/deploy/index.html?scale=18.0&mass=2&impulse=14&gravity=7&damp=0.2&debug=true
+// http://www.hobistic.com/anima/deploy/index.html?scale=18.0&density=4&impulse=14&gravity=7&damp=0.2&debug=true
 var DEBUG = anima.getRequestParameter('debug');
 var WORLD_SCALE = parseFloat(anima.getRequestParameter('scale', '18.0'));
-var CHARACTER_MASS = parseFloat(anima.getRequestParameter('mass', '2.0'));
+var CHARACTER_DENSITY = parseFloat(anima.getRequestParameter('density', '2.0'));
 var CHARACTER_IMPULSE = parseFloat(anima.getRequestParameter('impulse', '14.0'));
 var GRAVITY = parseFloat(anima.getRequestParameter('gravity', '7.0'));
 var LINEAR_DAMPING = parseFloat(anima.getRequestParameter('damp', '0.2'));
@@ -164,22 +164,29 @@ function setCharacterPointsPolys(level, fixDef) {
     ];
 }
 
-function resetCharacter(body, characterPosX, characterPosY, arrow) {
+function resetCharacter(character, characterPosX, characterPosY) {
 
-    var animator = body.getAnimator();
-    animator.endAnimation(body.get('animationId'));
+    if (character.get('inAction')) {
+        character.set('inAction', false);
 
-    var physicalBody = body.getPhysicalBody();
-    physicalBody.SetPositionAndAngle(new b2Vec2(characterPosX, characterPosY), 0);
-    physicalBody.SetLinearVelocity(new b2Vec2(0, 0));
-    physicalBody.SetAngularVelocity(0);
-    physicalBody.SetAwake(true);
+        var animator = character.getAnimator();
+        animator.endAnimation(character.get('animationId'));
 
-    arrow.setAngle(anima.toRadians(40));
-    var power = 0.0;
-    arrow.set('power', power * CHARACTER_IMPULSE);
-    arrow.setCurrentSprite(power * arrow.getTotalSprites());
-    arrow.fadeIn();
+        var physicalBody = character.getPhysicalBody();
+        physicalBody.SetPositionAndAngle(new b2Vec2(characterPosX, characterPosY), 0);
+        physicalBody.SetLinearVelocity(new b2Vec2(0, 0));
+        physicalBody.SetAngularVelocity(0);
+    }
+}
+
+function characterOnCommode(level, center, character) {
+
+    var commodeLB = level.getLayer('environment').getNode('commode').getAABB().lowerBound;
+    var platformUB = level.getLayer('environment').getNode('platform').getAABB().upperBound;
+    var physicalSize = character.getPhysicalSize();
+
+    return (center.x < platformUB.x
+        && (Math.abs(center.y - commodeLB.y) < physicalSize.height / 2));
 }
 
 function createCharacter(layer) {
@@ -208,30 +215,33 @@ function createCharacter(layer) {
     //bodyDef.fixedRotation = false;
 
     var fixDef = new b2FixtureDef;
-    fixDef.mass = CHARACTER_MASS;
-    fixDef.density = 1;
+    fixDef.density = CHARACTER_DENSITY;
     fixDef.friction = 0.5;
     fixDef.restitution = 0.2;
     //setCharacterPointsPolys(level, fixDef);
     setCharacterPointsSvg(fixDef);
     body.define(bodyDef, fixDef);
 
+    var physicalBody = body.getPhysicalBody();
+
+    body.setAwakeListener(function (body, awake) {
+
+        if (!awake) {
+            var center = physicalBody.GetWorldCenter();
+            if (characterOnCommode(level, center, body)) {
+                resetCharacter(body, characterPosX, characterPosY);
+            }
+        }
+    });
+
     body.setLogic(function (body) {
-
-        var level = body.getLevel();
-        var physicalBody = body.getPhysicalBody();
-
-//        if (sleeping) {
-//            if (!arrow.isVisible()) {
-//                resetCharacter(body, characterPosX, characterPosY, arrow);
-//            }
-//        } else
 
         if (physicalBody.IsAwake()) {
             var center = physicalBody.GetWorldCenter();
-            if (center.y < 0 || center.y > level.getPhysicalSize().height) {
-                var arrow = level.getLayer('gizmos').getNode('arrow');
-                resetCharacter(body, characterPosX, characterPosY, arrow);
+            if (center.y < 0 || center.y > level.getPhysicalSize().height
+                || center.x < 0) {
+
+                resetCharacter(body, characterPosX, characterPosY);
             }
         }
     });
@@ -248,14 +258,16 @@ function animateCharacter(character) {
 
     var animationId = character.get('animationId');
     if (animationId) {
-        animator.endAnimation(animationId);
+        return;
     }
 
     animationId = animator.addAnimation(function (animator, t) {
         var characterSprites = character.getTotalSprites();
         var index = t * characterSprites / 2000;
         character.setCurrentSprite(index);
-    }, 0, 2000);
+    }, 0, 2000, null, function () {
+        character.set('inRestAnimation', false);
+    });
     character.set('animationId', animationId);
 }
 
@@ -307,7 +319,7 @@ function createArrow(layer) {
             if (DEBUG) {
                 debug(layer, ''
                     + ' | scale:' + WORLD_SCALE.toFixed(1)
-                    + ' | mass:' + CHARACTER_MASS.toFixed(1)
+                    + ' | density:' + CHARACTER_DENSITY.toFixed(1)
                     + ' | angle:' + anima.round(anima.toDegrees(theta - Math.PI / 2))
                     + ' | impulse: ' + (power * CHARACTER_IMPULSE).toFixed(2) + ' (' + power.toFixed(2) + ')'
                     + ' | gravity:' + GRAVITY.toFixed(2)
@@ -323,6 +335,7 @@ function createArrow(layer) {
                 animator.addTask(function (loopTime) {
                     character.get('sta_papakia').play();
                     character.applyImpulse(arrow.getAngle(), arrow.get('power'));
+                    character.set('inAction', true);
                 });
                 var platformImage = level.getLayer('environment').getNode('image_platform');
                 animator.addAnimation(function (animator, t) {
@@ -336,6 +349,17 @@ function createArrow(layer) {
             }
         }
     });
+}
+
+function resetArrow(level) {
+
+    var arrow = level.getLayer('gizmos').getNode('arrow');
+
+    arrow.setAngle(anima.toRadians(40));
+    var power = 0.0;
+    arrow.set('power', power * CHARACTER_IMPULSE);
+    arrow.setCurrentSprite(power * arrow.getTotalSprites());
+    arrow.fadeIn();
 }
 
 function createSkorosPouf(layer, id, skorosX, skorosY) {
@@ -398,7 +422,7 @@ function createSkoros(layer, id, posX, posY, animationOffset) {
     bodyDef.fixedRotation = false;
 
     var fixDef = new b2FixtureDef;
-    fixDef.mass = 1.0;
+    fixDef.density = CHARACTER_DENSITY;
     fixDef.friction = 0.5;
     fixDef.restitution = 0.2;
     fixDef.svgPoints = [
@@ -449,8 +473,7 @@ function createObstacle(layer, id, imageFile, points, size, posX, posY) {
     bodyDef.position.y = posY;
 
     var fixDef = new b2FixtureDef;
-    fixDef.mass = CHARACTER_MASS;
-    fixDef.density = 1;
+    fixDef.density = CHARACTER_DENSITY;
     fixDef.friction = 0.5;
     fixDef.restitution = 0.2;
     fixDef.svgPoints = points
@@ -525,8 +548,12 @@ function createLevel0() {
         var idB = bodyB.getId();
 
         if (idA == 'character' && idB == 'platform') {
-            animateCharacter(bodyA);
-            bodyA.get('gazia').play();
+            if (!bodyA.get('inRestAnimation')) {
+                bodyA.set('inRestAnimation', true);
+                animateCharacter(bodyA);
+                bodyA.get('gazia').play();
+                resetArrow(level);
+            }
             return;
         }
 

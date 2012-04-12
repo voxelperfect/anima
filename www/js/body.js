@@ -10,6 +10,9 @@ anima.Body = anima.Node.extend({
         this._centroidOffset = null;
 
         this._logicFn = null;
+
+        this._wasAwake = false;
+        this._awakeListenerFn = null;
     },
 
     setBackground:function (color, url, width, height) {
@@ -99,7 +102,28 @@ anima.Body = anima.Node.extend({
             this._body.GetWorldCenter());
     },
 
+    getAABB: function() {
+
+        return this._body.GetFixtureList().GetAABB();
+    },
+
+    setAwakeListener: function(listenerFn) {
+
+        this._awakeListenerFn = listenerFn;
+    },
+
     /* internal methods */
+
+    _checkAwake: function() {
+
+        var awake = this._body.IsAwake();
+        if (awake != this._wasAwake && this._awakeListenerFn) {
+            this._awakeListenerFn(this, awake);
+        }
+        this._wasAwake = awake;
+
+        return awake;
+    },
 
     _createPolygonShapes:function (fixDef) {
 

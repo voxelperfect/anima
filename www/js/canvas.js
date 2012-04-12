@@ -140,21 +140,23 @@ anima.Canvas = anima.Node.extend({
 
     _update:function () {
 
-        var level = this._currentScene;
-        var hasLevel = (level && level._world) ? true : false;
-        var sleeping = hasLevel ? !level.isAwake() : true;
+        var scene = this._currentScene;
+        if (scene && scene._world) {
+            var sleeping = !scene.isAwake();
+            if (!sleeping) {
+                this._step(scene, sleeping);
+            }
 
-        if (hasLevel && !sleeping) {
-            this._step(level, sleeping);
+            this._animator.animate();
+
+            if (!sleeping) {
+                scene._update();
+            }
+
+            return;
         }
 
-        var loopTime = this._animator.animate();
-
-        if (!sleeping) {
-            level._update();
-        }
-
-        this._wasSleeping = sleeping;
+        this._animator.animate();
     },
 
     _getImageUrls:function (urls) {

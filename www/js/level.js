@@ -53,7 +53,7 @@ anima.Level = anima.Scene.extend({
         return this._physicalSize;
     },
 
-    setContactListener:function (listenerFn) {
+    setContactListener:function (onBeginContactFn, onEndContact, onPreSolveFn, OnPostSolveFn) {
 
         var me = this;
 
@@ -63,7 +63,7 @@ anima.Level = anima.Scene.extend({
 
             var bodyA = contact.GetFixtureA().GetBody().GetUserData().node;
             var bodyB = contact.GetFixtureB().GetBody().GetUserData().node;
-            listenerFn(bodyA, bodyB);
+            onBeginContactFn(bodyA, bodyB);
         };
 
         listener.EndContact = function (contact) {
@@ -113,6 +113,7 @@ anima.Level = anima.Scene.extend({
         var node;
         for (var id in this._nodesWithLogic) {
             node = this._nodesWithLogic[id];
+            node._checkAwake();
             node._logicFn(node);
         }
     },
