@@ -228,9 +228,14 @@ function createCharacter(layer) {
 
         if (!awake) {
             var center = physicalBody.GetWorldCenter();
-            if (characterOnCommode(level, center, body)) {
-                resetCharacter(body, characterPosX, characterPosY);
-            }
+            body.getAnimator().addTask(function () {
+                if (body.get('inAction')
+                    && !body.getPhysicalBody().IsAwake()
+                    && characterOnCommode(level, center, body)) {
+
+                    resetCharacter(body, characterPosX, characterPosY);
+                }
+            }, 2000);
         }
     });
 

@@ -11,12 +11,13 @@ anima.Animator = Class.extend({
         this._animationTimeStart = 0;
     },
 
-    addTask:function (taskFn) {
+    addTask:function (taskFn, delay) {
 
         var animationId = this._lastAnimationID++;
         this._animationQueue.push({
             id:animationId,
-            taskFn:taskFn
+            taskFn:taskFn,
+            delay:delay
         });
         return animationId;
     },
@@ -35,13 +36,13 @@ anima.Animator = Class.extend({
         return animationId;
     },
 
-    addAnimation:function (interpolateValuesFn, startTime, duration, easing, onAnimationEndedFn, loop) {
+    addAnimation:function (interpolateValuesFn, delay, duration, easing, onAnimationEndedFn, loop) {
 
         var animationId = this._lastAnimationID++;
         this._animationQueue.push({
             id:animationId,
             interpolateValuesFn:interpolateValuesFn,
-            startTime:startTime,
+            delay:delay,
             duration:duration,
             easing:easing,
             onAnimationEndedFn:onAnimationEndedFn,
@@ -80,17 +81,22 @@ anima.Animator = Class.extend({
             animation = animationQueue[i];
 
             if (animation.taskFn) {
-                animation.taskFn(loopTime);
-                endedAnimations.push(animation.id);
-                continue;
+                if (!animation.delay) {
+                    animation.taskFn(loopTime);
+                    endedAnimations.push(animation.id);
+                    continue;
+                }
             } else if (animation.endId) {
                 endedAnimations.push(animation.endId);
                 endedAnimations.push(animation.id);
                 continue;
             }
 
-            if (animation.startTime == 0) {
+            if (!animation.startTime) {
                 animation.startTime = loopTime;
+                if (animation.delay) {
+                    animation.startTime += animation.delay;
+                }
                 animation.frame = 0;
                 animation.totalFrames = Math.round(0.5 + animation.duration * anima.frameRate / 1000.0);
             }
@@ -101,6 +107,10 @@ anima.Animator = Class.extend({
             } else {
                 t = loopTime - animation.startTime;
             }
+            if (t < 0.0) {
+                continue; // delay set by startTime
+            }
+
             end = (t > animation.duration);
             if (end) {
                 t = animation.duration;
@@ -110,7 +120,9 @@ anima.Animator = Class.extend({
             if (easingFn) {
                 t = easingFn(null, t, 0.0, 1.0, animation.duration);
             }
-            animation.interpolateValuesFn(this, t);
+            if (animation.interpolateValuesFn) {
+                animation.interpolateValuesFn(this, t);
+            }
 
             if (end) {
                 if (animation.loop) {
