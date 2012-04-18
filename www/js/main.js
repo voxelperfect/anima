@@ -1,12 +1,12 @@
 var canvas = null;
 
-// http://www.hobistic.com/anima/deploy/index.html?scale=18.0&density=4&impulse=14&gravity=7&damp=0.2&debug=true
+// http://localhost/hobistic/anima/www/index.html?scale=18.0&density=2&impulse=300&gravity=9.81&damp=0.4&debug=true
 var DEBUG = anima.getRequestParameter('debug');
 var WORLD_SCALE = parseFloat(anima.getRequestParameter('scale', '18.0'));
 var CHARACTER_DENSITY = parseFloat(anima.getRequestParameter('density', '2.0'));
-var CHARACTER_IMPULSE = parseFloat(anima.getRequestParameter('impulse', '14.0'));
-var GRAVITY = parseFloat(anima.getRequestParameter('gravity', '7.0'));
-var LINEAR_DAMPING = parseFloat(anima.getRequestParameter('damp', '0.2'));
+var CHARACTER_IMPULSE = parseFloat(anima.getRequestParameter('impulse', '300.0'));
+var GRAVITY = parseFloat(anima.getRequestParameter('gravity', '9.81'));
+var LINEAR_DAMPING = parseFloat(anima.getRequestParameter('damp', '0.4'));
 
 function getImageUrl(level, imageName, extension) {
 
@@ -276,6 +276,7 @@ function animateCharacter(character) {
         character.setCurrentSprite(index);
     }, 0, 2000, null, function () {
         character.set('inRestAnimation', false);
+        character.set('animationId', null);
     });
     character.set('animationId', animationId);
 }
