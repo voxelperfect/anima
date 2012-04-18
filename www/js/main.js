@@ -176,6 +176,8 @@ function resetCharacter(character, characterPosX, characterPosY) {
         physicalBody.SetPositionAndAngle(new b2Vec2(characterPosX, characterPosY), 0);
         physicalBody.SetLinearVelocity(new b2Vec2(0, 0));
         physicalBody.SetAngularVelocity(0);
+
+        physicalBody.SetAwake(true);
     }
 }
 
@@ -234,6 +236,7 @@ function createCharacter(layer) {
                     && characterOnCommode(level, center, body)) {
 
                     resetCharacter(body, characterPosX, characterPosY);
+                    resetArrow(level);
                 }
             }, 2000);
         }
@@ -247,6 +250,7 @@ function createCharacter(layer) {
                 || center.x < 0) {
 
                 resetCharacter(body, characterPosX, characterPosY);
+                resetArrow(level);
             }
         }
     });
@@ -557,7 +561,6 @@ function createLevel0() {
                 bodyA.set('inRestAnimation', true);
                 animateCharacter(bodyA);
                 bodyA.get('gazia').play();
-                resetArrow(level);
             }
             return;
         }

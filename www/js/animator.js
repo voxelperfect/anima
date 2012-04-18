@@ -14,11 +14,20 @@ anima.Animator = Class.extend({
     addTask:function (taskFn, delay) {
 
         var animationId = this._lastAnimationID++;
-        this._animationQueue.push({
+
+        var animation = {
             id:animationId,
-            taskFn:taskFn,
-            delay:delay
-        });
+            delay:delay,
+            duration:0
+        };
+        if (!delay) {
+            animation.taskFn = taskFn;
+        } else {
+            animation.onAnimationEndedFn = taskFn;
+        }
+
+        this._animationQueue.push(animation);
+
         return animationId;
     },
 
@@ -111,7 +120,7 @@ anima.Animator = Class.extend({
                 continue; // delay set by startTime
             }
 
-            end = (t > animation.duration);
+            end = (t >= animation.duration);
             if (end) {
                 t = animation.duration;
             }
