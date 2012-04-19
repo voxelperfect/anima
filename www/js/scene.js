@@ -132,8 +132,8 @@ anima.Scene = anima.Node.extend({
                 this._position.y = y2;
                 this._renderer.updateTransform(me);
             } else {
-                this._canvas._animator.addAnimation(
-                    function (animator, dt) {
+                this._canvas._animator.addAnimation({
+                    interpolateValuesFn:function (animator, dt) {
 
                         me._scale.x = me._scale.y = animator.interpolate(s1, s2, dt);
                         me._position.x = animator.interpolate(x1, x2, dt);
@@ -141,13 +141,13 @@ anima.Scene = anima.Node.extend({
 
                         me._renderer.updateTransform(me);
                     },
-                    0, duration,
-                    easing,
-                    function (animation) {
+                    duration:duration,
+                    easing:easing,
+                    onAnimationEndedFn:function (animation) {
                         if (callbackFn) {
                             callbackFn(animation, viewport);
                         }
-                    });
+                    }});
             }
         }
 

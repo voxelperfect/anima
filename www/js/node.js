@@ -113,10 +113,14 @@ anima.Node = Class.extend({
         this.show();
 
         var me = this;
-        this._animator.addAnimation(function (animator, t) {
-            var opacity = animator.interpolate(0.0, 1.0, t);
-            me.getElement().css('opacity', opacity);
-        }, 0, duration, anima.Easing.easeInOutSine, callbackFn);
+        this._animator.addAnimation({
+            interpolateValuesFn:function (animator, t) {
+                var opacity = animator.interpolate(0.0, 1.0, t);
+                me.getElement().css('opacity', opacity);
+            },
+            duration:duration,
+            easing:anima.Easing.easeInOutSine,
+            onAnimationEndedFn:callbackFn});
     },
 
     fadeOut:function (duration, callbackFn) {
@@ -126,15 +130,19 @@ anima.Node = Class.extend({
         }
 
         var me = this;
-        this._animator.addAnimation(function (animator, t) {
-            var opacity = animator.interpolate(1.0, 0.0, t);
-            me.getElement().css('opacity', opacity);
-        }, 0, duration, anima.Easing.easeInOutSine, function (animation) {
-            me.hide();
-            if (callbackFn) {
-                callbackFn();
-            }
-        });
+        this._animator.addAnimation({
+            interpolateValuesFn:function (animator, t) {
+                var opacity = animator.interpolate(1.0, 0.0, t);
+                me.getElement().css('opacity', opacity);
+            },
+            duration:duration,
+            easing:anima.Easing.easeInOutSine,
+            onAnimationEndedFn:function (animation) {
+                me.hide();
+                if (callbackFn) {
+                    callbackFn();
+                }
+            }});
     },
 
     setBackground:function (color, url, width, height, postponeTransform) {
