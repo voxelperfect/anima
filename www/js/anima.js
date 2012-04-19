@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.8.1 build 1';
+anima.version = '0.8.2 build 1';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -147,6 +147,8 @@ anima.getScript = function (url, options) {
 
     return $.ajax(options);
 };
+
+anima.ext = {};
 
 var b2Vec2 = Box2D.Common.Math.b2Vec2,
     b2BodyDef = Box2D.Dynamics.b2BodyDef,
