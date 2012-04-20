@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.8.2 build 1';
+anima.version = '0.8.3 build 1';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -105,6 +105,17 @@ anima.isObject = function (value) {
 anima.isVisible = function (element$) {
 
     return element$ ? (element$.css("display") != "none") : false;
+};
+
+anima.isMapEmpty = function (map) {
+
+    function isEmpty(map) {
+        var name;
+        for (name in map) {
+            return false;
+        }
+        return true;
+    }
 };
 
 anima.clone = function (obj) {

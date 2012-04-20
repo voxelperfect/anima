@@ -29,10 +29,6 @@ anima.Animator = Class.extend({
         }
 
         this._animationQueue.push(animation);
-        this._animationChains[animationId] = {
-            animation:animation,
-            chainTo:null
-        };
 
         return animationId;
     },
@@ -49,36 +45,23 @@ anima.Animator = Class.extend({
             endId:id
         };
         this._animationQueue.push(animation);
-        this._animationChains[animationId] = {
-            animation:animation,
-            chainTo:null
-        };
 
         return animationId;
     },
 
-    addAnimation:function (animation, chainToId) {
+    addAnimation:function (animation, chainId) {
 
         animation = anima.clone(animation);
-
         animation.id = this._lastAnimationID++;
 
-        var entry = {
-            animation:animation,
-            chainTo:null
-        };
-        this._animationChains[animation.id] = entry;
-
-        if (chainToId) {
-            var otherEntry = this._animationChains[chainToId];
-            if (otherEntry) {
-                otherEntry.chainTo = animation;
-            } else {
-                chainToId = null;
+        if (chainId) {
+            var chain = this._animationChains[chainId];
+            if (!chain) {
+                chain = [];
+                this._animationChains[chainId] = chain;
             }
-        }
-
-        if (!chainToId) {
+            chain.push(animation);
+        } else {
             this._animationQueue.push(animation);
         }
 
@@ -94,6 +77,7 @@ anima.Animator = Class.extend({
     animate:function () {
 
         var animationQueue = this._animationQueue;
+        var animationChains = this._animationChains;
 
         if (this._animationTimeStart == 0) {
             this._animationTimeStart = new Date().getTime();
@@ -107,67 +91,20 @@ anima.Animator = Class.extend({
         }
 
         var endedAnimations = [];
-
-        var i, animation, t, newValue, easing;
-        var p, property, end, css;
-        var easingFn;
+        var i;
 
         for (i = 0; i < count; i++) {
-            animation = animationQueue[i];
+            this._animate(loopTime, animationQueue[i], endedAnimations);
+        }
 
-            if (animation.taskFn) {
-                if (!animation.delay) {
-                    animation.taskFn(loopTime);
-                    endedAnimations.push(animation.id);
-                    continue;
+        var chain, active;
+        for (var chainId in animationChains) {
+            chain = animationChains[chainId];
+            if (chain.length > 0) {
+                active = this._animate(loopTime, chain[0], endedAnimations);
+                if (!active) {
+                    chain.shift();
                 }
-            } else if (animation.endId) {
-                endedAnimations.push(animation.endId);
-                endedAnimations.push(animation.id);
-                continue;
-            }
-
-            if (!animation.startTime) {
-                animation.startTime = loopTime;
-                if (animation.delay) {
-                    animation.startTime += animation.delay;
-                }
-                animation.frame = 0;
-                animation.totalFrames = Math.round(0.5 + animation.duration * anima.frameRate / 1000.0);
-            }
-
-            if (this._adaptive) {
-                // TODO needs more work here...
-                t = animation.frame * animation.duration / animation.totalFrames;
-            } else {
-                t = loopTime - animation.startTime;
-            }
-            if (t < 0.0) {
-                continue; // delayed
-            }
-
-            end = (t >= animation.duration);
-            if (end) {
-                t = animation.duration;
-            }
-
-            easingFn = anima.isObject(animation.easing) ? animation.easing.fn : animation.easing;
-            if (easingFn) {
-                t = easingFn(null, t, 0.0, 1.0, animation.duration);
-            }
-            if (animation.interpolateValuesFn) {
-                animation.interpolateValuesFn(this, t, animation.data);
-            }
-
-            if (end) {
-                if (animation.loop) {
-                    animation.delay = null;
-                    animation.startTime = null;
-                } else {
-                    endedAnimations.push(animation.id);
-                }
-            } else {
-                animation.frame++;
             }
         }
 
@@ -196,13 +133,73 @@ anima.Animator = Class.extend({
 
     /* internal methods */
 
+    _animate:function (loopTime, animation, endedAnimations) {
+
+        if (animation.taskFn) {
+            if (!animation.delay) {
+                animation.taskFn(loopTime);
+                endedAnimations.push(animation.id);
+                return false;
+            }
+        } else if (animation.endId) {
+            endedAnimations.push(animation.endId);
+            endedAnimations.push(animation.id);
+            return false;
+        }
+
+        if (!animation.startTime) {
+            animation.startTime = loopTime;
+            if (animation.delay) {
+                animation.startTime += animation.delay;
+            }
+            animation.frame = 0;
+            animation.totalFrames = Math.round(0.5 + animation.duration * anima.frameRate / 1000.0);
+        }
+
+        var t;
+        if (this._adaptive) {
+            // TODO needs more work here...
+            t = animation.frame * animation.duration / animation.totalFrames;
+        } else {
+            t = loopTime - animation.startTime;
+        }
+        if (t < 0.0) {
+            return true; // delayed
+        }
+
+        var end = (t >= animation.duration);
+        if (end) {
+            t = animation.duration;
+        }
+
+        var easingFn = anima.isObject(animation.easing) ? animation.easing.fn : animation.easing;
+        if (easingFn) {
+            t = easingFn(null, t, 0.0, 1.0, animation.duration);
+        }
+        if (animation.interpolateValuesFn) {
+            animation.interpolateValuesFn(this, t, animation.data);
+        }
+
+        if (end) {
+            if (animation.loop) {
+                animation.delay = null;
+                animation.startTime = null;
+            } else {
+                endedAnimations.push(animation.id);
+            }
+        } else {
+            animation.frame++;
+        }
+
+        return !end;
+    },
+
     _endAnimation:function (id) {
 
         var animationQueue = this._animationQueue;
 
-        var entry = this._animationChains[id];
-
         var i, animation;
+
         var count = animationQueue.length;
         for (i = 0; i < count; i++) {
             animation = animationQueue[i];
@@ -212,16 +209,8 @@ anima.Animator = Class.extend({
                 if (animation.onAnimationEndedFn) {
                     animation.onAnimationEndedFn(animation);
                 }
-                if (entry.chainTo) {
-                    var animation = entry.chainTo;
-                    this._animationChains[animation.id] = {
-                        animation:animation
-                    };
-                    this._animationQueue.push(animation);
-                }
+
             }
         }
-
-        delete this._animationChains[id];
     }
 });
