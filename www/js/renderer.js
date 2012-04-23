@@ -4,6 +4,11 @@ anima.RendererCSS3 = Class.extend({
 
     },
 
+    css:function (node, properties) {
+
+        node._element$.css(properties);
+    },
+
     createCanvas:function (canvas) {
 
         var parent$ = $('#pageContent');
@@ -86,23 +91,35 @@ anima.RendererCSS3 = Class.extend({
 
         var elementId = this.getElementIdContext(parent) + node._id;
 
-        var div = '<div id="' + elementId + '"></div>';
+        var html = null;
+        if (node._elementType == 'box') {
+            html = '<div id="' + elementId + '"></div>';
+        } else if (node._elementType == 'input') {
+            html = '<input data-role="none" id="' + elementId + '"></input>';
+        }
         var appended = false;
         if (parent._type == 'Layer') {
             var count = parent._nodes.length;
             if (count > 0) {
-                parent._nodes[count - 1]._element$.after(div);
+                parent._nodes[count - 1]._element$.after(html);
                 appended = true;
             }
         }
         if (!appended) {
-            this.getElement(parent).append(div);
+            this.getElement(parent).append(html);
         }
 
         node._element$ = $('#' + elementId);
-        node._element$.css({
+
+        var css = {
             'position':'absolute'
-        });
+        };
+        if (node._elementType == 'input') {
+            css['border'] = 'none !important';
+            css['padding'] = '0 !important';
+            css['background'] = 'none !important';
+        }
+        node._element$.css(css);
     },
 
     getParentElementSize:function (node) {

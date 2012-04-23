@@ -1,10 +1,11 @@
 anima.Node = Class.extend({
 
-    init:function (id) {
+    init:function (id, elementType) {
 
         this._id = id;
 
         this._type = 'Node';
+        this._elementType = elementType || 'box';
 
         this._position = {
             x:0,
@@ -52,6 +53,16 @@ anima.Node = Class.extend({
     isVisible:function () {
 
         return anima.isVisible(this.getElement());
+    },
+
+    css:function (properties) {
+
+        this._renderer.css(this, properties);
+    },
+
+    getElementType:function () {
+
+        return this._elementType;
     },
 
     getImageUrl:function () {

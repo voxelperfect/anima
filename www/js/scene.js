@@ -111,7 +111,7 @@ anima.Scene = anima.Node.extend({
                 css[anima.cssVendorPrefix + 'transition-properties'] = 'transform';
                 css[anima.cssVendorPrefix + 'transition-duration'] = duration + 'ms';
                 css[anima.cssVendorPrefix + 'transition-timing-function'] = easing.css;
-                element$.css(css);
+                me.css(css);
 
                 element$.bind(anima.cssTransitionEndEvent, function () {
                     element$.unbind(anima.cssTransitionEndEvent);
@@ -120,7 +120,7 @@ anima.Scene = anima.Node.extend({
                     css[anima.cssVendorPrefix + 'transition-property'] = '';
                     css[anima.cssVendorPrefix + 'transition-duration'] = '';
                     css[anima.cssVendorPrefix + 'transition-timing-function'] = '';
-                    element$.css(css);
+                    me.css(css);
 
                     if (callbackFn) {
                         callbackFn(null, viewport);
