@@ -94,7 +94,19 @@ anima.RendererCSS3 = Class.extend({
         var html = null;
         if (node._elementType == 'box') {
             html = '<div id="' + elementId + '"></div>';
-        } else if (node._elementType == 'input') {
+        } else if (node._elementType == 'text') {
+            html = '<input data-role="none" id="' + elementId + '"></input>';
+        } else if (node._elementType == 'number') {
+            html = '<input data-role="none" id="' + elementId + '"></input>';
+        } else if (node._elementType == 'email') {
+            html = '<input data-role="none" id="' + elementId + '"></input>';
+        } else if (node._elementType == 'telephone') {
+            html = '<input data-role="none" id="' + elementId + '"></input>';
+        } else if (node._elementType == 'textarea') {
+            html = '<input data-role="none" id="' + elementId + '"></input>';
+        } else if (node._elementType == 'date') {
+            html = '<input data-role="none" id="' + elementId + '"></input>';
+        } else if (node._elementType == 'time') {
             html = '<input data-role="none" id="' + elementId + '"></input>';
         }
         var appended = false;
@@ -111,15 +123,9 @@ anima.RendererCSS3 = Class.extend({
 
         node._element$ = $('#' + elementId);
 
-        var css = {
+        node._element$.css({
             'position':'absolute'
-        };
-        if (node._elementType == 'input') {
-            css['border'] = 'none !important';
-            css['padding'] = '0 !important';
-            css['background'] = 'none !important';
-        }
-        node._element$.css(css);
+        });
     },
 
     getParentElementSize:function (node) {

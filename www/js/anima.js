@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.8.4 build 1';
+anima.version = '0.8.5 build 1';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -158,6 +158,48 @@ anima.getScript = function (url, options) {
 
     return $.ajax(options);
 };
+
+anima.formatDate = function (date1) {
+
+    return date1.getFullYear() + '-' +
+        (date1.getMonth() < 9 ? '0' : '') + (date1.getMonth() + 1) + '-' +
+        (date1.getDate() < 10 ? '0' : '') + date1.getDate();
+}
+
+anima.allowNumbersOnly = function (event) {
+
+    // Allow: backspace, delete, tab and escape
+    if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 ||
+        // Allow: Ctrl+A
+        (event.keyCode == 65 && event.ctrlKey === true) ||
+        // Allow: home, end, left, right
+        (event.keyCode >= 35 && event.keyCode <= 39)) {
+        // let it happen, don't do anything
+        return;
+    }
+    else {
+        // Ensure that it is a number and stop the keypress
+        if ((event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105 )) {
+            event.preventDefault();
+        }
+    }
+}
+
+anima.isValidEmail = function (email) {
+
+    var emailReg = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    return emailReg.test(email);
+}
+
+anima.parseDate = function (str) {
+
+    var date = null;
+    try {
+        date = Date.parse(str);
+    } catch (e) {
+    }
+    return date;
+}
 
 anima.ext = {};
 
