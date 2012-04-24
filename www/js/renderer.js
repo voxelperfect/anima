@@ -94,20 +94,24 @@ anima.RendererCSS3 = Class.extend({
         var html = null;
         if (node._elementType == 'box') {
             html = '<div id="' + elementId + '"></div>';
-        } else if (node._elementType == 'text') {
-            html = '<input data-role="none" id="' + elementId + '"></input>';
-        } else if (node._elementType == 'number') {
-            html = '<input data-role="none" id="' + elementId + '"></input>';
-        } else if (node._elementType == 'email') {
-            html = '<input data-role="none" id="' + elementId + '"></input>';
-        } else if (node._elementType == 'telephone') {
-            html = '<input data-role="none" id="' + elementId + '"></input>';
-        } else if (node._elementType == 'textarea') {
-            html = '<input data-role="none" id="' + elementId + '"></input>';
-        } else if (node._elementType == 'date') {
-            html = '<input data-role="none" id="' + elementId + '"></input>';
-        } else if (node._elementType == 'time') {
-            html = '<input data-role="none" id="' + elementId + '"></input>';
+        } else {
+            var dataRole = 'data-role="none"';
+            var placeHolder = node._editPlaceHolder ? ' placeholder="' + node._editPlaceHolder + '"' : '';
+            if (node._elementType == 'text') {
+                html = '<input ' + dataRole + placeHolder + ' id="' + elementId + '"></input>';
+            } else if (node._elementType == 'number') {
+                html = '<input ' + dataRole + placeHolder + ' id="' + elementId + '"></input>';
+            } else if (node._elementType == 'email') {
+                html = '<input ' + dataRole + placeHolder + ' id="' + elementId + '"></input>';
+            } else if (node._elementType == 'telephone') {
+                html = '<input ' + dataRole + placeHolder + ' id="' + elementId + '"></input>';
+            } else if (node._elementType == 'textarea') {
+                html = '<textarea ' + dataRole + placeHolder + ' id="' + elementId + '"></textarea>';
+            } else if (node._elementType == 'date') {
+                html = '<input ' + dataRole + placeHolder + ' id="' + elementId + '"></input>';
+            } else if (node._elementType == 'time') {
+                html = '<input ' + dataRole + placeHolder + ' id="' + elementId + '"></input>';
+            }
         }
         var appended = false;
         if (parent._type == 'Layer') {

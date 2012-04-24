@@ -1,11 +1,12 @@
 anima.Node = Class.extend({
 
-    init:function (id, elementType) {
+    init:function (id, elementType, placeHolder) {
 
         this._id = id;
 
         this._type = 'Node';
         this._elementType = elementType || 'box';
+        this._editPlaceHolder = placeHolder;
 
         this._position = {
             x:0,
@@ -63,6 +64,11 @@ anima.Node = Class.extend({
     getElementType:function () {
 
         return this._elementType;
+    },
+
+    getEditPlaceHolder: function() {
+
+        return this._editPlaceHolder;
     },
 
     getImageUrl:function () {
