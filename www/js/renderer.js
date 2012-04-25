@@ -9,6 +9,11 @@ anima.RendererCSS3 = Class.extend({
         node._element$.css(properties);
     },
 
+    html:function (node, html) {
+
+        node._element$.html(html);
+    },
+
     createCanvas:function (canvas) {
 
         var parent$ = $('#pageContent');

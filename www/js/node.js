@@ -61,12 +61,17 @@ anima.Node = Class.extend({
         this._renderer.css(this, properties);
     },
 
+    html:function (html) {
+
+        this._renderer.html(this, html);
+    },
+
     getElementType:function () {
 
         return this._elementType;
     },
 
-    getEditPlaceHolder: function() {
+    getEditPlaceHolder:function () {
 
         return this._editPlaceHolder;
     },
