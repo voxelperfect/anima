@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.8.7 build 1';
+anima.version = '0.8.8 build 1';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -43,7 +43,7 @@ anima.frameRate = 30; // fps
 anima.physicsFrameRate = 2 * anima.frameRate;
 
 if (!window.requestAnimationFrame) {
-    window.requestAnimationFrame = ( function () {
+    window.requestAnimationFrame = (function () {
 
         return window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||
@@ -56,7 +56,7 @@ if (!window.requestAnimationFrame) {
                     window.setTimeout(callbackCode, 1000 / anima.frameRate);
                 }
             };
-    } )();
+    })();
 }
 
 anima.getRequestParameter = function (name, defaultValue) {
@@ -220,11 +220,20 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
  * By John Resig http://ejohn.org/
  * MIT Licensed.
  */
+// http://ejohn.org/blog/simple-javascript-inheritance/
+// http://blog.buymeasoda.com/understanding-john-resigs-simple-javascript-i
 // Inspired by base2 and Prototype
+// IE8 fixes by Kostas Karolemeas
 (function () {
-    var initializing = false, fnTest = /xyz/.test(function () {
+    var initializing = false;
+
+    // Test for methods including _super calls
+    var fnTest = anima.isIE8 ? {test:function () {
+        return true;
+    }} : /xyz/.test((function () {
         xyz;
-    }) ? /\b_super\b/ : /.*/;
+    }).toString()) ? /\b_super\b/ : /.*/;
+
     // The base Class implementation (does nothing)
     this.Class = function () {
     };

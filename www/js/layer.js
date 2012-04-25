@@ -112,6 +112,24 @@ anima.Layer = Class.extend({
 
     /* internal methods */
 
+    _getScaledBox:function () {
+
+        if (!this._position) {
+            return null;
+        }
+
+        var scene = this._scene;
+        var canvas = scene._canvas;
+
+        var me = this;
+        return {
+            x:me._position.x * scene._scale.x * canvas._scale.x,
+            y:me._position.y * scene._scale.y * canvas._scale.y,
+            width:me._size.width * me._scale.x * scene._scale.x * canvas._scale.x,
+            height:me._size.height * me._scale.y * scene._scale.y * canvas._scale.y
+        };
+    },
+
     _getImageUrls:function (urls) {
 
         var url;

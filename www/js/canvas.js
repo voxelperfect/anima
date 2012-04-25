@@ -107,6 +107,21 @@ anima.Canvas = anima.Node.extend({
 
     /* internal methods */
 
+    _getScaledBox:function () {
+
+        if (!this._position) {
+            return null;
+        }
+
+        var me = this;
+        return {
+            x:me._position.x,
+            y:me._position.y,
+            width:me._size.width * me._scale.x,
+            height:me._size.height * me._scale.y
+        };
+    },
+
     _FIXED_TIMESTEP:1.0 / anima.physicsFrameRate,
     _MINIMUM_TIMESTEP:1.0 / (anima.physicsFrameRate * 10.0),
     _VELOCITY_ITERATIONS:8,

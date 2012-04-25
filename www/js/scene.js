@@ -166,6 +166,23 @@ anima.Scene = anima.Node.extend({
 
     /* internal methods */
 
+    _getScaledBox:function () {
+
+        if (!this._position) {
+            return null;
+        }
+
+        var canvas = this._canvas;
+
+        var me = this;
+        return {
+            x:me._position.x * canvas._scale.x,
+            y:me._position.y * canvas._scale.y,
+            width:me._size.width * me._scale.x * canvas._scale.x,
+            height:me._size.height * me._scale.y * canvas._scale.y
+        };
+    },
+
     _adjustViewAspectRatio:function (view) {
 
         var adjustedBox = anima.clone(view);

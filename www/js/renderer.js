@@ -275,22 +275,27 @@ anima.RendererCSS3 = Class.extend({
     removeElement:function (node) {
 
         node._element$.remove();
+    },
+
+    /* internal methods */
+
+    _applyCSS2Transform:function (node) {
+
+        var box = node._getScaledBox();
+        if (!box) {
+            return;
+        }
+
+        node._element$.css({
+            'left':(box.x + 0.5) << 0,
+            'top':(box.y + 0.5) << 0,
+            'width':(box.width + 0.5) << 0,
+            'height':(box.height + 0.5) << 0
+        });
     }
 });
 
-anima.RendererIE = new Class({
-    Extends:anima.RendererCSS3,
-
-    initialize:function () {
-
-        this.parent();
-    },
-
-    createCanvas:function (canvas) {
-
-        this.parent(canvas);
-        this._addScaledBoxMethod(canvas);
-    },
+anima.RendererIE = anima.RendererCSS3.extend({
 
     addHtml5Canvas:function (canvas) {
 
@@ -299,13 +304,6 @@ anima.RendererIE = new Class({
     getHtml5CanvasContext:function (canvas) {
 
         return null;
-    },
-
-    createElement:function (parent, node) {
-
-        this.parent(parent, node);
-
-        this._addScaledBoxMethod(node);
     },
 
     setBackground:function (node) {
@@ -344,7 +342,7 @@ anima.RendererIE = new Class({
 
     updateTransform:function (node) {
 
-        node.forEachNode(node, this._applyTransform);
+        node.forEachNode(node, this._applyCSS2Transform);
     },
 
     updateOrigin:function (node) {
@@ -357,108 +355,8 @@ anima.RendererIE = new Class({
 
     updateHtml5Canvas:function (node) {
 
-    },
-
-    /* internal methods */
-
-    _applyTransform:function (node) {
-
-        if (!node.getScaledBox) {
-            return;
-        }
-
-        var box = node.getScaledBox();
-
-        node._element$.css({
-            'left':(box.x + 0.5) << 0,
-            'top':(box.y + 0.5) << 0,
-            'width':(box.width + 0.5) << 0,
-            'height':(box.height + 0.5) << 0
-        });
-    },
-
-    _addScaledBoxMethod:function (node) {
-
-        if (node.getScaledBox) {
-            return;
-        }
-
-        var type = node._type;
-        if (type == 'Node') {
-            node.getScaledBox = function () {
-                var layer = node._layer;
-                var scene = layer._scene;
-                var canvas = scene._canvas;
-
-                return {
-                    x:node._position.x * layer._scale.x
-                        * scene._scale.x
-                        * canvas._scale.x,
-
-                    y:node._position.y * layer._scale.y
-                        * scene._scale.y
-                        * canvas._scale.y,
-
-                    width:node._size.width * node._scale.x
-                        * layer._scale.x * scene._scale.x * canvas._scale.x,
-
-                    height:node._size.height * node._scale.y
-                        * layer._scale.y * scene._scale.y * canvas._scale.y
-                };
-            };
-        } else if (type == 'Layer') {
-            node.getScaledBox = function () {
-                var scene = node._scene;
-                var canvas = scene._canvas;
-
-                return {
-                    x:node._position.x
-                        * scene._scale.x
-                        * canvas._scale.x,
-
-                    y:node._position.y
-                        * scene._scale.y
-                        * canvas._scale.y,
-
-                    width:node._size.width * node._scale.x
-                        * scene._scale.x * canvas._scale.x,
-
-                    height:node._size.height * node._scale.y
-                        * scene._scale.y * canvas._scale.y
-                };
-            };
-        } else if (type == 'Scene') {
-            node.getScaledBox = function () {
-                var canvas = node._canvas;
-
-                return {
-                    x:node._position.x
-                        * canvas._scale.x,
-
-                    y:node._position.y
-                        * canvas._scale.y,
-
-                    width:node._size.width * node._scale.x
-                        * canvas._scale.x,
-
-                    height:node._size.height * node._scale.y
-                        * canvas._scale.y
-                };
-            };
-        } else if (type == 'Canvas') {
-            node.getScaledBox = function () {
-                return {
-                    x:node._position.x,
-
-                    y:node._position.y,
-
-                    width:node._size.width * node._scale.x,
-
-                    height:node._size.height * node._scale.y
-                };
-            };
-        }
     }
 });
 
 anima.defaultRenderer = anima.isIE8 ? new anima.RendererIE() : new anima.RendererCSS3();
+

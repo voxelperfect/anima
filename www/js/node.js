@@ -358,6 +358,25 @@ anima.Node = Class.extend({
 
     /* internal methods */
 
+    _getScaledBox:function () {
+
+        if (!this._position) {
+            return null;
+        }
+
+        var layer = this._layer;
+        var scene = layer._scene;
+        var canvas = scene._canvas;
+
+        var me = this;
+        return {
+            x:me._position.x * layer._scale.x * scene._scale.x * canvas._scale.x,
+            y:me._position.y * layer._scale.y * scene._scale.y * canvas._scale.y,
+            width:me._size.width * me._scale.x * layer._scale.x * scene._scale.x * canvas._scale.x,
+            height:me._size.height * me._scale.y * layer._scale.y * scene._scale.y * canvas._scale.y
+        };
+    },
+
     _removeElement:function () {
 
         this._renderer.removeElement(this);
