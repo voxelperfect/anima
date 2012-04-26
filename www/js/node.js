@@ -12,6 +12,9 @@ anima.Node = Class.extend({
         this._elementType = options.elementType || 'box';
         this._editPlaceHolder = options.placeHolder;
         this._renderMode = options.renderMode || 'fast';
+        if (anima.isIE8) {
+            this._renderMode = 'fast';
+        }
 
         this._position = {
             x:0,
@@ -49,6 +52,8 @@ anima.Node = Class.extend({
         this._dragging = false;
         this._dragged = false;
         this._draggingHandler = null;
+
+        this._resizeHandler = null;
     },
 
     getId:function () {
@@ -307,6 +312,8 @@ anima.Node = Class.extend({
             this._renderer.on(this, 'vmousedown', anima._dragHandler);
             this._renderer.on(this, 'vmousemove', anima._dragHandler);
             this._renderer.on(this, 'vmouseup', anima._dragHandler);
+        } else if (eventType == 'resize') {
+            this._resizeHandler = handler;
         } else {
             this._renderer.on(this, eventType, handler);
         }
@@ -344,7 +351,6 @@ anima.Node = Class.extend({
         if (type == 'Node') {
             callbackFn(root);
         } else if (type == 'Layer') {
-            callbackFn(root);
             for (var i = 0; i < root._nodes.length; i++) {
                 callbackFn(root._nodes[i]);
             }
@@ -413,13 +419,13 @@ anima._dragHandler = function (event) {
                     node._dragging = false;
                     node._dragged = false;
                     if (node._draggingHandler) {
-                        node._draggingHandler(event, 'dragend');
+                        node._draggingHandler(event, 'dragend', node);
                     }
                 } else {
                     node._dragging = true;
                     node._dragged = false;
                     if (node._draggingHandler) {
-                        node._draggingHandler(event, 'dragstart');
+                        node._draggingHandler(event, 'dragstart', node);
                     }
                 }
             }
@@ -428,7 +434,7 @@ anima._dragHandler = function (event) {
             if (node._dragging) {
                 node._dragged = true;
                 if (node._dragging && node._draggingHandler) {
-                    node._draggingHandler(event, 'dragmove');
+                    node._draggingHandler(event, 'dragmove', node);
                 }
             }
             break;
@@ -438,7 +444,7 @@ anima._dragHandler = function (event) {
                     node._dragging = false;
                     node._dragged = false;
                     if (node._draggingHandler) {
-                        node._draggingHandler(event, 'dragend');
+                        node._draggingHandler(event, 'dragend', node);
                     }
                 }
             }

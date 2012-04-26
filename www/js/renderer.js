@@ -132,7 +132,7 @@ anima.RendererCSS3 = Class.extend({
                 this.getElement(parent).append(html);
             }
         } else if (node._renderMode == 'accurate') {
-            var topElement$ = node.getCanvas()._element$.parent();
+            var topElement$ = node._canvas._element$.parent();
             topElement$.append(html);
         }
 
@@ -223,6 +223,8 @@ anima.RendererCSS3 = Class.extend({
         } else if (node._renderMode == 'accurate') {
             this._applyCSS2Transform(node);
         }
+
+        this._updateAccurateNodes(node);
     },
 
     updateOrigin:function (node) {
@@ -237,6 +239,10 @@ anima.RendererCSS3 = Class.extend({
             'width':node._size.width,
             'height':node._size.height
         });
+
+        if (node.isVisible() && node._resizeHandler) {
+            node._resizeHandler(node);
+        }
     },
 
     updateHtml5Canvas:function (node) {
@@ -274,6 +280,19 @@ anima.RendererCSS3 = Class.extend({
 
     /* internal methods */
 
+    _updateAccurateNodes:function (node) {
+
+        var accurateNodes = node._accurateNodes;
+        if (accurateNodes) {
+            var accurateNode, renderer;
+            var count = accurateNodes.length;
+            for (var i = 0; i < count; i++) {
+                accurateNode = accurateNodes[i];
+                accurateNode._renderer.updateTransform(accurateNode);
+            }
+        }
+    },
+
     _applyCSS3Transform:function (node) {
 
         var x = (node._position.x - node._origin.x * node._size.width + 0.5) << 0;
@@ -292,6 +311,10 @@ anima.RendererCSS3 = Class.extend({
 
         var transformation = translation + scale + rotation + acceleration;
         node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
+
+        if (node.isVisible() && node._resizeHandler) {
+            node._resizeHandler(node);
+        }
     },
 
     _applyCSS2Transform:function (node) {
@@ -307,6 +330,10 @@ anima.RendererCSS3 = Class.extend({
             'width':(box.width + 0.5) << 0,
             'height':(box.height + 0.5) << 0
         });
+
+        if (node.isVisible() && node._resizeHandler) {
+            node._resizeHandler(node);
+        }
     }
 });
 
@@ -319,13 +346,6 @@ anima.RendererIE = anima.RendererCSS3.extend({
     getHtml5CanvasContext:function (canvas) {
 
         return null;
-    },
-
-    createElement:function (parent, node) {
-
-        node._renderMode = 'accurate';
-
-        this._super(parent, node);
     },
 
     setBackground:function (node) {
@@ -373,6 +393,9 @@ anima.RendererIE = anima.RendererCSS3.extend({
 
     updateSize:function (node) {
 
+        if (node.isVisible() && node._resizeHandler) {
+            node._resizeHandler(node);
+        }
     },
 
     updateHtml5Canvas:function (node) {
@@ -394,6 +417,10 @@ anima.RendererIE = anima.RendererCSS3.extend({
             'width':(box.width + 0.5) << 0,
             'height':(box.height + 0.5) << 0
         });
+
+        if (node.isVisible() && node._resizeHandler) {
+            node._resizeHandler(node);
+        }
     }
 });
 

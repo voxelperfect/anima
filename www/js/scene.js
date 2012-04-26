@@ -13,6 +13,8 @@ anima.Scene = anima.Node.extend({
         this._layerMap = [];
 
         this._viewport = null;
+
+        this._accurateNodes = [];
     },
 
     getCanvas:function () {

@@ -36,15 +36,15 @@ anima.Canvas = anima.Node.extend({
 
     addScene:function (scene) {
 
+        scene._canvas = this;
+        scene._animator = this._animator;
+        scene._canvas = this;
+
         this._renderer.createElement(this, scene);
         scene.hide();
 
         this._scenes.push(scene);
         this._sceneMap[scene._id] = scene;
-
-        scene._canvas = this;
-        scene._animator = this._animator;
-        scene._canvas = this;
     },
 
     getScene:function (id) {
@@ -62,6 +62,7 @@ anima.Canvas = anima.Node.extend({
 
         var newScene = this.getScene(id);
         if (newScene) {
+            newScene._renderer.updateTransform(newScene);
             if (this._currentScene) {
                 this._animator.clearAnimations();
                 this._currentScene.fadeOut(duration, function () {
@@ -225,6 +226,10 @@ anima.Canvas = anima.Node.extend({
         };
 
         this._renderer.updateAll(this);
+
+        if (this._currentScene) {
+            this._currentScene._renderer.updateTransform(this._currentScene);
+        }
     }
 });
 
