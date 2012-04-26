@@ -6,11 +6,6 @@ anima.Layer = Class.extend({
 
         this._type = 'Layer';
 
-        this._scale = {
-            x:1.0,
-            y:1.0
-        };
-
         this._data = {};
 
         this._nodes = [];
@@ -55,14 +50,14 @@ anima.Layer = Class.extend({
 
     addNode:function (node) {
 
+        node._layer = this;
+        node._animator = this._animator;
+        node._canvas = this._canvas;
+
         this._renderer.createElement(this, node);
 
         this._nodes.push(node);
         this._nodeMap[node._id] = node;
-
-        node._layer = this;
-        node._animator = this._animator;
-        node._canvas = this._canvas;
     },
 
     getNode:function (id) {
@@ -87,48 +82,12 @@ anima.Layer = Class.extend({
         }
     },
 
-    setScale:function (scale) {
-
-        this._scale = anima.clone(scale);
-        this._renderer.updateTransform(this);
-    },
-
-    getScale:function () {
-
-        return this._scale;
-    },
-
-    scale:function (dsx, dsy) {
-
-        this._scale.x *= dsx;
-        this._scale.y *= dsy;
-        this._renderer.updateTransform(this);
-    },
-
     getAnimator:function () {
 
         return this._animator;
     },
 
     /* internal methods */
-
-    _getScaledBox:function () {
-
-        if (!this._position) {
-            return null;
-        }
-
-        var scene = this._scene;
-        var canvas = scene._canvas;
-
-        var me = this;
-        return {
-            x:me._position.x * scene._scale.x * canvas._scale.x,
-            y:me._position.y * scene._scale.y * canvas._scale.y,
-            width:me._size.width * me._scale.x * scene._scale.x * canvas._scale.x,
-            height:me._size.height * me._scale.y * scene._scale.y * canvas._scale.y
-        };
-    },
 
     _getImageUrls:function (urls) {
 

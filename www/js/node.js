@@ -1,12 +1,17 @@
 anima.Node = Class.extend({
 
-    init:function (id, elementType, placeHolder) {
+    init:function (id, options) {
 
         this._id = id;
 
         this._type = 'Node';
-        this._elementType = elementType || 'box';
-        this._editPlaceHolder = placeHolder;
+
+        if (!options) {
+            options = {};
+        }
+        this._elementType = options.elementType || 'box';
+        this._editPlaceHolder = options.placeHolder;
+        this._renderMode = options.renderMode || 'fast';
 
         this._position = {
             x:0,
@@ -358,7 +363,7 @@ anima.Node = Class.extend({
 
     /* internal methods */
 
-    _getScaledBox:function () {
+    _getScaledBox:function (absolute) {
 
         if (!this._position) {
             return null;
@@ -369,12 +374,21 @@ anima.Node = Class.extend({
         var canvas = scene._canvas;
 
         var me = this;
-        return {
-            x:me._position.x * layer._scale.x * scene._scale.x * canvas._scale.x,
-            y:me._position.y * layer._scale.y * scene._scale.y * canvas._scale.y,
-            width:me._size.width * me._scale.x * layer._scale.x * scene._scale.x * canvas._scale.x,
-            height:me._size.height * me._scale.y * layer._scale.y * scene._scale.y * canvas._scale.y
-        };
+        if (absolute) {
+            return {
+                x:((me._position.x * scene._scale.x + scene._position.x) * canvas._scale.x + canvas._position.x),
+                y:((me._position.y * scene._scale.y + scene._position.y) * canvas._scale.y + canvas._position.y),
+                width:me._size.width * me._scale.x * scene._scale.x * canvas._scale.x,
+                height:me._size.height * me._scale.y * scene._scale.y * canvas._scale.y
+            };
+        } else {
+            return {
+                x:me._position.x * scene._scale.x * canvas._scale.x,
+                y:me._position.y * scene._scale.y * canvas._scale.y,
+                width:me._size.width * me._scale.x * scene._scale.x * canvas._scale.x,
+                height:me._size.height * me._scale.y * scene._scale.y * canvas._scale.y
+            };
+        }
     },
 
     _removeElement:function () {

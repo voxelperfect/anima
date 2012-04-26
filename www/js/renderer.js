@@ -118,16 +118,22 @@ anima.RendererCSS3 = Class.extend({
                 html = '<input ' + dataRole + placeHolder + ' id="' + elementId + '"></input>';
             }
         }
-        var appended = false;
-        if (parent._type == 'Layer') {
-            var count = parent._nodes.length;
-            if (count > 0) {
-                parent._nodes[count - 1]._element$.after(html);
-                appended = true;
+
+        if (node._renderMode == 'fast') {
+            var appended = false;
+            if (parent._type == 'Layer') {
+                var count = parent._nodes.length;
+                if (count > 0) {
+                    parent._nodes[count - 1]._element$.after(html);
+                    appended = true;
+                }
             }
-        }
-        if (!appended) {
-            this.getElement(parent).append(html);
+            if (!appended) {
+                this.getElement(parent).append(html);
+            }
+        } else if (node._renderMode == 'accurate') {
+            var topElement$ = node.getCanvas()._element$.parent();
+            topElement$.append(html);
         }
 
         node._element$ = $('#' + elementId);
@@ -212,22 +218,11 @@ anima.RendererCSS3 = Class.extend({
 
     updateTransform:function (node) {
 
-        var x = (node._position.x - node._origin.x * node._size.width + 0.5) << 0;
-        var y = (node._position.y - node._origin.y * node._size.height + 0.5) << 0;
-        var translation = 'translate(' + x + 'px, ' + y + 'px)';
-
-        var scale = ' scale(' + node._scale.x + ', ' + node._scale.y + ')';
-
-        var rotation = '';
-        if (node._angle && node._angle != 0) {
-            var degrees = -anima.toDegrees(node._angle);
-            rotation = 'rotate(' + degrees + 'deg) ';
+        if (node._renderMode == 'fast') {
+            this._applyCSS3Transform(node);
+        } else if (node._renderMode == 'accurate') {
+            this._applyCSS2Transform(node);
         }
-
-        var acceleration = anima.isWebkit ? ' translateZ(0)' : '';
-
-        var transformation = translation + scale + rotation + acceleration;
-        node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
     },
 
     updateOrigin:function (node) {
@@ -279,9 +274,29 @@ anima.RendererCSS3 = Class.extend({
 
     /* internal methods */
 
+    _applyCSS3Transform:function (node) {
+
+        var x = (node._position.x - node._origin.x * node._size.width + 0.5) << 0;
+        var y = (node._position.y - node._origin.y * node._size.height + 0.5) << 0;
+        var translation = 'translate(' + x + 'px, ' + y + 'px)';
+
+        var scale = ' scale(' + node._scale.x + ', ' + node._scale.y + ')';
+
+        var rotation = '';
+        if (node._angle && node._angle != 0) {
+            var degrees = -anima.toDegrees(node._angle);
+            rotation = 'rotate(' + degrees + 'deg) ';
+        }
+
+        var acceleration = anima.isWebkit ? ' translateZ(0)' : '';
+
+        var transformation = translation + scale + rotation + acceleration;
+        node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
+    },
+
     _applyCSS2Transform:function (node) {
 
-        var box = node._getScaledBox();
+        var box = node._getScaledBox(true);
         if (!box) {
             return;
         }
@@ -304,6 +319,13 @@ anima.RendererIE = anima.RendererCSS3.extend({
     getHtml5CanvasContext:function (canvas) {
 
         return null;
+    },
+
+    createElement:function (parent, node) {
+
+        node._renderMode = 'accurate';
+
+        this._super(parent, node);
     },
 
     setBackground:function (node) {
@@ -355,6 +377,23 @@ anima.RendererIE = anima.RendererCSS3.extend({
 
     updateHtml5Canvas:function (node) {
 
+    },
+
+    /* internal methods */
+
+    _applyCSS2Transform:function (node) {
+
+        var box = node._getScaledBox();
+        if (!box) {
+            return;
+        }
+
+        node._element$.css({
+            'left':(box.x + 0.5) << 0,
+            'top':(box.y + 0.5) << 0,
+            'width':(box.width + 0.5) << 0,
+            'height':(box.height + 0.5) << 0
+        });
     }
 });
 
