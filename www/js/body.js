@@ -97,24 +97,28 @@ anima.Body = anima.Node.extend({
 
     applyImpulse:function (angle, power) {
 
+        if (!power || power == 0.0) {
+            return;
+        }
+
         this._body.ApplyImpulse(
             new b2Vec2(Math.cos(angle) * power, Math.sin(angle) * power),
             this._body.GetWorldCenter());
     },
 
-    getAABB: function() {
+    getAABB:function () {
 
         return this._body.GetFixtureList().GetAABB();
     },
 
-    setAwakeListener: function(listenerFn) {
+    setAwakeListener:function (listenerFn) {
 
         this._awakeListenerFn = listenerFn;
     },
 
     /* internal methods */
 
-    _checkAwake: function() {
+    _checkAwake:function () {
 
         var awake = this._body.IsAwake();
         if (awake != this._wasAwake && this._awakeListenerFn) {
