@@ -52,30 +52,33 @@ anima.Canvas = anima.Node.extend({
         return this._sceneMap[id];
     },
 
-    setCurrentScene:function (id, duration, callbackFn) {
+    setCurrentScene:function (id, duration, callbackFn, progressFn) {
 
-        var me = this;
-
-        if (!duration) {
-            duration = 500;
+        if (!progressFn) {
+            progressFn = anima.defaultProgressReporter;
         }
 
         var newScene = this.getScene(id);
         if (newScene) {
-            newScene._renderer.updateTransform(newScene);
-            if (this._currentScene) {
-                this._animator.clearAnimations();
-                this._currentScene.fadeOut(duration, function () {
+            var me = this;
+            this._loadImages(newScene, progressFn, function () {
+                if (!duration) {
+                    duration = 500;
+                }
+
+                newScene._renderer.updateTransform(newScene);
+                if (me._currentScene) {
+                    me._animator.clearAnimations();
+                    me._currentScene.fadeOut(duration, function () {
+                        newScene.fadeIn(duration, callbackFn);
+                        me._currentScene = newScene;
+                    });
+                } else {
                     newScene.fadeIn(duration, callbackFn);
                     me._currentScene = newScene;
-                });
-            } else {
-                newScene.fadeIn(duration, callbackFn);
-                this._currentScene = newScene;
-            }
+                }
+            });
         }
-
-        return newScene;
     },
 
     getCurrentScene:function () {
@@ -175,19 +178,6 @@ anima.Canvas = anima.Node.extend({
         this._animator.animate();
     },
 
-    _getImageUrls:function (urls) {
-
-        var url = this._background.url;
-        if (url) {
-            urls.push(url);
-        }
-
-        var count = this._scenes.length;
-        for (var i = 0; i < count; i++) {
-            this._scenes[i]._getImageUrls(urls);
-        }
-    },
-
     _resize:function () {
 
         var sourceWidth = this._size.width;
@@ -230,8 +220,57 @@ anima.Canvas = anima.Node.extend({
         if (this._currentScene) {
             this._currentScene._renderer.updateTransform(this._currentScene);
         }
+    },
+
+    _loadImages:function (scene, progressFn, callbackFn) {
+
+        $.mobile.showPageLoadingMsg();
+
+        var urls = [];
+        try {
+            scene._getImageUrls(urls);
+        } catch (e) {
+            console.log(e);
+            $.mobile.hidePageLoadingMsg();
+            return;
+        }
+        var totalImages = urls.length;
+        if (totalImages == 0) {
+            $.mobile.hidePageLoadingMsg();
+            if (callbackFn) {
+                callbackFn.call();
+            }
+            return;
+        }
+        var image;
+        var loadedImages = 0;
+        for (var i = 0; i < totalImages; i++) {
+            image = new Image();
+            image.onload = function () {
+                loadedImages++;
+
+                if (progressFn) {
+                    progressFn(anima.round(loadedImages * 100.0 / totalImages));
+                }
+                if (loadedImages >= totalImages) {
+                    $.mobile.hidePageLoadingMsg();
+                    if (callbackFn) {
+                        callbackFn.call();
+                    }
+                }
+
+                image = null;
+            };
+            image.src = urls[i];
+        }
     }
 });
+
+anima.defaultProgressReporter = function (percent) {
+
+    var loadIcon$ = $('.ui-loader .ui-icon-loading');
+    loadIcon$.html('' + percent);
+}
 
 anima.onResize = function () {
 
@@ -261,62 +300,16 @@ function _anima_update() {
     window.requestAnimationFrame(_anima_update, '_anima_update()');
 }
 
-anima._loadImages = function (progressFn, callbackFn) {
-
-    $.mobile.showPageLoadingMsg();
-
-    var urls = [];
-    try {
-        $.each(anima._canvases, function (index, value) {
-            value._getImageUrls(urls);
-        });
-    } catch (e) {
-        console.log(e);
-        $.mobile.hidePageLoadingMsg();
-        return;
-    }
-    var totalImages = urls.length;
-    if (totalImages == 0) {
-        $.mobile.hidePageLoadingMsg();
-        if (callbackFn) {
-            callbackFn.call();
-        }
-        return;
-    }
-    var image;
-    var loadedImages = 0;
-    for (var i = 0; i < totalImages; i++) {
-        image = new Image();
-        image.onload = function () {
-            loadedImages++;
-
-            if (progressFn) {
-                progressFn(anima.round(loadedImages * 100.0 / totalImages));
-            }
-            if (loadedImages >= totalImages) {
-                $.mobile.hidePageLoadingMsg();
-                if (callbackFn) {
-                    callbackFn.call();
-                }
-            }
-
-            image = null;
-        };
-        image.src = urls[i];
-    }
-};
-
-anima.start = function (progressFn, callbackFn) {
+anima.start = function (callbackFn) {
 
     $.mobile.loadingMessageTextVisible = false;
 
-    anima._loadImages(progressFn, function () {
-        anima._initializeSound(function () {
-            anima.onResize();
-            if (callbackFn) {
-                callbackFn.call();
-            }
-            window.requestAnimationFrame(_anima_update, '_anima_update()');
-        });
+    anima._initializeSound(function () {
+        anima.onResize();
+        window.requestAnimationFrame(_anima_update, '_anima_update()');
+
+        if (callbackFn) {
+            callbackFn.call();
+        }
     });
 };
