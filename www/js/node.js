@@ -145,7 +145,7 @@ anima.Node = Class.extend({
         this.show();
 
         var me = this;
-        this._animator.addAnimation({
+        return this._animator.addAnimation({
             interpolateValuesFn:function (animator, t) {
                 var opacity = animator.interpolate(0.0, 1.0, t);
                 me.getElement().css('opacity', opacity);
@@ -162,7 +162,7 @@ anima.Node = Class.extend({
         }
 
         var me = this;
-        this._animator.addAnimation({
+        return this._animator.addAnimation({
             interpolateValuesFn:function (animator, t) {
                 var opacity = animator.interpolate(1.0, 0.0, t);
                 me.getElement().css('opacity', opacity);
