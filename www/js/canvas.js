@@ -269,7 +269,7 @@ anima.Canvas = anima.Node.extend({
 anima.defaultProgressReporter = function (percent) {
 
     var loadIcon$ = $('.ui-loader .ui-icon-loading');
-    loadIcon$.html('' + percent);
+    loadIcon$.html('<div class="progress-percent">' + percent + '</div>');
 }
 
 anima.onResize = function () {

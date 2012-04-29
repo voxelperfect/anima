@@ -24,7 +24,7 @@ body {
     /* background: url('../images/splash.png') no-repeat fixed center center !important; */
 }
 
-.ui-loader .ui-icon-loading {
+.progress-percent {
     text-align: center;
     padding-top: 16px;
     font-size: 12px;
