@@ -58,6 +58,7 @@ anima.ext.SlideShow = Class.extend({
         if (this._currentNodeIndex >= totalNodes) {
             if (this._runOnce) {
                 done = true;
+                this._currentNodeIndex--;
             } else {
                 this._currentNodeIndex = 0;
             }
@@ -78,7 +79,7 @@ anima.ext.SlideShow = Class.extend({
                     }, me._changeDelay);
                 }
             });
-        } else {
+        } else if (newNode != lastNode) {
             newNode.fadeIn(1000);
         }
     }
