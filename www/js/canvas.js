@@ -159,23 +159,30 @@ anima.Canvas = anima.Node.extend({
 
     _update:function () {
 
-        var scene = this._currentScene;
-        if (scene && scene._world) {
-            var sleeping = !scene.isAwake();
-            if (!sleeping) {
-                this._step(scene, sleeping);
+        try {
+            var scene = this._currentScene;
+            if (scene && scene._world) {
+                var sleeping = !scene.isAwake();
+                if (!sleeping) {
+                    this._step(scene, sleeping);
+                }
+
+                this._animator.animate();
+
+                if (!sleeping) {
+                    scene._update();
+                }
+
+                return;
             }
 
             this._animator.animate();
-
-            if (!sleeping) {
-                scene._update();
+        } catch (e) {
+            anima.log(e);
+            if (anima.debug) {
+                throw e;
             }
-
-            return;
         }
-
-        this._animator.animate();
     },
 
     _resize:function () {

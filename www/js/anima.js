@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.9.0 build 2';
+anima.version = '0.9.0 build 6';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -70,6 +70,11 @@ anima.getRequestParameter = function (name, defaultValue) {
     else
         return decodeURIComponent(results[1].replace(/\+/g, " "));
 };
+
+anima.debug = anima.getRequestParameter('debug');
+
+// https://github.com/cpatik/console.log-wrapper
+anima.log = log;
 
 if (typeof String.prototype.startsWith != 'function') {
     String.prototype.startsWith = function (str) {

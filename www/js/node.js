@@ -414,7 +414,7 @@ anima._dragHandler = function (event) {
     var which = event.which;
     switch (type) {
         case 'vmousedown':
-            if (which == 1) {
+            if (which == 1 || which == 0) {
                 if (node._dragging && node._dragged) {
                     node._dragging = false;
                     node._dragged = false;
@@ -439,7 +439,7 @@ anima._dragHandler = function (event) {
             }
             break;
         case 'vmouseup':
-            if (which == 1) {
+            if (which == 1 || which == 0) {
                 if (node._dragging && node._dragged) {
                     node._dragging = false;
                     node._dragged = false;
