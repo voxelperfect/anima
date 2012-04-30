@@ -180,7 +180,7 @@ anima.Canvas = anima.Node.extend({
         } catch (e) {
             anima.log(e);
             if (anima.debug) {
-                throw e;
+                console.trace();
             }
         }
     },
