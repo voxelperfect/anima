@@ -149,6 +149,6 @@ anima.Level = anima.Scene.extend({
 
         node._angle = -node._body.GetAngle();
 
-        this._renderer.updateAll(node);
+        this._renderer.updateTransform(node);
     }
 });

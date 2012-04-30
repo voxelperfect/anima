@@ -240,7 +240,7 @@ anima.RendererCSS3 = Class.extend({
             'height':node._size.height
         });
 
-        if (node.isVisible() && node._resizeHandler) {
+        if (node._resizeHandler && node.isVisible()) {
             node._resizeHandler(node);
         }
     },
@@ -312,7 +312,7 @@ anima.RendererCSS3 = Class.extend({
         var transformation = translation + scale + rotation + acceleration;
         node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
 
-        if (node.isVisible() && node._resizeHandler) {
+        if (node._resizeHandler && node.isVisible()) {
             node._resizeHandler(node);
         }
     },
@@ -331,7 +331,7 @@ anima.RendererCSS3 = Class.extend({
             'height':(box.height + 0.5) << 0
         });
 
-        if (node.isVisible() && node._resizeHandler) {
+        if (node._resizeHandler && node.isVisible()) {
             node._resizeHandler(node);
         }
     }
@@ -393,7 +393,7 @@ anima.RendererIE = anima.RendererCSS3.extend({
 
     updateSize:function (node) {
 
-        if (node.isVisible() && node._resizeHandler) {
+        if (node._resizeHandler && node.isVisible()) {
             node._resizeHandler(node);
         }
     },
@@ -418,7 +418,7 @@ anima.RendererIE = anima.RendererCSS3.extend({
             'height':(box.height + 0.5) << 0
         });
 
-        if (node.isVisible() && node._resizeHandler) {
+        if (node._resizeHandler && node.isVisible()) {
             node._resizeHandler(node);
         }
     }
