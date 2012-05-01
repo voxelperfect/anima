@@ -178,9 +178,10 @@ anima.Canvas = anima.Node.extend({
 
             this._animator.animate();
         } catch (e) {
-            anima.log(e);
-            if (anima.debug) {
-                console.trace();
+            if (console.exception) {
+                console.exception(e);
+            } else {
+                anima.log(e);
             }
         }
     },
