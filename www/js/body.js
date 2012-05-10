@@ -106,6 +106,13 @@ anima.Body = anima.Node.extend({
             this._body.GetWorldCenter());
     },
 
+    setAngle:function (angle) {
+
+        this._super(angle);
+
+        this._body.SetAngle(-angle);
+    },
+
     getAABB:function () {
 
         return this._body.GetFixtureList().GetAABB();

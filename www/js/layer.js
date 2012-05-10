@@ -62,6 +62,10 @@ anima.Layer = Class.extend({
         if (node._renderMode == 'accurate') {
             this._scene._accurateNodes.push(node);
         }
+
+        if (node.logic) {
+            node.getLevel()._addNodeWithLogic(node);
+        }
     },
 
     getNode:function (id) {

@@ -17,6 +17,9 @@ anima.Level = anima.Scene.extend({
 
         this._nodesWithLogic = [];
         this._dynamicBodies = [];
+
+        this._beginContactListenerFn = null;
+        this._registerContactListener();
     },
 
     setBackground:function (color, url, postponeTransform) {
@@ -53,32 +56,9 @@ anima.Level = anima.Scene.extend({
         return this._physicalSize;
     },
 
-    setContactListener:function (onBeginContactFn, onEndContact, onPreSolveFn, OnPostSolveFn) {
+    setContactListener:function (beginContactListenerFn) {
 
-        var me = this;
-
-        var listener = new Box2D.Dynamics.b2ContactListener;
-
-        listener.BeginContact = function (contact) {
-
-            var bodyA = contact.GetFixtureA().GetBody().GetUserData().node;
-            var bodyB = contact.GetFixtureB().GetBody().GetUserData().node;
-            onBeginContactFn(bodyA, bodyB);
-        };
-
-        listener.EndContact = function (contact) {
-
-        };
-
-        listener.PostSolve = function (contact, impulse) {
-
-        };
-
-        listener.PreSolve = function (contact, oldManifold) {
-
-        };
-
-        this._world.SetContactListener(listener);
+        this._beginContactListenerFn = beginContactListenerFn;
     },
 
     isAwake:function () {
@@ -98,7 +78,7 @@ anima.Level = anima.Scene.extend({
 
     _addNodeWithLogic:function (node) {
 
-        if (node._logicFn) {
+        if (node._logicFn || node.logic) {
             this._nodesWithLogic[this._renderer.getElementId(node)] = node;
         }
     },
@@ -114,7 +94,11 @@ anima.Level = anima.Scene.extend({
         for (var id in this._nodesWithLogic) {
             node = this._nodesWithLogic[id];
             node._checkAwake();
-            node._logicFn(node);
+            if (node.logic) {
+                node.logic();
+            } else {
+                node._logicFn(node);
+            }
         }
     },
 
@@ -150,5 +134,39 @@ anima.Level = anima.Scene.extend({
         node._angle = -node._body.GetAngle();
 
         this._renderer.updateTransform(node);
+    },
+
+    _registerContactListener:function () {
+
+        var me = this;
+
+        var listener = new Box2D.Dynamics.b2ContactListener;
+
+        listener.BeginContact = function (contact) {
+
+            var bodyA = contact.GetFixtureA().GetBody().GetUserData().node;
+            var bodyB = contact.GetFixtureB().GetBody().GetUserData().node;
+
+            if (bodyA.onBeginContact) {
+                bodyA.onBeginContact(bodyB);
+            }
+            if (me._beginContactListenerFn) {
+                me._beginContactListenerFn(bodyA, bodyB);
+            }
+        };
+
+        listener.EndContact = function (contact) {
+
+        };
+
+        listener.PostSolve = function (contact, impulse) {
+
+        };
+
+        listener.PreSolve = function (contact, oldManifold) {
+
+        };
+
+        this._world.SetContactListener(listener);
     }
 });
