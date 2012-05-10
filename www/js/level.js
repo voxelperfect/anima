@@ -150,6 +150,10 @@ anima.Level = anima.Scene.extend({
             if (bodyA.onBeginContact) {
                 bodyA.onBeginContact(bodyB);
             }
+            if (bodyB.onBeginContact) {
+                bodyB.onBeginContact(bodyA);
+            }
+
             if (me._beginContactListenerFn) {
                 me._beginContactListenerFn(bodyA, bodyB);
             }

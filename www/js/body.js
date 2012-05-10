@@ -95,6 +95,14 @@ anima.Body = anima.Node.extend({
         this._physicalSize = anima.clone(physicalSize);
     },
 
+    applyImpulseVector: function(vector, point) {
+
+        if (!point) {
+            point = this._body.GetWorldCenter();
+        }
+        this._body.ApplyImpulse(vector, point);
+    },
+
     applyImpulse:function (angle, power) {
 
         if (!power || power == 0.0) {

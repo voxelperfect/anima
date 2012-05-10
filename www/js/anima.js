@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.9.1 build 1';
+anima.version = '0.9.1 build 2';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -83,6 +83,9 @@ if (anima.isIE && console && (typeof console.log == 'object')) {
 } else {
     anima.log = function (msg) {
         console.log(msg);
+        if (msg.stack) {
+            console.log(msg.stack);
+        }
     };
 }
 
