@@ -149,7 +149,11 @@ anima.Canvas = anima.Node.extend({
             stepsPerformed++;
         }
 
-        level._logic();
+        try {
+            level._logic();
+        } catch (e) {
+            anima.logException(e);
+        }
 
         if (this._debug) {
             level._world.DrawDebugData(true);
@@ -164,7 +168,7 @@ anima.Canvas = anima.Node.extend({
             if (scene && scene._world) {
                 var sleeping = !scene.isAwake();
                 if (!sleeping) {
-                    this._step(scene, sleeping);
+                    this._step(scene);
                 }
 
                 this._animator.animate();
@@ -178,11 +182,7 @@ anima.Canvas = anima.Node.extend({
 
             this._animator.animate();
         } catch (e) {
-            if (console.exception) {
-                console.exception(e);
-            } else {
-                anima.log(e);
-            }
+            anima.logException(e);
         }
     },
 

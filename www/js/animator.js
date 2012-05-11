@@ -137,7 +137,11 @@ anima.Animator = Class.extend({
 
         if (animation.taskFn) {
             if (!animation.delay) {
-                animation.taskFn(loopTime);
+                try {
+                    animation.taskFn(loopTime);
+                } catch (e) {
+                    anima.logException(e);
+                }
                 endedAnimations.push(animation.id);
                 return false;
             }
@@ -177,7 +181,11 @@ anima.Animator = Class.extend({
             t = easingFn(null, t, 0.0, 1.0, animation.duration);
         }
         if (animation.interpolateValuesFn) {
-            animation.interpolateValuesFn(this, t, animation.data);
+            try {
+                animation.interpolateValuesFn(this, t, animation.data);
+            } catch (e) {
+                anima.logException(e);
+            }
         }
 
         if (end) {

@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.9.1 build 2';
+anima.version = '0.9.1 build 5';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -74,17 +74,29 @@ anima.getRequestParameter = function (name, defaultValue) {
 anima.debug = anima.getRequestParameter('debug');
 
 anima.log = null;
+anima.logException = null;
 if (anima.isIE && console && (typeof console.log == 'object')) {
     anima.log = function (msg) {
         if (anima.debug) {
             alert(msg);
         }
-    }
+    };
+    anima.logException = function (e) {
+        anima.log(e);
+    };
+
 } else {
     anima.log = function (msg) {
         console.log(msg);
         if (msg.stack) {
             console.log(msg.stack);
+        }
+    };
+    anima.logException = function (e) {
+        if (console.exception) {
+            console.exception(e);
+        } else {
+            anima.log(e);
         }
     };
 }
