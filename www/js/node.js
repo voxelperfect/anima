@@ -405,9 +405,6 @@ anima.Node = Class.extend({
 
 anima._dragHandler = function (event) {
 
-    event.stopPropagation();
-    anima.preventDefault(event);
-
     var node = event.data;
 
     var type = event.type;
@@ -432,6 +429,9 @@ anima._dragHandler = function (event) {
             break;
         case 'vmousemove':
             if (node._dragging) {
+                event.stopPropagation();
+                anima.preventDefault(event);
+
                 node._dragged = true;
                 if (node._dragging && node._draggingHandler) {
                     node._draggingHandler(event, 'dragmove', node);
@@ -441,6 +441,9 @@ anima._dragHandler = function (event) {
         case 'vmouseup':
             if (which == 1 || which == 0) {
                 if (node._dragging && node._dragged) {
+                    event.stopPropagation();
+                    anima.preventDefault(event);
+
                     node._dragging = false;
                     node._dragged = false;
                     if (node._draggingHandler) {
