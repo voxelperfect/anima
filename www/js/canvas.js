@@ -173,11 +173,11 @@ anima.Canvas = anima.Node.extend({
                     this._step(scene);
                 }
 
-                this._animator.animate();
-
                 if (!sleeping) {
                     scene._update();
                 }
+
+                this._animator.animate();
 
                 return;
             }

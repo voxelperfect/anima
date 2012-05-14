@@ -300,19 +300,23 @@ anima.RendererCSS3 = Class.extend({
 
         var x = (node._position.x - node._origin.x * node._size.width + 0.5) << 0;
         var y = (node._position.y - node._origin.y * node._size.height + 0.5) << 0;
-        var translation = 'translate(' + x + 'px, ' + y + 'px)';
+        var transformation = 'translate(' + x + 'px, ' + y + 'px)';
 
-        var scale = ' scale(' + node._scale.x + ', ' + node._scale.y + ')';
-
-        var rotation = '';
-        if (node._angle && node._angle != 0) {
-            var degrees = -anima.toDegrees(node._angle);
-            rotation = 'rotate(' + degrees + 'deg) ';
+        var sx = node._scale.x;
+        var sy = node._scale.y;
+        if (sx != 1 && sy != 1) {
+            transformation += ' scale(' + sx + ', ' + sy + ')';
         }
 
-        var acceleration = anima.isWebkit ? ' translateZ(0)' : '';
+        if (node._angle && Math.abs(node._angle) > 0.1) {
+            var degrees = -anima.toDegrees(node._angle);
+            transformation += ' rotate(' + degrees + 'deg)';
+        }
 
-        var transformation = translation + scale + rotation + acceleration;
+        if (anima.isWebkit) {
+            transformation += ' translateZ(0)';
+        }
+
         node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
 
         if (node._resizeHandler && node.isVisible()) {

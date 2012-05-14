@@ -55,6 +55,7 @@ anima.Body = anima.Node.extend({
 
         this._calculateCentroidOffset();
 
+        this._update();
         this._renderer.updateAll(this);
 
         this.getLevel()._addDynamicBody(this);
@@ -140,6 +141,19 @@ anima.Body = anima.Node.extend({
     },
 
     /* internal methods */
+
+    _update:function () {
+
+        var level = this._layer._scene;
+
+        var center = this._body.GetWorldCenter();
+        this._position.x = (center.x /* + this._centroidOffset.x */) * level._physicsScale;
+        this._position.y = (center.y /* + this._centroidOffset.y */) * level._physicsScale;
+
+        this._angle = -this._body.GetAngle();
+
+        this._renderer.updateTransform(this);
+    },
 
     _checkAwake:function () {
 
