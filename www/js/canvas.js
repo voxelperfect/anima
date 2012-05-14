@@ -45,6 +45,8 @@ anima.Canvas = anima.Node.extend({
 
         this._scenes.push(scene);
         this._sceneMap[scene._id] = scene;
+
+        scene.setSize();
     },
 
     getScene:function (id) {
@@ -103,9 +105,9 @@ anima.Canvas = anima.Node.extend({
         }
     },
 
-    setBackground:function (color, url, width, height) {
+    setSize:function (width, height) {
 
-        this._super(color, url, width, height, true);
+        this._super(width, height, true);
         this._resize();
     },
 

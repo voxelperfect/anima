@@ -40,10 +40,8 @@ anima.Node = Class.extend({
             weight:'normal'
         };
 
-        this._background = {
-            color:null,
-            url:null
-        };
+        this._backgrounds = {};
+        this._background = null;
 
         this._data = {};
 
@@ -84,11 +82,6 @@ anima.Node = Class.extend({
     getEditPlaceHolder:function () {
 
         return this._editPlaceHolder;
-    },
-
-    getImageUrl:function () {
-
-        return this._background.url;
     },
 
     getLayer:function () {
@@ -177,10 +170,7 @@ anima.Node = Class.extend({
             }});
     },
 
-    setBackground:function (color, url, width, height, postponeTransform) {
-
-        this._background.color = color;
-        this._background.url = url;
+    setSize:function (width, height, postponeTransform) {
 
         if (this._layer) {
             if (!width) {
@@ -193,36 +183,80 @@ anima.Node = Class.extend({
         this._size.width = width;
         this._size.height = height;
 
-        this._renderer.setBackground(this);
         if (!postponeTransform) {
             this._renderer.updateAll(this);
         }
     },
 
-    setSpriteGrid:function (spriteGrid) {
+    addBackground:function (color, url, spriteSheet, name) {
 
-        this._spriteGrid = anima.clone(spriteGrid);
-        this._lastSpriteIndex = -1;
+        if (!name) {
+            name = 'default';
+        }
+
+        var first = anima.isMapEmpty(this._backgrounds);
+
+        this._backgrounds[name] = {
+            color:color,
+            url:url,
+            spriteSheet:anima.clone(spriteSheet),
+            lastSpriteIndex:-1
+        };
+
+        if (first) {
+            this.setActiveBackground(name);
+        }
+    },
+
+    setActiveBackground:function (name) {
+
+        var background = this._backgrounds[name];
+        if (background) {
+            this._background = background;
+            this._renderer.setBackground(this);
+        }
     },
 
     getTotalSprites:function () {
 
-        return this._spriteGrid ? this._spriteGrid.totalSprites : (this._background && this._background.url ? 1 : 0);
+        if (this._background) {
+            if (this._background.spriteSheet) {
+                return this._background.spriteSheet.totalSprites;
+            } else {
+                return 1;
+            }
+        } else {
+            return 0;
+        }
     },
 
-    getSpriteGrid:function () {
+    getSpriteSheetDuration:function () {
 
-        return this._spriteGrid;
+        if (this._background) {
+            if (this._background.spriteSheet) {
+                var duration = this._background.spriteSheet.duration;
+                return duration ? duration : 2000;
+            } else {
+                return 0;
+            }
+        } else {
+            return 0;
+        }
     },
 
     setCurrentSprite:function (index) {
 
-        index = (index + 0.5) << 0;
-        if (this._lastSpriteIndex == index) {
-            return;
+        if (this._background) {
+            var spriteSheet = this._background.spriteSheet;
+            if (spriteSheet) {
+                index = (index + 0.5) << 0;
+                if (spriteSheet.lastSpriteIndex == index) {
+                    return;
+                }
+                spriteSheet.lastSpriteIndex = index;
+                this._renderer.setCurrentSprite(this, index);
+            }
         }
-        this._lastSpriteIndex = index;
-        this._renderer.setCurrentSprite(this, index);
     },
 
     getSize:function () {
@@ -368,6 +402,16 @@ anima.Node = Class.extend({
     },
 
     /* internal methods */
+
+    _getImageUrls:function (urls) {
+
+        for (var name in this._backgrounds) {
+            var url = this._backgrounds[name].url;
+            if (url) {
+                urls.push(url);
+            }
+        }
+    },
 
     _getScaledBox:function (absolute) {
 

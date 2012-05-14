@@ -15,9 +15,9 @@ anima.Body = anima.Node.extend({
         this._awakeListenerFn = null;
     },
 
-    setBackground:function (color, url, width, height) {
+    setSize:function (width, height) {
 
-        this._super(color, url, width, height, true);
+        this._super(width, height, true);
 
         var level = this._layer._scene;
         var ps = level.getPhysicsScale();

@@ -99,14 +99,9 @@ anima.Layer = Class.extend({
 
     _getImageUrls:function (urls) {
 
-        var url;
-
         var count = this._nodes.length;
         for (var i = 0; i < count; i++) {
-            url = this._nodes[i].getImageUrl();
-            if (url) {
-                urls.push(url);
-            }
+            this._nodes[i]._getImageUrls(urls);
         }
     },
 

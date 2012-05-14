@@ -22,9 +22,9 @@ anima.Level = anima.Scene.extend({
         this._registerContactListener();
     },
 
-    setBackground:function (color, url, postponeTransform) {
+    setSize:function (postponeTransform) {
 
-        this._super(color, url, postponeTransform);
+        this._super(postponeTransform);
 
         this._physicsScale = this._size.width / this._physicalSize.width;
         this._physicalSize.height = this._size.height * this._physicalSize.width / this._size.width;

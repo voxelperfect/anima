@@ -59,9 +59,9 @@ anima.Scene = anima.Node.extend({
         }
     },
 
-    setBackground:function (color, url, postponeTransform) {
+    setSize:function (postponeTransform) {
 
-        this._super(color, url, this._canvas._size.width, this._canvas._size.height, true);
+        this._super(this._canvas._size.width, this._canvas._size.height, true);
 
         if (!postponeTransform) {
             this._renderer.updateAll(this);

@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.9.1 build 5';
+anima.version = '0.9.2 build 1';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -139,13 +139,20 @@ anima.isVisible = function (element$) {
 
 anima.isMapEmpty = function (map) {
 
-    function isEmpty(map) {
-        var name;
-        for (name in map) {
-            return false;
-        }
-        return true;
+    var name;
+    for (name in map) {
+        return false;
     }
+    return true
+};
+
+anima.getMapSize = function (map) {
+
+    var count = 0;
+    for (name in map) {
+        count++;
+    }
+    return count;
 };
 
 anima.clone = function (obj) {

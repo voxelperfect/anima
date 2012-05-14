@@ -2,8 +2,8 @@ anima.ext.ScoreDisplay = Class.extend({
 
     init:function (level, config) {
 
+        this._spriteSheetUrl = config.spriteSheetUrl;
         this._spriteSheet = config.spriteSheet;
-        this._spriteGrid = config.spriteGrid;
 
         this._digitWidth = config.digitWidth;
         this._digitHeight = config.digitHeight;
@@ -121,8 +121,8 @@ anima.ext.ScoreDisplay = Class.extend({
         var node = new anima.Node('score_' + id);
         layer.addNode(node);
 
-        node.setBackground(null, this._spriteSheet, this._digitWidth, this._digitHeight);
-        node.setSpriteGrid(this._spriteGrid);
+        node.setSize(this._digitWidth, this._digitHeight);
+        node.addBackground(null, this._spriteSheetUrl, this._spriteSheet);
         node.setPosition({
             x:posX,
             y:posY
