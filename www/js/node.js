@@ -259,6 +259,27 @@ anima.Node = Class.extend({
         }
     },
 
+    animateSpriteSheet:function (startFrame, endFrame, duration, onAnimationEndedFn) {
+
+        if (!startFrame && !endFrame) {
+            startFrame = 0;
+            endFrame = this.getTotalSprites() - 1;
+        }
+        if (!duration) {
+            duration = this.getSpriteSheetDuration();
+        }
+
+        var me = this;
+        var animationId = this._animator.addAnimation({
+            interpolateValuesFn:function (animator, t) {
+                var index = (startFrame + t * (endFrame - startFrame)) / duration;
+                me.setCurrentSprite(index);
+            },
+            duration:duration,
+            onAnimationEndedFn:onAnimationEndedFn
+        });
+    },
+
     getSize:function () {
 
         return this._size;
