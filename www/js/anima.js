@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.9.2 build 3';
+anima.version = '0.9.3 build 2';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -75,7 +75,7 @@ anima.debug = anima.getRequestParameter('debug');
 
 anima.log = null;
 anima.logException = null;
-if (anima.isIE && console && (typeof console.log == 'object')) {
+if (anima.isIE) {
     anima.log = function (msg) {
         if (anima.debug) {
             alert(msg);
@@ -236,6 +236,15 @@ anima.parseDate = function (str) {
     } catch (e) {
     }
     return date;
+}
+
+anima.loadXML = function (file, callback) {
+
+    return $.get(file, null, function(data, textStatus, jqXHR) {
+        if (callback) {
+            callback($(data));
+        }
+    }, 'xml');
 }
 
 anima.ext = {};

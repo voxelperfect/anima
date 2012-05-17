@@ -35,7 +35,7 @@ anima.Level = anima.Scene.extend({
             debugDraw.SetDrawScale(this._physicsScale);
             debugDraw.SetFillAlpha(0.5);
             debugDraw.SetLineThickness(1.0);
-            debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit); // | b2DebugDraw.e_centerOfMassBit);
+            debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_centerOfMassBit);
 
             this._world.SetDebugDraw(debugDraw);
         }

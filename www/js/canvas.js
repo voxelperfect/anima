@@ -147,7 +147,13 @@ anima.Canvas = anima.Node.extend({
                 deltaTime += frameTime;
                 frameTime = 0.0;
             }
-            world.Step(deltaTime, this._VELOCITY_ITERATIONS, this._POSITION_ITERATIONS);
+
+            try {
+                world.Step(deltaTime, this._VELOCITY_ITERATIONS, this._POSITION_ITERATIONS);
+            } catch (e) {
+                anima.logException(e);
+            }
+
             stepsPerformed++;
         }
 
