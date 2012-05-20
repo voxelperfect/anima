@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.9.4 build 1';
+anima.version = '0.9.4 build 2';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -39,8 +39,8 @@ if ($.support.cssTransitions) {
 
 anima.isWebkit = ($.browser.webkit || $.browser.safari);
 
-anima.frameRate = 30; // fps
-anima.physicsFrameRate = 2 * anima.frameRate;
+anima.frameRate = 60; // fps
+anima.physicsFrameRate = anima.frameRate;
 
 if (!window.requestAnimationFrame) {
     window.requestAnimationFrame = (function () {
@@ -340,25 +340,44 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
 
 /* Performance Statistics */
 
+// TODO add one stats object per section (e.g. physics step/update, logic, animator, etc)
+// width is 80px so set left accordingly for each one (horizontal alignment... or maybe vertical is better?)
+
 anima.stats = null;
-anima.initializeStats = function () {
+
+anima._createStatsMonitor = function (name, mode, y) {
+
+    var monitor = null;
     if (Stats) {
-        anima.stats = new Stats();
-        anima.stats.setMode(0); // 0: fps, 1: ms
+        monitor = new Stats(name);
+        monitor.setMode(mode); // 0: fps, 1: ms
 
-        // Align top-left
-        anima.stats.domElement.style.position = 'absolute';
-        anima.stats.domElement.style.left = '0px';
-        anima.stats.domElement.style.top = '0px';
+        monitor.domElement.style.position = 'absolute';
+        monitor.domElement.style.left = '0px';
+        monitor.domElement.style.top = y + 'px';
 
-        document.body.appendChild(anima.stats.domElement);
+        document.body.appendChild(monitor.domElement);
     } else {
-        anima.stats = {
-            domElement:null,
+        monitor = {
             begin:function () {
             },
             end:function () {
             }
         }
     }
+
+    return monitor;
+}
+
+anima.initializeStats = function () {
+
+    var yStep = 45;
+
+    anima.stats = {
+        total:anima._createStatsMonitor(null, 0, 0),
+        physics:anima._createStatsMonitor('P', 1, 1 * yStep),
+        logic:anima._createStatsMonitor('L', 1, 2 * yStep),
+        update:anima._createStatsMonitor('U', 1, 3 * yStep),
+        animate:anima._createStatsMonitor('A', 1, 4 * yStep)
+    };
 }

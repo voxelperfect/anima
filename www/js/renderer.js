@@ -317,10 +317,14 @@ anima.RendererCSS3 = Class.extend({
             transformation += ' translateZ(0)';
         }
 
-        node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
+        if (node._lastTransformation != transformation) {
+            node._lastTransformation = transformation;
 
-        if (node._resizeHandler && node.isVisible()) {
-            node._resizeHandler(node);
+            node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
+
+            if (node._resizeHandler && node.isVisible()) {
+                node._resizeHandler(node);
+            }
         }
     },
 
