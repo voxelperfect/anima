@@ -138,23 +138,31 @@ anima.Canvas = anima.Node.extend({
 
         var world = level._world;
 
-        var frameTime = 1.0 / anima.frameRate;
-        var stepsPerformed = 0;
-        while ((frameTime > 0.0) && (stepsPerformed < this._MAXIMUM_NUMBER_OF_STEPS)) {
-            var deltaTime = Math.min(frameTime, this._FIXED_TIMESTEP);
-            frameTime -= deltaTime;
-            if (frameTime < this._MINIMUM_TIMESTEP) {
-                deltaTime += frameTime;
-                frameTime = 0.0;
-            }
+        if (anima.physicsFrameRate != anima.frameRate) {
+            var frameTime = 1.0 / anima.frameRate;
+            var stepsPerformed = 0;
+            while ((frameTime > 0.0) && (stepsPerformed < this._MAXIMUM_NUMBER_OF_STEPS)) {
+                var deltaTime = Math.min(frameTime, this._FIXED_TIMESTEP);
+                frameTime -= deltaTime;
+                if (frameTime < this._MINIMUM_TIMESTEP) {
+                    deltaTime += frameTime;
+                    frameTime = 0.0;
+                }
 
+                try {
+                    world.Step(deltaTime, this._VELOCITY_ITERATIONS, this._POSITION_ITERATIONS);
+                } catch (e) {
+                    anima.logException(e);
+                }
+
+                stepsPerformed++;
+            }
+        } else {
             try {
-                world.Step(deltaTime, this._VELOCITY_ITERATIONS, this._POSITION_ITERATIONS);
+                world.Step(1.0 / anima.frameRate, this._VELOCITY_ITERATIONS, this._POSITION_ITERATIONS);
             } catch (e) {
                 anima.logException(e);
             }
-
-            stepsPerformed++;
         }
 
         try {
@@ -172,6 +180,8 @@ anima.Canvas = anima.Node.extend({
     _update:function () {
 
         try {
+            anima.stats.begin();
+
             var scene = this._currentScene;
             if (scene && scene._world) {
                 var sleeping = !scene.isAwake();
@@ -184,11 +194,13 @@ anima.Canvas = anima.Node.extend({
                 }
 
                 this._animator.animate();
+                anima.stats.end();
 
                 return;
             }
 
             this._animator.animate();
+            anima.stats.end();
         } catch (e) {
             anima.logException(e);
         }
@@ -319,6 +331,8 @@ function _anima_update() {
 anima.start = function (callbackFn) {
 
     $.mobile.loadingMessageTextVisible = false;
+
+    anima.initializeStats();
 
     anima._initializeSound(function () {
         anima.onResize();

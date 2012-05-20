@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.9.3 build 2';
+anima.version = '0.9.4 build 1';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -240,7 +240,7 @@ anima.parseDate = function (str) {
 
 anima.loadXML = function (file, callback) {
 
-    return $.get(file, null, function(data, textStatus, jqXHR) {
+    return $.get(file, null, function (data, textStatus, jqXHR) {
         if (callback) {
             callback($(data));
         }
@@ -337,3 +337,28 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
         return Class;
     };
 })();
+
+/* Performance Statistics */
+
+anima.stats = null;
+anima.initializeStats = function () {
+    if (Stats) {
+        anima.stats = new Stats();
+        anima.stats.setMode(0); // 0: fps, 1: ms
+
+        // Align top-left
+        anima.stats.domElement.style.position = 'absolute';
+        anima.stats.domElement.style.left = '0px';
+        anima.stats.domElement.style.top = '0px';
+
+        document.body.appendChild(anima.stats.domElement);
+    } else {
+        anima.stats = {
+            domElement:null,
+            begin:function () {
+            },
+            end:function () {
+            }
+        }
+    }
+}
