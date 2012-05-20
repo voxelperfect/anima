@@ -181,23 +181,19 @@ anima.RendererCSS3 = Class.extend({
 
     setCurrentSprite:function (node, index) {
 
-        if (node._background.url) {
-            var spriteSheet = node._background.spriteSheet;
-            if (spriteSheet) {
-                index = anima.round(index);
-                if (index >= 0 && index < spriteSheet.totalSprites) {
-                    var rows = spriteSheet.rows;
-                    var columns = spriteSheet.columns;
+        var spriteSheet = node._background.spriteSheet;
 
-                    var row = Math.floor(index / columns);
-                    var column = index - (row * columns);
+        if (index >= 0 && index < spriteSheet.totalSprites) {
+            var rows = spriteSheet.rows;
+            var columns = spriteSheet.columns;
 
-                    var position = (-column * node._size.width) + 'px '
-                        + (-row * node._size.height) + 'px';
+            var row = Math.floor(index / columns);
+            var column = index - (row * columns);
 
-                    node._element$.css('background-position', position);
-                }
-            }
+            var position = (-column * node._size.width) + 'px '
+                + (-row * node._size.height) + 'px';
+
+            node._element$.css('background-position', position);
         }
     },
 
