@@ -78,7 +78,7 @@ anima.Level = anima.Scene.extend({
 
     _addNodeWithLogic:function (node) {
 
-        if (node._logicFn || node.logic) {
+        if (node.logic) {
             this._nodesWithLogic[this._renderer.getElementId(node)] = node;
         }
     },
@@ -96,8 +96,6 @@ anima.Level = anima.Scene.extend({
             node._checkAwake();
             if (node.logic) {
                 node.logic();
-            } else {
-                node._logicFn(node);
             }
         }
     },

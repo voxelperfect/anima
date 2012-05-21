@@ -7,8 +7,6 @@ anima.Body = anima.Node.extend({
         this._physicalSize = null;
         this._body = null;
 
-        this._logicFn = null;
-
         this._wasAwake = false;
         this._awakeListenerFn = null;
 
@@ -68,21 +66,6 @@ anima.Body = anima.Node.extend({
     getLevel:function () {
 
         return this._layer._scene;
-    },
-
-    setLogic:function (logicFn) {
-
-        this._logicFn = logicFn;
-        if (logicFn) {
-            this.getLevel()._addNodeWithLogic(this);
-        } else {
-            this.getLevel()._removeNodeWithLogic(this);
-        }
-    },
-
-    getLogic:function () {
-
-        return this._logicFn;
     },
 
     getPhysicalBody:function () {

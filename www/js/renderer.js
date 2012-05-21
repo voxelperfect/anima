@@ -19,6 +19,7 @@ anima.RendererCSS3 = Class.extend({
         var parent$ = $('#pageContent');
         parent$.append('<div id="' + canvas._id + '"></div>');
         canvas._element$ = $('#' + canvas._id);
+        canvas._domElement = canvas._element$.get(0);
 
         canvas._element$.css({
             'padding':'0px',
@@ -137,6 +138,7 @@ anima.RendererCSS3 = Class.extend({
         }
 
         node._element$ = $('#' + elementId);
+        node._domElement = node._element$.get(0);
 
         node._element$.css({
             'position':'absolute'
@@ -316,7 +318,11 @@ anima.RendererCSS3 = Class.extend({
         if (node._lastTransformation != transformation) {
             node._lastTransformation = transformation;
 
-            node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
+            if (anima.isWebkit) {
+                node._domElement.style[anima.cssVendorPrefix + 'transform'] = transformation;
+            } else {
+                node._element$.css(anima.cssVendorPrefix + 'transform', transformation);
+            }
 
             if (node._resizeHandler && node.isVisible()) {
                 node._resizeHandler(node);
