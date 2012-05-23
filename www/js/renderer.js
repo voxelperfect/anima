@@ -195,7 +195,11 @@ anima.RendererCSS3 = Class.extend({
             var position = (-column * node._size.width) + 'px '
                 + (-row * node._size.height) + 'px';
 
-            node._element$.css('background-position', position);
+            if (anima.isWebkit) {
+                node._domElement.style['background-position'] = position;
+            } else {
+                node._element$.css('background-position', position);
+            }
         }
     },
 

@@ -75,7 +75,7 @@ anima.Layer = Class.extend({
 
     removeNode:function (id) {
 
-        var node = this.getNode();
+        var node = this.getNode(id);
         if (node) {
             var count = this._nodes.length;
             for (var i = 0; i < count; i++) {

@@ -94,9 +94,7 @@ anima.Level = anima.Scene.extend({
         for (var id in this._nodesWithLogic) {
             node = this._nodesWithLogic[id];
             node._checkAwake();
-            if (node.logic) {
-                node.logic();
-            }
+            node.logic();
         }
     },
 

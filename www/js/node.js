@@ -422,6 +422,11 @@ anima.Node = Class.extend({
         }
     },
 
+    destroy: function() {
+
+        this.getLayer().removeNode(this.getId());
+    },
+
     /* internal methods */
 
     _getImageUrls:function (urls) {

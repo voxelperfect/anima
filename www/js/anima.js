@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.9.4 build 2';
+anima.version = '0.9.4 build 3';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -340,10 +340,16 @@ var b2Vec2 = Box2D.Common.Math.b2Vec2,
 
 /* Performance Statistics */
 
-// TODO add one stats object per section (e.g. physics step/update, logic, animator, etc)
-// width is 80px so set left accordingly for each one (horizontal alignment... or maybe vertical is better?)
+anima._statsLevel = anima.getRequestParameter('stats', 'none');
 
-anima.stats = null;
+anima.stats = {};
+
+anima.stats._nopMonitor = {
+    begin:function () {
+    },
+    end:function () {
+    }
+};
 
 anima._createStatsMonitor = function (name, mode, y) {
 
@@ -358,12 +364,7 @@ anima._createStatsMonitor = function (name, mode, y) {
 
         document.body.appendChild(monitor.domElement);
     } else {
-        monitor = {
-            begin:function () {
-            },
-            end:function () {
-            }
-        }
+        monitor = anima.stats._nopMonitor;
     }
 
     return monitor;
@@ -373,11 +374,12 @@ anima.initializeStats = function () {
 
     var yStep = 45;
 
-    anima.stats = {
-        total:anima._createStatsMonitor(null, 0, 0),
-        physics:anima._createStatsMonitor('P', 1, 1 * yStep),
-        logic:anima._createStatsMonitor('L', 1, 2 * yStep),
-        update:anima._createStatsMonitor('U', 1, 3 * yStep),
-        animate:anima._createStatsMonitor('A', 1, 4 * yStep)
-    };
+    var level = anima._statsLevel;
+
+
+    anima.stats.total = (level == 'all' || level == 'fps') ? anima._createStatsMonitor(null, 0, 0) : anima.stats._nopMonitor;
+    anima.stats.physics = (level == 'all') ? anima._createStatsMonitor('P', 1, 1 * yStep) : anima.stats._nopMonitor;
+    anima.stats.logic = (level == 'all') ? anima._createStatsMonitor('L', 1, 2 * yStep) : anima.stats._nopMonitor;
+    anima.stats.update = (level == 'all') ? anima._createStatsMonitor('U', 1, 3 * yStep) : anima.stats._nopMonitor;
+    anima.stats.animate = (level == 'all') ? anima._createStatsMonitor('A', 1, 4 * yStep) : anima.stats._nopMonitor;
 }

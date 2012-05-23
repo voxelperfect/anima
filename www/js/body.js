@@ -127,6 +127,12 @@ anima.Body = anima.Node.extend({
         this._awakeListenerFn = listenerFn;
     },
 
+    isMoving:function () {
+
+        var velocity = this._body.GetLinearVelocity();
+        return velocity.Length() > 0.01;
+    },
+
     /* internal methods */
 
     _update:function () {
@@ -144,13 +150,13 @@ anima.Body = anima.Node.extend({
 
     _checkAwake:function () {
 
-        var awake = this._body.IsAwake();
-        if (awake != this._wasAwake && this._awakeListenerFn) {
-            this._awakeListenerFn(this, awake);
+        if (this._awakeListenerFn) {
+            var awake = this._body.IsAwake();
+            if (awake != this._wasAwake) {
+                this._awakeListenerFn(this, awake);
+            }
+            this._wasAwake = awake;
         }
-        this._wasAwake = awake;
-
-        return awake;
     },
 
     _pointToVector:function (point, scale) {
@@ -196,8 +202,14 @@ anima.Body = anima.Node.extend({
 
     _removeElement:function () {
 
+        this._body.SetActive(false);
+        this.hide();
+
         this.getLevel()._removeNodeWithLogic(this);
         this.getLevel()._removeDynamicBody(this);
+
+        this.getLevel().getWorld().DestroyBody(this._body);
+
         this._super();
     }
 });
