@@ -146,7 +146,7 @@ anima.Animator = Class.extend({
         if (animation.taskFn) {
             if (!animation.delay) {
                 try {
-                    animation.taskFn(loopTime);
+                    animation.taskFn(this, animation);
                 } catch (e) {
                     anima.logException(e);
                 }
