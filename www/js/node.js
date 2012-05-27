@@ -1,3 +1,13 @@
+anima._spriteSheetInterpolator = function (animator, t, animation) {
+
+    var data = animation.data;
+    var index = (data.startFrame + t * (data.endFrame - data.startFrame)) / animation.duration;
+    var node = animator.getNode(data.nodeId);
+    if (node) {
+        node.setCurrentSprite(index);
+    }
+};
+
 anima.Node = Class.extend({
 
     init:function (id, options) {
@@ -163,7 +173,7 @@ anima.Node = Class.extend({
             },
             duration:duration,
             easing:anima.Easing.easeInOutSine,
-            onAnimationEndedFn:function (animation) {
+            onAnimationEndedFn:function (animator, animation) {
                 me.hide();
                 if (callbackFn) {
                     callbackFn();
@@ -198,7 +208,7 @@ anima.Node = Class.extend({
         var first = anima.isMapEmpty(this._backgrounds);
 
         this._backgrounds[name] = {
-            name: name,
+            name:name,
             color:color,
             url:url,
             spriteSheet:anima.clone(spriteSheet),
@@ -235,18 +245,13 @@ anima.Node = Class.extend({
             var duration = animation.duration;
 
             var data = {
-                node:this,
+                nodeId:this._id,
                 startFrame:startFrame,
                 endFrame:endFrame
             }
 
-            var userData = animation.data;
-            if (userData) {
-                data = $.extend(data, userData);
-            }
-
             this._backgroundAnimationId = this._animator.addAnimation({
-                interpolateValuesFn:this._spriteSheetInterpolator,
+                interpolateValuesFn:anima._spriteSheetInterpolator,
                 duration:duration,
                 delay:animation.delay,
                 loop:animation.loop,
@@ -255,7 +260,7 @@ anima.Node = Class.extend({
         }
     },
 
-    getActiveBackgroundName: function() {
+    getActiveBackgroundName:function () {
 
         return this._background ? this._background.name : null;
     },
@@ -451,13 +456,6 @@ anima.Node = Class.extend({
 
     /* internal methods */
 
-    _spriteSheetInterpolator:function (animator, t, animation) {
-
-        var data = animation.data;
-        var index = (data.startFrame + t * (data.endFrame - data.startFrame)) / animation.duration;
-        data.node.setCurrentSprite(index);
-    },
-
     _getImageUrls:function (urls) {
 
         for (var name in this._backgrounds) {
@@ -552,4 +550,5 @@ anima._dragHandler = function (event) {
             }
             break;
     }
-}
+};
+

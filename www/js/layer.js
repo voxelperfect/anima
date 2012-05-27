@@ -50,6 +50,11 @@ anima.Layer = Class.extend({
 
     addNode:function (node) {
 
+        if (this._scene._nodeMap[node._id]) {
+            anima.log('duplicate node id "' + node._id + '" in scene "' + this._scene._id + '"');
+            return;
+        }
+
         node._layer = this;
         node._animator = this._animator;
         node._canvas = this._canvas;
@@ -66,6 +71,8 @@ anima.Layer = Class.extend({
         if (node.logic) {
             node.getLevel()._addNodeWithLogic(node);
         }
+
+        this._scene._nodeMap[node._id] = node;
     },
 
     getNode:function (id) {
@@ -79,7 +86,7 @@ anima.Layer = Class.extend({
         if (node) {
             var count = this._nodes.length;
             for (var i = 0; i < count; i++) {
-                if (this._nodes[i]._id = id) {
+                if (this._nodes[i]._id == id) {
                     this._nodes.splice(i, 1);
                     delete this._nodeMap[id];
                     node._removeElement();
@@ -87,6 +94,8 @@ anima.Layer = Class.extend({
                 }
             }
             node._layer = null;
+
+            delete this._scene._nodeMap[node._id];
         }
     },
 

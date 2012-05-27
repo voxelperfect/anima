@@ -10,7 +10,7 @@ anima.Canvas = anima.Node.extend({
 
         this._renderer.createCanvas(this);
 
-        this._animator = new anima.Animator(adaptive);
+        this._animator = new anima.Animator(this, adaptive);
 
         this._scenes = [];
         this._sceneMap = [];
@@ -94,7 +94,7 @@ anima.Canvas = anima.Node.extend({
         if (scene) {
             var count = this._scenes.length;
             for (var i = 0; i < count; i++) {
-                if (this._scenes[i]._id = id) {
+                if (this._scenes[i]._id == id) {
                     this._scenes.splice(i, 1);
                     delete this._sceneMap[id];
                     scene._removeElement();

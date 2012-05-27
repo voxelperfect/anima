@@ -8,7 +8,6 @@ anima.Body = anima.Node.extend({
         this._body = null;
 
         this._wasAwake = false;
-        this._awakeListenerFn = null;
 
         this._origin.x = 0.5;
         this._origin.y = 0.5;
@@ -28,13 +27,11 @@ anima.Body = anima.Node.extend({
 
     define:function (bodyDef, fixDef) {
 
-        var me = this;
-
         var world = this._layer._scene._world;
 
         this._body = world.CreateBody(bodyDef);
         this._body.SetUserData({
-            node:me
+            id:this.getId()
         });
 
         var level = this._layer._scene;
@@ -47,6 +44,7 @@ anima.Body = anima.Node.extend({
             var file = fixDef.shapeFile;
             fixDef.shapeFile = null;
 
+            var me = this;
             anima.loadXML(file, function (data$) {
                 me._createShapes(data$, fixDef);
 
@@ -122,11 +120,6 @@ anima.Body = anima.Node.extend({
         return this._body.GetFixtureList().GetAABB();
     },
 
-    setAwakeListener:function (listenerFn) {
-
-        this._awakeListenerFn = listenerFn;
-    },
-
     isMoving:function () {
 
         var velocity = this._body.GetLinearVelocity();
@@ -150,10 +143,10 @@ anima.Body = anima.Node.extend({
 
     _checkAwake:function () {
 
-        if (this._awakeListenerFn) {
+        if (this.onAwakeChanged) {
             var awake = this._body.IsAwake();
             if (awake != this._wasAwake) {
-                this._awakeListenerFn(this, awake);
+                this.onAwakeChanged(awake);
             }
             this._wasAwake = awake;
         }
@@ -202,8 +195,8 @@ anima.Body = anima.Node.extend({
 
     _removeElement:function () {
 
-        this._body.SetActive(false);
         this.hide();
+        this._body.SetActive(false);
 
         var level = this.getLevel();
         level._removeNodeWithLogic(this);

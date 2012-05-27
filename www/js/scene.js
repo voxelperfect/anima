@@ -11,6 +11,7 @@ anima.Scene = anima.Node.extend({
 
         this._layers = [];
         this._layerMap = [];
+        this._nodeMap = [];
 
         this._viewport = null;
 
@@ -48,7 +49,7 @@ anima.Scene = anima.Node.extend({
         if (layer) {
             var count = this._layers.length;
             for (var i = 0; i < count; i++) {
-                if (this._layers[i]._id = id) {
+                if (this._layers[i]._id == id) {
                     this._layers.splice(i, 1);
                     delete this._layerMap[id];
                     layer._removeElement();
@@ -57,6 +58,11 @@ anima.Scene = anima.Node.extend({
             }
             layer._scene = null;
         }
+    },
+
+    getNode:function (id) {
+
+        return this._nodeMap[id];
     },
 
     setSize:function (postponeTransform) {
@@ -145,7 +151,7 @@ anima.Scene = anima.Node.extend({
                     },
                     duration:duration,
                     easing:easing,
-                    onAnimationEndedFn:function (animation) {
+                    onAnimationEndedFn:function (animator, animation) {
                         if (callbackFn) {
                             callbackFn(animation, viewport);
                         }

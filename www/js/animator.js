@@ -1,7 +1,8 @@
 anima.Animator = Class.extend({
 
-    init:function (adaptive) {
+    init:function (canvas, adaptive) {
 
+        this._canvas = canvas;
         this._adaptive = adaptive;
 
         this._animationQueue = [];
@@ -10,6 +11,12 @@ anima.Animator = Class.extend({
 
         this._animationLoopTimerID = null;
         this._animationTimeStart = 0;
+    },
+
+    getNode: function(id) {
+
+        var scene = this._canvas.getCurrentScene();
+        return (scene != null) ? scene.getNode(id) : null;
     },
 
     addTask:function (taskFn, delay, data) {
@@ -216,7 +223,7 @@ anima.Animator = Class.extend({
                 animationQueue.splice(i, 1);
 
                 if (animation.onAnimationEndedFn) {
-                    animation.onAnimationEndedFn(animation);
+                    animation.onAnimationEndedFn(this, animation);
                 }
 
             }

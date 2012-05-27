@@ -34,7 +34,12 @@ anima.Level = anima.Scene.extend({
             debugDraw.SetDrawScale(this._physicsScale);
             debugDraw.SetFillAlpha(0.5);
             debugDraw.SetLineThickness(1.0);
-            debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit | b2DebugDraw.e_centerOfMassBit);
+            debugDraw.SetFlags(b2DebugDraw.e_shapeBit
+                | b2DebugDraw.e_jointBit
+                | b2DebugDraw.e_aabbBit
+                | b2DebugDraw.e_pairBit
+                | b2DebugDraw.e_centerOfMassBit
+                | b2DebugDraw.e_controllerBit);
 
             this._world.SetDebugDraw(debugDraw);
         }
@@ -123,8 +128,11 @@ anima.Level = anima.Scene.extend({
 
         listener.BeginContact = function (contact) {
 
-            var bodyA = contact.GetFixtureA().GetBody().GetUserData().node;
-            var bodyB = contact.GetFixtureB().GetBody().GetUserData().node;
+            var bodyAId = contact.GetFixtureA().GetBody().GetUserData().id;
+            var bodyA = me.getNode(bodyAId);
+
+            var bodyBId = contact.GetFixtureB().GetBody().GetUserData().id;
+            var bodyB = me.getNode(bodyBId);
 
             if (bodyA.onBeginContact) {
                 bodyA.onBeginContact(bodyB);
