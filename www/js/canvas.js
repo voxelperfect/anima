@@ -130,7 +130,7 @@ anima.Canvas = anima.Node.extend({
 
     _FIXED_TIMESTEP:1.0 / anima.physicsFrameRate,
     _MINIMUM_TIMESTEP:1.0 / (anima.physicsFrameRate * 10.0),
-    _VELOCITY_ITERATIONS:8,
+    _VELOCITY_ITERATIONS:10,
     _POSITION_ITERATIONS:8,
     _MAXIMUM_NUMBER_OF_STEPS:anima.frameRate,
 

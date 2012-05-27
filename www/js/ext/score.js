@@ -85,30 +85,36 @@ anima.ext.ScoreDisplay = Class.extend({
         var steps = points / increment;
         var duration = 100 * steps;
 
+        var data = {
+            pointsToAdd:points,
+            pointsAdded:0,
+            increment:increment,
+            duration:duration,
+            display:this
+        };
+
         var animator = this._layer.getAnimator();
         animator.addAnimation({
-            interpolateValuesFn:function (animator, t, data) {
-                var newPoints = data.increment;
-                if (data.pointsAdded + newPoints > data.pointsToAdd) {
-                    newPoints = data.pointsToAdd - data.pointsAdded;
-                }
-
-                var display = data.display;
-                display.setScore(display._currentScore + newPoints);
-
-                data.pointsAdded += newPoints;
-            },
-            duration:duration,
-            data:{
-                pointsToAdd:points,
-                pointsAdded:0,
-                increment:increment,
-                duration:duration,
-                display:this
-            }}, 'add-score');
+            interpolateValuesFn:this._scoreInterpolator,
+            duration:duration
+        }, 'add-score', data);
     },
 
     /* internal methods */
+
+    _scoreInterpolator:function (animator, t, animation) {
+
+        var data = animation.data;
+        var newPoints = data.increment;
+        if (data.pointsAdded + newPoints > data.pointsToAdd) {
+            newPoints = data.pointsToAdd - data.pointsAdded;
+        }
+
+        var display = data.display;
+        display.setScore(display._currentScore + newPoints);
+
+        data.pointsAdded += newPoints;
+    },
 
     _calculatePosition:function (level) {
 

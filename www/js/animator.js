@@ -49,9 +49,10 @@ anima.Animator = Class.extend({
         return animationId;
     },
 
-    addAnimation:function (animation, chainId) {
+    addAnimation:function (animation, chainId, data) {
 
         animation = anima.clone(animation);
+        animation.data = data;
         animation.id = this._lastAnimationID++;
 
         if (chainId) {
@@ -182,7 +183,7 @@ anima.Animator = Class.extend({
         }
         if (animation.interpolateValuesFn) {
             try {
-                animation.interpolateValuesFn(this, t, animation.data);
+                animation.interpolateValuesFn(this, t, animation);
             } catch (e) {
                 anima.logException(e);
             }

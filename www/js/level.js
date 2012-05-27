@@ -18,7 +18,6 @@ anima.Level = anima.Scene.extend({
         this._nodesWithLogic = [];
         this._dynamicBodies = [];
 
-        this._beginContactListenerFn = null;
         this._registerContactListener();
     },
 
@@ -54,11 +53,6 @@ anima.Level = anima.Scene.extend({
     getPhysicalSize:function () {
 
         return this._physicalSize;
-    },
-
-    setContactListener:function (beginContactListenerFn) {
-
-        this._beginContactListenerFn = beginContactListenerFn;
     },
 
     isAwake:function () {
@@ -137,10 +131,6 @@ anima.Level = anima.Scene.extend({
             }
             if (bodyB.onBeginContact) {
                 bodyB.onBeginContact(bodyA);
-            }
-
-            if (me._beginContactListenerFn) {
-                me._beginContactListenerFn(bodyA, bodyB);
             }
         };
 

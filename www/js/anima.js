@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.9.4 build 3';
+anima.version = '0.9.5 build 2';
 
 anima.isIE = false;
 anima.isIE8 = false;

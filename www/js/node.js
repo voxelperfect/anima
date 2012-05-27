@@ -42,6 +42,7 @@ anima.Node = Class.extend({
 
         this._backgrounds = {};
         this._background = null;
+        this._backgroundAnimationId = null;
 
         this._data = {};
 
@@ -197,6 +198,7 @@ anima.Node = Class.extend({
         var first = anima.isMapEmpty(this._backgrounds);
 
         this._backgrounds[name] = {
+            name: name,
             color:color,
             url:url,
             spriteSheet:anima.clone(spriteSheet),
@@ -210,11 +212,52 @@ anima.Node = Class.extend({
 
     setActiveBackground:function (name) {
 
+        if (this._backgroundAnimationId) {
+            this._animator.endAnimation(this._backgroundAnimationId);
+        }
+
         var background = this._backgrounds[name];
         if (background) {
             this._background = background;
             this._renderer.setBackground(this);
         }
+
+        var spriteSheet = this._background.spriteSheet;
+        if (spriteSheet && spriteSheet.animation) {
+            var animation = spriteSheet.animation;
+
+            var startFrame = animation.startFrame;
+            var endFrame = animation.endFrame;
+            if (!startFrame && !endFrame) {
+                startFrame = 0;
+                endFrame = spriteSheet.totalSprites - 1;
+            }
+            var duration = animation.duration;
+
+            var data = {
+                node:this,
+                startFrame:startFrame,
+                endFrame:endFrame
+            }
+
+            var userData = animation.data;
+            if (userData) {
+                data = $.extend(data, userData);
+            }
+
+            this._backgroundAnimationId = this._animator.addAnimation({
+                interpolateValuesFn:this._spriteSheetInterpolator,
+                duration:duration,
+                delay:animation.delay,
+                loop:animation.loop,
+                onAnimationEndedFn:animation.onAnimationEndedFn
+            }, null, data);
+        }
+    },
+
+    getActiveBackgroundName: function() {
+
+        return this._background ? this._background.name : null;
     },
 
     getTotalSprites:function () {
@@ -257,27 +300,6 @@ anima.Node = Class.extend({
                 this._renderer.setCurrentSprite(this, index);
             }
         }
-    },
-
-    animateSpriteSheet:function (startFrame, endFrame, duration, onAnimationEndedFn) {
-
-        if (!startFrame && !endFrame) {
-            startFrame = 0;
-            endFrame = this.getTotalSprites() - 1;
-        }
-        if (!duration) {
-            duration = this.getSpriteSheetDuration();
-        }
-
-        var me = this;
-        var animationId = this._animator.addAnimation({
-            interpolateValuesFn:function (animator, t) {
-                var index = (startFrame + t * (endFrame - startFrame)) / duration;
-                me.setCurrentSprite(index);
-            },
-            duration:duration,
-            onAnimationEndedFn:onAnimationEndedFn
-        });
     },
 
     getSize:function () {
@@ -422,12 +444,19 @@ anima.Node = Class.extend({
         }
     },
 
-    destroy: function() {
+    destroy:function () {
 
         this.getLayer().removeNode(this.getId());
     },
 
     /* internal methods */
+
+    _spriteSheetInterpolator:function (animator, t, animation) {
+
+        var data = animation.data;
+        var index = (data.startFrame + t * (data.endFrame - data.startFrame)) / animation.duration;
+        data.node.setCurrentSprite(index);
+    },
 
     _getImageUrls:function (urls) {
 

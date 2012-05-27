@@ -28,11 +28,13 @@ anima.Body = anima.Node.extend({
 
     define:function (bodyDef, fixDef) {
 
+        var me = this;
+
         var world = this._layer._scene._world;
 
         this._body = world.CreateBody(bodyDef);
         this._body.SetUserData({
-            node:this
+            node:me
         });
 
         var level = this._layer._scene;
@@ -45,13 +47,11 @@ anima.Body = anima.Node.extend({
             var file = fixDef.shapeFile;
             fixDef.shapeFile = null;
 
-            var me = this;
             anima.loadXML(file, function (data$) {
                 me._createShapes(data$, fixDef);
 
                 me._update();
                 me._renderer.updateAll(me);
-
             });
         } else {
             this._body.CreateFixture(fixDef);
@@ -205,10 +205,17 @@ anima.Body = anima.Node.extend({
         this._body.SetActive(false);
         this.hide();
 
-        this.getLevel()._removeNodeWithLogic(this);
-        this.getLevel()._removeDynamicBody(this);
+        var level = this.getLevel();
+        level._removeNodeWithLogic(this);
+        level._removeDynamicBody(this);
 
-        this.getLevel().getWorld().DestroyBody(this._body);
+        if (this._body) {
+            var me = this;
+            this._animator.addTask(function () {
+                level.getWorld().DestroyBody(me._body);
+                me._body = null;
+            });
+        }
 
         this._super();
     }
