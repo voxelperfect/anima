@@ -312,13 +312,18 @@ anima.defaultProgressReporter = function (percent) {
     loadIcon$.html('<div class="progress-percent">' + percent + '</div>');
 }
 
+anima._resizeCanvas = function (animator, animation) {
+    animation.data.canvas._resize();
+};
 anima.onResize = function () {
 
-    $.each(anima._canvases, function (index, value) {
-        value.getAnimator().addTask(function () {
-            value._resize();
+    var canvas;
+    for (var i in anima._canvases) {
+        canvas = anima._canvases[i];
+        canvas.getAnimator().addTask(anima._resizeCanvas, null, {
+            canvas:canvas
         });
-    });
+    }
 };
 
 $(window).resize(function () {
@@ -335,9 +340,10 @@ function _anima_update() {
 
     window.requestAnimationFrame(_anima_update, '_anima_update()');
 
-    $.each(anima._canvases, function (index, value) {
-        value._update();
-    });
+    var canvas;
+    for (var i in anima._canvases) {
+        anima._canvases[i]._update();
+    }
 }
 
 anima.start = function (callbackFn) {

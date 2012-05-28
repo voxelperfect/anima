@@ -1,8 +1,8 @@
 anima.Level = anima.Scene.extend({
 
-    init:function (id, setId, physicalWidth, gravity) {
+    init:function (id, physicalWidth, gravity) {
 
-        this._super(id, setId);
+        this._super(id);
 
         this._physicalSize = {
             width:physicalWidth,

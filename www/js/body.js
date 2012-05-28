@@ -1,3 +1,10 @@
+anima._destroyBodyTask = function (animator, animation) {
+
+    var data = animation.data;
+    data.level.getWorld().DestroyBody(data.node._body);
+    data.node._body = null;
+};
+
 anima.Body = anima.Node.extend({
 
     init:function (id) {
@@ -203,10 +210,9 @@ anima.Body = anima.Node.extend({
         level._removeDynamicBody(this);
 
         if (this._body) {
-            var me = this;
-            this._animator.addTask(function () {
-                level.getWorld().DestroyBody(me._body);
-                me._body = null;
+            this._animator.addTask(anima._destroyBodyTask, null, {
+                level:level,
+                node:this
             });
         }
 

@@ -1,16 +1,10 @@
 anima.Scene = anima.Node.extend({
 
-    init:function (id, setId) {
+    init:function (id) {
 
         this._super(id);
 
-        this._setId = setId;
         this._type = 'Scene';
-    },
-
-    getSetId:function () {
-
-        return this._setId;
     },
 
     load:function () {
