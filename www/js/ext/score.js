@@ -135,7 +135,7 @@ anima.ext.ScoreDisplay = Class.extend({
         var x = this._posX;
         var y = this._posY;
         for (var i = 0; i < this._digitCount; i++) {
-            id = 'score_digit_' + i;
+            id = layerId + '_score_digit_' + i;
             this._digits.push(this._createDigit(this._layer, id, x, y));
             x += this._digitWidth + this._digitGap;
         }
