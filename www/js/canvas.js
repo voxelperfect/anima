@@ -62,6 +62,8 @@ anima.Canvas = anima.Node.extend({
 
         var newScene = this.getScene(id);
         if (newScene) {
+            newScene.load();
+
             var me = this;
             this._loadImages(newScene, progressFn, function () {
                 if (!duration) {

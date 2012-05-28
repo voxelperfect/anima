@@ -1,8 +1,8 @@
 anima.Level = anima.Scene.extend({
 
-    init:function (id, physicalWidth, gravity) {
+    init:function (id, setId, physicalWidth, gravity) {
 
-        this._super(id);
+        this._super(id, setId);
 
         this._physicalSize = {
             width:physicalWidth,
@@ -10,15 +10,26 @@ anima.Level = anima.Scene.extend({
         };
         this._physicsScale = 1.0;
 
-        this._world = new b2World(
-            gravity, // gravity
-            true  // allow sleep
-        );
+        this._gravity = gravity;
+    },
+
+    load:function () {
+
+        this._super();
+
+        if (this._world) {
+            this._world.ClearForces();
+        } else {
+            this._world = new b2World(
+                this._gravity, // gravity
+                true  // allow sleep
+            );
+
+            this._registerContactListener();
+        }
 
         this._nodesWithLogic = [];
         this._dynamicBodies = [];
-
-        this._registerContactListener();
     },
 
     setSize:function (postponeTransform) {

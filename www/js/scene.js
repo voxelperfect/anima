@@ -1,10 +1,25 @@
 anima.Scene = anima.Node.extend({
 
-    init:function (id) {
+    init:function (id, setId) {
 
         this._super(id);
 
+        this._setId = setId;
         this._type = 'Scene';
+    },
+
+    getSetId:function () {
+
+        return this._setId;
+    },
+
+    load:function () {
+
+        if (this._nodeMap) {
+            for (var id in this._nodeMap) {
+                this._nodeMap[id].destroy();
+            }
+        }
 
         this._origin.x = 0;
         this._origin.y = 0;
