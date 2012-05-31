@@ -500,6 +500,50 @@ anima.Node = Class.extend({
     }
 });
 
+anima._dragStartHandler = function (node, event) {
+
+    if (node._dragging && node._dragged) {
+        node._dragging = false;
+        node._dragged = false;
+        if (node._draggingHandler) {
+            node._draggingHandler(event, 'dragend', node);
+        }
+    } else {
+        node._dragging = true;
+        node._dragged = false;
+        if (node._draggingHandler) {
+            node._draggingHandler(event, 'dragstart', node);
+        }
+    }
+};
+
+anima._dragMoveHandler = function (node, event) {
+
+    if (node._dragging) {
+        event.stopPropagation();
+        anima.preventDefault(event);
+
+        node._dragged = true;
+        if (node._dragging && node._draggingHandler) {
+            node._draggingHandler(event, 'dragmove', node);
+        }
+    }
+};
+
+anima._dragEndHandler = function (node, event) {
+
+    if (node._dragging && node._dragged) {
+        event.stopPropagation();
+        anima.preventDefault(event);
+
+        node._dragging = false;
+        node._dragged = false;
+        if (node._draggingHandler) {
+            node._draggingHandler(event, 'dragend', node);
+        }
+    }
+};
+
 anima._dragHandler = function (event) {
 
     var node = event.data;
@@ -509,44 +553,15 @@ anima._dragHandler = function (event) {
     switch (type) {
         case 'vmousedown':
             if (which == 1 || which == 0) {
-                if (node._dragging && node._dragged) {
-                    node._dragging = false;
-                    node._dragged = false;
-                    if (node._draggingHandler) {
-                        node._draggingHandler(event, 'dragend', node);
-                    }
-                } else {
-                    node._dragging = true;
-                    node._dragged = false;
-                    if (node._draggingHandler) {
-                        node._draggingHandler(event, 'dragstart', node);
-                    }
-                }
+                anima._dragStartHandler(node, event);
             }
             break;
         case 'vmousemove':
-            if (node._dragging) {
-                event.stopPropagation();
-                anima.preventDefault(event);
-
-                node._dragged = true;
-                if (node._dragging && node._draggingHandler) {
-                    node._draggingHandler(event, 'dragmove', node);
-                }
-            }
+            anima._dragMoveHandler(node, event);
             break;
         case 'vmouseup':
             if (which == 1 || which == 0) {
-                if (node._dragging && node._dragged) {
-                    event.stopPropagation();
-                    anima.preventDefault(event);
-
-                    node._dragging = false;
-                    node._dragged = false;
-                    if (node._draggingHandler) {
-                        node._draggingHandler(event, 'dragend', node);
-                    }
-                }
+                anima._dragEndHandler(node, event);
             }
             break;
     }

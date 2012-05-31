@@ -14,8 +14,6 @@ anima.Body = anima.Node.extend({
         this._physicalSize = null;
         this._body = null;
 
-        this._wasAwake = false;
-
         this._origin.x = 0.5;
         this._origin.y = 0.5;
     },
@@ -146,17 +144,6 @@ anima.Body = anima.Node.extend({
         this._angle = -this._body.GetAngle();
 
         this._renderer.updateTransform(this);
-    },
-
-    _checkAwake:function () {
-
-        if (this.onAwakeChanged) {
-            var awake = this._body.IsAwake();
-            if (awake != this._wasAwake) {
-                this.onAwakeChanged(awake);
-            }
-            this._wasAwake = awake;
-        }
     },
 
     _pointToVector:function (point, scale) {

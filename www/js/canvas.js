@@ -132,8 +132,8 @@ anima.Canvas = anima.Node.extend({
 
     _FIXED_TIMESTEP:1.0 / anima.physicsFrameRate,
     _MINIMUM_TIMESTEP:1.0 / (anima.physicsFrameRate * 10.0),
-    _VELOCITY_ITERATIONS:10,
-    _POSITION_ITERATIONS:8,
+    _VELOCITY_ITERATIONS:7,
+    _POSITION_ITERATIONS:7,
     _MAXIMUM_NUMBER_OF_STEPS:anima.frameRate,
 
     _step:function (level) {
@@ -141,7 +141,7 @@ anima.Canvas = anima.Node.extend({
         var world = level._world;
 
         /**/ anima.stats.physics.begin();
-        if (anima.physicsFrameRate != anima.frameRate) {
+        if (anima.physicsFrameRate > anima.frameRate) {
             var frameTime = 1.0 / anima.frameRate;
             var stepsPerformed = 0;
             while ((frameTime > 0.0) && (stepsPerformed < this._MAXIMUM_NUMBER_OF_STEPS)) {
@@ -334,7 +334,7 @@ $(window).resize(function () {
 $(window).bind('orientationchange', function (event, orientation) {
 
     anima.onResize();
-})
+});
 
 function _anima_update() {
 
@@ -353,7 +353,7 @@ anima.start = function (callbackFn) {
 
     anima._initializeSound(function () {
         anima.onResize();
-        window.requestAnimationFrame(_anima_update, '_anima_update()');
+        _anima_update();
 
         if (callbackFn) {
             callbackFn.call();

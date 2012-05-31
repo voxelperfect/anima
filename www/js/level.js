@@ -25,6 +25,22 @@ anima.Level = anima.Scene.extend({
                 true  // allow sleep
             );
 
+            if (this._canvas._debug) {
+                var debugDraw = new b2DebugDraw();
+                debugDraw.SetSprite(this._renderer.getHtml5CanvasContext(this._canvas));
+                debugDraw.SetDrawScale(this._physicsScale);
+                debugDraw.SetFillAlpha(0.5);
+                debugDraw.SetLineThickness(1.0);
+                debugDraw.SetFlags(b2DebugDraw.e_shapeBit
+                    | b2DebugDraw.e_jointBit
+                    | b2DebugDraw.e_aabbBit
+                    | b2DebugDraw.e_pairBit
+                    | b2DebugDraw.e_centerOfMassBit
+                    | b2DebugDraw.e_controllerBit);
+
+                this._world.SetDebugDraw(debugDraw);
+            }
+
             this._registerContactListener();
         }
 
@@ -38,22 +54,6 @@ anima.Level = anima.Scene.extend({
 
         this._physicsScale = this._size.width / this._physicalSize.width;
         this._physicalSize.height = this._size.height * this._physicalSize.width / this._size.width;
-
-        if (this._canvas._debug) {
-            var debugDraw = new b2DebugDraw();
-            debugDraw.SetSprite(this._renderer.getHtml5CanvasContext(this._canvas));
-            debugDraw.SetDrawScale(this._physicsScale);
-            debugDraw.SetFillAlpha(0.5);
-            debugDraw.SetLineThickness(1.0);
-            debugDraw.SetFlags(b2DebugDraw.e_shapeBit
-                | b2DebugDraw.e_jointBit
-                | b2DebugDraw.e_aabbBit
-                | b2DebugDraw.e_pairBit
-                | b2DebugDraw.e_centerOfMassBit
-                | b2DebugDraw.e_controllerBit);
-
-            this._world.SetDebugDraw(debugDraw);
-        }
     },
 
     getWorld:function () {
@@ -103,7 +103,6 @@ anima.Level = anima.Scene.extend({
         var node;
         for (var id in this._nodesWithLogic) {
             node = this._nodesWithLogic[id];
-            node._checkAwake();
             node.logic();
         }
     },

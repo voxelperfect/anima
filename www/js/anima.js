@@ -1,6 +1,6 @@
 var anima = {};
 
-anima.version = '0.9.6 build 1';
+anima.version = '0.9.6 build 2';
 
 anima.isIE = false;
 anima.isIE8 = false;
@@ -42,9 +42,10 @@ anima.isWebkit = ($.browser.webkit || $.browser.safari);
 anima.frameRate = 60; // fps
 anima.physicsFrameRate = anima.frameRate;
 
+anima._userAgent = navigator.userAgent.toLowerCase();
+
 if (!window.requestAnimationFrame) {
     window.requestAnimationFrame = (function () {
-
         return window.webkitRequestAnimationFrame ||
             window.mozRequestAnimationFrame ||
             window.oRequestAnimationFrame ||
@@ -368,7 +369,7 @@ anima._createStatsMonitor = function (name, mode, y) {
     }
 
     return monitor;
-}
+};
 
 anima.initializeStats = function () {
 
@@ -376,10 +377,54 @@ anima.initializeStats = function () {
 
     var level = anima._statsLevel;
 
-
     anima.stats.total = (level == 'all' || level == 'fps') ? anima._createStatsMonitor(null, 0, 0) : anima.stats._nopMonitor;
     anima.stats.physics = (level == 'all') ? anima._createStatsMonitor('P', 1, 1 * yStep) : anima.stats._nopMonitor;
     anima.stats.logic = (level == 'all') ? anima._createStatsMonitor('L', 1, 2 * yStep) : anima.stats._nopMonitor;
     anima.stats.update = (level == 'all') ? anima._createStatsMonitor('U', 1, 3 * yStep) : anima.stats._nopMonitor;
     anima.stats.animate = (level == 'all') ? anima._createStatsMonitor('A', 1, 4 * yStep) : anima.stats._nopMonitor;
-}
+};
+
+/**
+ * http://kangax.github.com/iseventsupported/
+ */
+anima.isEventSupported = (function () {
+
+    var TAGNAMES = {
+        'select':'input', 'change':'input',
+        'submit':'form', 'reset':'form',
+        'error':'img', 'load':'img', 'abort':'img'
+    };
+
+    function isEventSupported(eventName, element) {
+
+        element = element || document.createElement(TAGNAMES[eventName] || 'div');
+        eventName = 'on' + eventName;
+
+        var isSupported = (eventName in element);
+
+        if (!isSupported) {
+            // if it has no `setAttribute` (i.e. doesn't implement Node interface), try generic element
+            if (!element.setAttribute) {
+                element = document.createElement('div');
+            }
+            if (element.setAttribute && element.removeAttribute) {
+                element.setAttribute(eventName, '');
+                isSupported = typeof element[eventName] == 'function';
+
+                // if property was created, "remove it" (by setting value to `undefined`)
+                if (typeof element[eventName] != 'undefined') {
+                    element[eventName] = undef;
+                }
+                element.removeAttribute(eventName);
+            }
+        }
+
+        element = null;
+        return isSupported;
+    }
+
+    return isEventSupported;
+})();
+
+anima.hasTouchEvents = anima.isEventSupported('touchstart');
+
