@@ -1,30 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b17466b5-dab4-4565-b97c-81415af0be8e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/anima.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/sass_stdlib.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/scopes/scope_settings.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/minify_client.sh" afterPath="$PROJECT_DIR$/scripts/minify_client.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/index.html" afterPath="$PROJECT_DIR$/www/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/anima.js" afterPath="$PROJECT_DIR$/www/js/anima.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/animator.js" afterPath="$PROJECT_DIR$/www/js/animator.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/body.js" afterPath="$PROJECT_DIR$/www/js/body.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/canvas.js" afterPath="$PROJECT_DIR$/www/js/canvas.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/ext/score.js" afterPath="$PROJECT_DIR$/www/js/ext/score.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/ext/slideshow.js" afterPath="$PROJECT_DIR$/www/js/ext/slideshow.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/layer.js" afterPath="$PROJECT_DIR$/www/js/layer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/level.js" afterPath="$PROJECT_DIR$/www/js/level.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/node.js" afterPath="$PROJECT_DIR$/www/js/node.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/renderer.js" afterPath="$PROJECT_DIR$/www/js/renderer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/scene.js" afterPath="$PROJECT_DIR$/www/js/scene.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/sound.js" afterPath="$PROJECT_DIR$/www/js/sound.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/resources/css/style.css" afterPath="$PROJECT_DIR$/www/resources/css/style.css" />
-    </list>
+    <list default="true" id="b17466b5-dab4-4565-b97c-81415af0be8e" name="Default" comment="" />
     <ignored path="anima.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -65,10 +42,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="level.js" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="level.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/js/level.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="0" selection-start="248" selection-end="248" vertical-scroll-proportion="0.0">
+            <state line="20" column="32" selection-start="527" selection-end="527" vertical-scroll-proportion="0.44117647">
               <folding>
                 <element signature="n#!!doc" expanded="true" />
               </folding>
@@ -132,16 +109,16 @@
       <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="3" selection-start="404" selection-end="404" vertical-scroll-proportion="-5.625">
+            <state line="36" column="62" selection-start="1963" selection-end="1963" vertical-scroll-proportion="-22.5">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="minify_client.sh" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="minify_client.sh" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/minify_client.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="0" selection-start="240" selection-end="240" vertical-scroll-proportion="0.15742129">
+            <state line="21" column="49" selection-start="901" selection-end="901" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -494,15 +471,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/level.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="0" selection-start="248" selection-end="248" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/www/js/node.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="7" column="0" selection-start="248" selection-end="248" vertical-scroll-proportion="0.0">
@@ -546,17 +514,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/index.html">
+    <entry file="file://$PROJECT_DIR$/scripts/minify_client.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="3" selection-start="404" selection-end="404" vertical-scroll-proportion="-5.625">
+        <state line="21" column="49" selection-start="901" selection-end="901" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/minify_client.sh">
+    <entry file="file://$PROJECT_DIR$/www/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="0" selection-start="240" selection-end="240" vertical-scroll-proportion="0.15742129">
+        <state line="36" column="62" selection-start="1963" selection-end="1963" vertical-scroll-proportion="-22.5">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/js/level.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="32" selection-start="527" selection-end="527" vertical-scroll-proportion="0.44117647">
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
